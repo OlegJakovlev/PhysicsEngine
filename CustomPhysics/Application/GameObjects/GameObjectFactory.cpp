@@ -4,47 +4,50 @@
 #include "../../PhysicsEngine/Engine/Actors/StaticActor.h"
 #include "../../PhysicsEngine/Engine/Actors/DynamicActor.h"
 
-std::atomic<uint64_t> GameObjectFactory::s_lastId = 0;
-
-uint64_t GameObjectFactory::GenerateId()
+namespace CustomApplication
 {
-    return s_lastId++;
-}
+    std::atomic<uint64_t> GameObjectFactory::s_lastId = 0;
 
-void GameObjectFactory::Init(ActorFactory* factory)
-{
-    m_actorFactory = factory;
-}
+    uint64_t GameObjectFactory::GenerateId()
+    {
+        return s_lastId++;
+    }
 
-GameObject* GameObjectFactory::CreateStaticActor(physx::PxTransform& transform, GameObject::Layer layer)
-{
-    StaticGameObject* staticObject = new StaticGameObject(GenerateId(), transform);
-    StaticActor* physicsActor = (StaticActor*) m_actorFactory->CreateStaticActor(staticObject->GetTransform());
+    void GameObjectFactory::Init(PhysicsEngine::ActorFactory* factory)
+    {
+        m_actorFactory = factory;
+    }
 
-    staticObject->SetPhysicsActor(physicsActor);
-    physicsActor->SetCollisionLayer(CollisionFilter::FilterGroup (layer));
-    
-    return staticObject;
-}
+    GameObject* GameObjectFactory::CreateStaticActor(physx::PxTransform& transform, GameObject::Layer layer)
+    {
+        StaticGameObject* staticObject = new StaticGameObject(GenerateId(), transform);
+        PhysicsEngine::StaticActor* physicsActor = (PhysicsEngine::StaticActor*) m_actorFactory->CreateStaticActor(staticObject->GetTransform());
 
-GameObject* GameObjectFactory::CreateDynamicActor(physx::PxTransform& transform, GameObject::Layer layer)
-{
-    DynamicGameObject* dynamicObject = new DynamicGameObject(GenerateId(), transform);
-    DynamicActor* dynamicExample = (DynamicActor*) m_actorFactory->CreateDynamicActor(dynamicObject->GetTransform());
+        staticObject->SetPhysicsActor(physicsActor);
+        physicsActor->SetCollisionLayer((uint32_t) layer);
 
-    dynamicObject->SetPhysicsActor(dynamicExample);
-    dynamicExample->SetCollisionLayer(CollisionFilter::FilterGroup (layer));
+        return staticObject;
+    }
 
-    return dynamicObject;
-}
+    GameObject* GameObjectFactory::CreateDynamicActor(physx::PxTransform& transform, GameObject::Layer layer)
+    {
+        DynamicGameObject* dynamicObject = new DynamicGameObject(GenerateId(), transform);
+        PhysicsEngine::DynamicActor* dynamicExample = (PhysicsEngine::DynamicActor*) m_actorFactory->CreateDynamicActor(dynamicObject->GetTransform());
 
-GameObject* GameObjectFactory::CreateKinematicActor(physx::PxTransform& transform, GameObject::Layer layer)
-{
-    DynamicGameObject* dynamicObject = new DynamicGameObject(GenerateId(), transform);
-    DynamicActor* dynamicExample = (DynamicActor*) m_actorFactory->CreateKinematicActor(dynamicObject->GetTransform());
+        dynamicObject->SetPhysicsActor(dynamicExample);
+        dynamicExample->SetCollisionLayer((uint32_t) layer);
 
-    dynamicObject->SetPhysicsActor(dynamicExample);
-    dynamicExample->SetCollisionLayer(CollisionFilter::FilterGroup(layer));
+        return dynamicObject;
+    }
 
-    return dynamicObject;
+    GameObject* GameObjectFactory::CreateKinematicActor(physx::PxTransform& transform, GameObject::Layer layer)
+    {
+        DynamicGameObject* dynamicObject = new DynamicGameObject(GenerateId(), transform);
+        PhysicsEngine::DynamicActor* dynamicExample = (PhysicsEngine::DynamicActor*) m_actorFactory->CreateKinematicActor(dynamicObject->GetTransform());
+
+        dynamicObject->SetPhysicsActor(dynamicExample);
+        dynamicExample->SetCollisionLayer((uint32_t) layer);
+
+        return dynamicObject;
+    }
 }

@@ -1,38 +1,41 @@
 #include "EventTracker.h"
 
-bool EventTracker::Init(bool enableDemoRecord)
+namespace PhysicsEngine
 {
-	m_enableDemoRecord = enableDemoRecord;
-
-	if (m_enableDemoRecord)
+	bool EventTracker::Init(bool enableDemoRecord)
 	{
-		m_demoRecorder = new DemoRecorder();
+		m_enableDemoRecord = enableDemoRecord;
 
-		if (!m_demoRecorder->Init())
+		if (m_enableDemoRecord)
+		{
+			m_demoRecorder = new DemoRecorder();
+
+			if (!m_demoRecorder->Init())
+			{
+				return false;
+			}
+		}
+
+		m_eventFactory = new EventFactory();
+		if (!m_eventFactory->Init())
 		{
 			return false;
 		}
+
+		return true;
 	}
 
-	m_eventFactory = new EventFactory();
-	if (!m_eventFactory->Init())
+	void EventTracker::RegisterAddActorEvent(const Actor* actor) const
 	{
-		return false;
+		if (!m_enableDemoRecord) return;
+
+		m_demoRecorder->Record(m_eventFactory->CreateAddActorEvent(actor));
 	}
 
-	return true;
-}
+	void EventTracker::RegisterAddForceEvent()
+	{
+		if (!m_enableDemoRecord) return;
 
-void EventTracker::RegisterAddActorEvent(const Actor* actor) const
-{
-	if (!m_enableDemoRecord) return;
-
-	m_demoRecorder->Record(m_eventFactory->CreateAddActorEvent(actor));
-}
-
-void EventTracker::RegisterAddForceEvent()
-{
-	if (!m_enableDemoRecord) return;
-
-	//m_demoRecorder->Record(m_eventFactory->CreateAddActorEvent());
+		//m_demoRecorder->Record(m_eventFactory->CreateAddActorEvent());
+	}
 }

@@ -1,5 +1,9 @@
 #include "SingleFrameAllocator.h"
 
-void SingleFrameAllocator::Clear()
+namespace PhysicsEngine
 {
+	void SingleFrameAllocator::Clear()
+	{
+	}
 }
+

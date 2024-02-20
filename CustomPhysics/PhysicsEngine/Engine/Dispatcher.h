@@ -6,22 +6,25 @@
 #include "PxPhysicsAPI.h"
 #include "CudaContextManager.h"
 
-class Dispatcher
+namespace PhysicsEngine
 {
-private:
-	physx::PxCpuDispatcher* g_cpuDispatcher;
+	class Dispatcher
+	{
+	private:
+		physx::PxCpuDispatcher* g_cpuDispatcher;
 
 #if PX_WINDOWS
-	physx::PxGpuDispatcher* g_gpuDispatcher;
+		physx::PxGpuDispatcher* g_gpuDispatcher;
 #endif
 
-public:
-	bool Init();
-	//bool Init(const CudaContextManager* contextManager);
+	public:
+		bool Init();
+		bool Init(const CudaContextManager* contextManager);
 
-	const physx::PxCpuDispatcher* GetCPU() const;
-	const physx::PxGpuDispatcher* GetGPU() const;
-};
+		const physx::PxCpuDispatcher* GetCPU() const;
+		const physx::PxGpuDispatcher* GetGPU() const;
+	};
+}
 
 #endif
 

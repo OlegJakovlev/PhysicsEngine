@@ -1,14 +1,18 @@
 #include "RendererFactory.h"
 #include "Renderers/GlutRenderer.h"
 
-IRender* RendererFactory::CreateRenderer(RendererType type)
+namespace CustomApplication
 {
-	switch (type)
+	IRender* RendererFactory::CreateRenderer(RendererType type)
 	{
-		case (RendererType::Glut):
-			return new GlutRenderer();
+		switch (type)
+		{
+			case (RendererType::Glut):
+				return new GlutRenderer();
 
-		default:
-			return nullptr;
+			default:
+				return nullptr;
+		}
 	}
+
 }

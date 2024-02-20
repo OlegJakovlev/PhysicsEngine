@@ -3,11 +3,14 @@
 #ifndef DoubleBufferAllocator_H
 #define DoubleBufferAllocator_H
 
-class DoubleBufferAllocator
+namespace PhysicsEngine
 {
-public:
-	void SwapBuffers();
-	void ClearCurrentBuffer();
-};
+	class DoubleBufferAllocator
+	{
+	public:
+		void SwapBuffers();
+		void ClearCurrentBuffer();
+	};
+}
 
 #endif

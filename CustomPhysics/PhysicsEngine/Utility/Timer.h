@@ -5,22 +5,25 @@
 
 #include <chrono>
 
-class Timer
+namespace PhysicsEngine
 {
-public:
-	Timer() = default;
-	Timer& operator=(const Timer&) = default;
-	Timer(const Timer&) = default;
-	virtual ~Timer() = default;
+	class Timer
+	{
+	public:
+		Timer() = default;
+		Timer& operator=(const Timer&) = default;
+		Timer(const Timer&) = default;
+		virtual ~Timer() = default;
 
-	double GetCurrentTime() const;
-	double GetElapsedTime() const;
-	void Stop();
-	void Reset();
+		double GetCurrentTime() const;
+		double GetElapsedTime() const;
+		void Stop();
+		void Reset();
 
-private:
-	std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
-	std::chrono::time_point<std::chrono::high_resolution_clock> stopTime;
-};
+	private:
+		std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
+		std::chrono::time_point<std::chrono::high_resolution_clock> stopTime;
+	};
+}
 
 #endif

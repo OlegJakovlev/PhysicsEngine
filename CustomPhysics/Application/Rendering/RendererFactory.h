@@ -6,10 +6,14 @@
 #include "Renderers/IRender.h"
 #include "RendererType.h"
 
-class RendererFactory
+namespace CustomApplication
 {
-public:
-	static IRender* CreateRenderer(RendererType type);
-};
+	class RendererFactory
+	{
+	public:
+		static IRender* CreateRenderer(RendererType type);
+	};
+}
+
 
 #endif

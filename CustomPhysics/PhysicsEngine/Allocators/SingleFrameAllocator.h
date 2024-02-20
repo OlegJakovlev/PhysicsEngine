@@ -3,10 +3,13 @@
 #ifndef SingleFrameAllocator_H
 #define SingleFrameAllocator_H
 
-class SingleFrameAllocator
+namespace PhysicsEngine
 {
-public:
-	void Clear();
-};
+	class SingleFrameAllocator
+	{
+	public:
+		void Clear();
+	};
+}
 
 #endif

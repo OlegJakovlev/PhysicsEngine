@@ -1,72 +1,76 @@
 #include "GameScene.h"
 
-void GameScene::AddGameActorInternal(StaticGameObject* staticGameObject)
+namespace CustomApplication
 {
-	m_staticGameObjects[m_staticGameObjectCount] = staticGameObject;
-	m_staticGameObjectCount++;
-}
-
-void GameScene::AddGameActorInternal(DynamicGameObject* dynamicGameObject)
-{
-	m_dynamicGameObjects[m_dynamicGameObjectCount] = dynamicGameObject;
-	m_dynamicGameObjectCount++;
-}
-
-void GameScene::AddGameActor(GameObject* gameObject)
-{
-	GameObject::Type underlayingType = gameObject->GetType();
-
-	if (underlayingType == GameObject::Type::Static)
+	void GameScene::AddGameActorInternal(StaticGameObject* staticGameObject)
 	{
-		StaticGameObject* staticGameObject = static_cast<StaticGameObject*>(gameObject);
-		AddGameActorInternal(staticGameObject);
+		m_staticGameObjects[m_staticGameObjectCount] = staticGameObject;
+		m_staticGameObjectCount++;
+	}
+
+	void GameScene::AddGameActorInternal(DynamicGameObject* dynamicGameObject)
+	{
+		m_dynamicGameObjects[m_dynamicGameObjectCount] = dynamicGameObject;
+		m_dynamicGameObjectCount++;
+	}
+
+	void GameScene::AddGameActor(GameObject* gameObject)
+	{
+		GameObject::Type underlayingType = gameObject->GetType();
+
+		if (underlayingType == GameObject::Type::Static)
+		{
+			StaticGameObject* staticGameObject = static_cast<StaticGameObject*>(gameObject);
+			AddGameActorInternal(staticGameObject);
+			return;
+		}
+
+		if (underlayingType == GameObject::Type::Dynamic)
+		{
+			DynamicGameObject* dynamicGameObject = static_cast<DynamicGameObject*>(gameObject);
+			AddGameActorInternal(dynamicGameObject);
+			return;
+		}
+
+		std::printf("Unknown underlaying GameObject type!");
 		return;
 	}
 
-	if (underlayingType == GameObject::Type::Dynamic)
+	void GameScene::Init(const PhysicsEngine::PhysicsEngine* physicsEngine)
 	{
-		DynamicGameObject* dynamicGameObject = static_cast<DynamicGameObject*>(gameObject);
-		AddGameActorInternal(dynamicGameObject);
-		return;
+		m_staticGameObjectCount = 0;
+		m_dynamicGameObjectCount = 0;
+
+		m_staticGameObjects = new GameObject * [k_maxStaticGameObjects];
+		m_dynamicGameObjects = new GameObject * [k_maxDynamicGameObjects];
+
+		gameObjectFactory = new GameObjectFactory();
+		gameObjectFactory->Init(const_cast<PhysicsEngine::ActorFactory*>(physicsEngine->GetActorFactory()));
 	}
 
-	std::printf("Unknown underlaying GameObject type!");
-	return;
-}
+	const void* GameScene::GetPhysicsScene() const
+	{
+		return m_physicsScene;
+	}
 
-void GameScene::Init(const PhysicsEngine* physicsEngine)
-{
-	m_staticGameObjectCount = 0;
-	m_dynamicGameObjectCount = 0;
+	const GameObject** GameScene::GetStaticActors() const
+	{
+		return const_cast<const GameObject**>(m_staticGameObjects);
+	}
 
-	m_staticGameObjects = new GameObject* [k_maxStaticGameObjects];
-	m_dynamicGameObjects = new GameObject* [k_maxDynamicGameObjects];
+	const uint32_t GameScene::GetStaticActorCount() const
+	{
+		return m_staticGameObjectCount;
+	}
 
-	gameObjectFactory = new GameObjectFactory();
-	gameObjectFactory->Init(const_cast<ActorFactory*>(physicsEngine->GetActorFactory()));
-}
+	const GameObject** GameScene::GetDynamicActors() const
+	{
+		return const_cast<const GameObject**>(m_dynamicGameObjects);
+	}
 
-const void* GameScene::GetPhysicsScene() const
-{
-	return m_physicsScene;
-}
+	const uint32_t GameScene::GetDynamicActorCount() const
+	{
+		return m_dynamicGameObjectCount;
+	}
 
-const GameObject** GameScene::GetStaticActors() const
-{
-	return const_cast<const GameObject**>(m_staticGameObjects);
-}
-
-const uint32_t GameScene::GetStaticActorCount() const
-{
-	return m_staticGameObjectCount;
-}
-
-const GameObject** GameScene::GetDynamicActors() const
-{
-	return const_cast<const GameObject**>(m_dynamicGameObjects);
-}
-
-const uint32_t GameScene::GetDynamicActorCount() const
-{
-	return m_dynamicGameObjectCount;
 }

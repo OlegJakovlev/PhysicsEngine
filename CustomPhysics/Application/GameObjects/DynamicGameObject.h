@@ -5,13 +5,16 @@
 
 #include "GameObject.h"
 
-class DynamicGameObject : public GameObject
+namespace CustomApplication
 {
-	friend class GameObjectFactory;
+	class DynamicGameObject : public GameObject
+	{
+		friend class GameObjectFactory;
 
-protected:
-	DynamicGameObject() = delete;
-	DynamicGameObject(const uint64_t id, physx::PxTransform& transform);
-};
+	protected:
+		DynamicGameObject() = delete;
+		DynamicGameObject(const uint64_t id, physx::PxTransform& transform);
+	};
+}
 
 #endif

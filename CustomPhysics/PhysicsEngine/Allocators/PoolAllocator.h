@@ -3,8 +3,11 @@
 #ifndef PoolAllocator_H
 #define PoolAllocator_H
 
-class PoolAllocator
+namespace PhysicsEngine
 {
-};
+	class PoolAllocator
+	{
+	};
+}
 
 #endif

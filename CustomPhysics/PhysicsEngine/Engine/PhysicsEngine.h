@@ -14,52 +14,56 @@
 #ifdef REMOTE_VISUAL_DEBUG
 #include "../Debug/VisualDebugger.h"
 #endif
+
 #include "Actors/ActorFactory.h"
 #include "Actors/GeometryFactory.h"
 #include "../Utility/ShapeCreator.h"
 
-// Composition Root
-class PhysicsEngine : public IPhysicsEngine
+namespace PhysicsEngine
 {
-private:
-	static constexpr float k_deltaTime = 1.0f / 60.0f;
-	static constexpr int k_substeps = 4;
+	// Composition Root
+	class PhysicsEngine : public IPhysicsEngine
+	{
+	private:
+		static constexpr float k_deltaTime = 1.0f / 60.0f;
+		static constexpr int k_substeps = 4;
 
-	// Services
-	Foundation* m_foundation;
-	Physics* m_physics;
-	Dispatcher* m_dispatcher;
-	SceneManager* m_sceneManager;
-	TaskManager* m_taskManager;
+		// Services
+		Foundation* m_foundation;
+		Physics* m_physics;
+		Dispatcher* m_dispatcher;
+		SceneManager* m_sceneManager;
+		TaskManager* m_taskManager;
 #ifdef REMOTE_VISUAL_DEBUG
-	VisualDebugger* m_visualDebuger;
+		VisualDebugger* m_visualDebuger;
 #endif
 
-	// Factories and databases
-	ActorFactory* m_actorFactory;
-	GeometryFactory* m_geoFactory;
-	ShapeCreator* m_shapeCreator;
-	MaterialDatabase* m_materialDatabase;
+		// Factories and databases
+		ActorFactory* m_actorFactory;
+		GeometryFactory* m_geoFactory;
+		ShapeCreator* m_shapeCreator;
+		MaterialDatabase* m_materialDatabase;
 
-	// Local variables
-	SingleFrameAllocator g_singleFrameAllocator;
-	DoubleBufferAllocator g_doubleBufferAllocator;
+		// Local variables
+		SingleFrameAllocator g_singleFrameAllocator;
+		DoubleBufferAllocator g_doubleBufferAllocator;
 
 #ifdef DEBUG_MODE
-	void RunUpdate();
+		void RunUpdate();
 #endif
 
-public:
-	void Release();
+	public:
+		void Release();
 
-	bool Init() override;
-	bool PostInit() override;
-	void Update(float dt) override;
+		bool Init() override;
+		bool PostInit() override;
+		void Update(float dt) override;
 
-	// TODO: API Exposed
-	const SceneManager* GetSceneManager() const;
-	const ActorFactory* GetActorFactory() const;
-	const GeometryFactory* GetGeometryFactory() const;
-	const ShapeCreator* GetShapeCreator() const;
-	const MaterialDatabase* GetMaterialDatabase() const;
-};
+		// TODO: API Exposed
+		const SceneManager* GetSceneManager() const;
+		const ActorFactory* GetActorFactory() const;
+		const GeometryFactory* GetGeometryFactory() const;
+		const ShapeCreator* GetShapeCreator() const;
+		const MaterialDatabase* GetMaterialDatabase() const;
+	};
+}

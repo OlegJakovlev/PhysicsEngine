@@ -3,8 +3,11 @@
 #ifndef StackAllocator_H
 #define StackAllocator_H
 
-class StackAllocator
+namespace PhysicsEngine
 {
-};
+	class StackAllocator
+	{
+	};
+}
 
 #endif

@@ -2,10 +2,13 @@
 
 #include "../GlobalDefine.h"
 
-// Responsible for exposing engine API to end application
-struct IPhysicsEngine
+namespace PhysicsEngine
 {
-	virtual bool Init() = 0;
-	virtual bool PostInit() = 0;
-	virtual void Update(float dt) = 0;
-};
+	// Responsible for exposing engine API to end application
+	struct IPhysicsEngine
+	{
+		virtual bool Init() = 0;
+		virtual bool PostInit() = 0;
+		virtual void Update(float dt) = 0;
+	};
+}

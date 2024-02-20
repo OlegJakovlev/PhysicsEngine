@@ -5,15 +5,18 @@
 
 #include "PxPhysicsAPI.h"
 
-class Cooking
+namespace PhysicsEngine
 {
-private:
-	physx::PxCooking* gCooking;
+	class Cooking
+	{
+	private:
+		physx::PxCooking* gCooking;
 
-public:
-	bool Init(const physx::PxFoundation* foundation, const physx::PxPhysics* physics);
-	void Release();
-};
+	public:
+		bool Init(const physx::PxFoundation* foundation, const physx::PxPhysics* physics);
+		void Release();
+	};
+}
 
 #endif
 

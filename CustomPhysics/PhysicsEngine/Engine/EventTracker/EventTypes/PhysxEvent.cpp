@@ -1,6 +1,9 @@
 #include "PhysxEvent.h"
 
-PhysxEvent::PhysxEvent(uint64_t id)
+namespace PhysicsEngine
 {
-	m_eventId = id;
+	PhysxEvent::PhysxEvent(uint64_t id)
+	{
+		m_eventId = id;
+	}
 }

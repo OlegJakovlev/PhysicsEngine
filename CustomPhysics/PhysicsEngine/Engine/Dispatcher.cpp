@@ -1,21 +1,29 @@
 #include "Dispatcher.h"
 #include <thread>
 
-bool Dispatcher::Init()
+namespace PhysicsEngine
 {
-	uint8_t availableThreads = std::thread::hardware_concurrency();
-	g_cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(availableThreads);
-	g_gpuDispatcher = nullptr;
-	return true;
-}
+	bool Dispatcher::Init()
+	{
+		uint8_t availableThreads = std::thread::hardware_concurrency();
+		g_cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(availableThreads);
+		g_gpuDispatcher = nullptr;
+		return true;
+	}
 
-const physx::PxCpuDispatcher* Dispatcher::GetCPU() const
-{
-	return g_cpuDispatcher;
-}
+	bool Dispatcher::Init(const CudaContextManager* contextManager)
+	{
+		return false;
+	}
 
-const physx::PxGpuDispatcher* Dispatcher::GetGPU() const
-{
-	return g_gpuDispatcher;
+	const physx::PxCpuDispatcher* Dispatcher::GetCPU() const
+	{
+		return g_cpuDispatcher;
+	}
+
+	const physx::PxGpuDispatcher* Dispatcher::GetGPU() const
+	{
+		return g_gpuDispatcher;
+	}
 }
 

@@ -5,24 +5,27 @@
 
 #include "../Engine/EventTracker/EventTypes/PhysxEvent.h"
 
-class DemoRecorder
+namespace PhysicsEngine
 {
-public:
-    class DemoHeader
+    class DemoRecorder
     {
+    public:
+        class DemoHeader
+        {
 
+        };
+
+        class DemoBody
+        {
+
+        };
+
+        bool Init();
+        void Record(PhysxEvent* eventToRecord);
+
+        //void Binarize(DemoEntry* entry);
+        //void Debinarize();
     };
-
-    class DemoBody
-    {
-
-    };
-
-    bool Init();
-    void Record(PhysxEvent* eventToRecord);
-
-    //void Binarize(DemoEntry* entry);
-    //void Debinarize();
-};
+}
 
 #endif

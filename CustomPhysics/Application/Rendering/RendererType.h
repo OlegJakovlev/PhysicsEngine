@@ -3,12 +3,15 @@
 #ifndef RendererType_H
 #define RendererType_H
 
-enum class RendererType
+namespace CustomApplication
 {
-	Glut,
-	Vulkan,
-	DirectX11,
-	SDL,
-};
+	enum class RendererType
+	{
+		Glut,
+		Vulkan,
+		DirectX11,
+		SDL,
+	};
+}
 
 #endif

@@ -5,23 +5,26 @@
 
 #include "../GlobalDefine.h"
 
-#ifdef DEBUG_MODE
+#ifdef REMOTE_VISUAL_DEBUG
 #include "PxPhysicsAPI.h"
 
-class VisualDebugger
+namespace PhysicsEngine
 {
-private:
-	const char* host = "localhost";
-	const int connectionPort = 5425;
-	const int timeoutMillis = 100;
-	physx::PxPvd* m_pvd;
-	physx::PxPvdTransport* m_transport;
+	class VisualDebugger
+	{
+	private:
+		const char* host = "localhost";
+		const int connectionPort = 5425;
+		const int timeoutMillis = 100;
+		physx::PxPvd* m_pvd;
+		physx::PxPvdTransport* m_transport;
 
-public:
-	bool Init(const physx::PxFoundation* foundation);
-	void Release();
-	const physx::PxPvd* GetPVDService() const;
-};
+	public:
+		bool Init(const physx::PxFoundation* foundation);
+		void Release();
+		const physx::PxPvd* GetPVDService() const;
+	};
+}
 
 #endif
 #endif

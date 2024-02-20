@@ -1,16 +1,20 @@
 #include "Cooking.h"
 
-bool Cooking::Init(const physx::PxFoundation* foundation, const physx::PxPhysics* physics)
+namespace PhysicsEngine
 {
-	physx::PxFoundation* foundationObject = const_cast<physx::PxFoundation*>(foundation);
+	bool Cooking::Init(const physx::PxFoundation* foundation, const physx::PxPhysics* physics)
+	{
+		physx::PxFoundation* foundationObject = const_cast<physx::PxFoundation*>(foundation);
 
-	gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundationObject, physx::PxCookingParams(physics->getTolerancesScale()));
+		gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundationObject, physx::PxCookingParams(physics->getTolerancesScale()));
 
-	return true;
+		return true;
+	}
+
+	void Cooking::Release()
+	{
+		gCooking->release();
+		gCooking = nullptr;
+	}
 }
 
-void Cooking::Release()
-{
-	gCooking->release();
-	gCooking = nullptr;
-}

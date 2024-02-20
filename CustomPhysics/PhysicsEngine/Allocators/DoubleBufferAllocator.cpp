@@ -1,9 +1,12 @@
 #include "DoubleBufferAllocator.h"
 
-void DoubleBufferAllocator::SwapBuffers()
+namespace PhysicsEngine
 {
-}
+	void DoubleBufferAllocator::SwapBuffers()
+	{
+	}
 
-void DoubleBufferAllocator::ClearCurrentBuffer()
-{
+	void DoubleBufferAllocator::ClearCurrentBuffer()
+	{
+	}
 }

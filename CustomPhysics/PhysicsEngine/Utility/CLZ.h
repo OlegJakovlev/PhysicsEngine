@@ -5,13 +5,16 @@
 
 #include <cstdint>
 
-class CLZ
+namespace PhysicsEngine
 {
-private:
-    static uint8_t m_clzLookup[256];
+    class CLZ
+    {
+    private:
+        static uint8_t m_clzLookup[256];
 
-public:
-    static uint32_t CLZ1(uint32_t x);
-};
+    public:
+        static uint32_t CLZ1(uint32_t x);
+    };
+}
 
 #endif

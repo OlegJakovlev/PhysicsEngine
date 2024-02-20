@@ -6,18 +6,22 @@
 #include "PxPhysicsAPI.h"
 #include <iostream>
 
-class Physics
+namespace PhysicsEngine
 {
-private:
-	physx::PxPhysics* gPhysics;
+	class Physics
+	{
+	private:
+		physx::PxPhysics* gPhysics;
 
-public:
-	bool Init(const physx::PxFoundation* foundation,
-			  const physx::PxPvd* visualDebugger);
+	public:
+		bool Init(const physx::PxFoundation* foundation,
+				  const physx::PxPvd* visualDebugger);
 
-	void Release();
+		void Release();
 
-	const physx::PxPhysics* GetPhysics() const;
-};
+		const physx::PxPhysics* GetPhysics() const;
+	};
+}
+
 
 #endif

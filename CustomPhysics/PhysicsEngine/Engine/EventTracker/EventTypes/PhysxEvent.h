@@ -5,16 +5,19 @@
 
 #include <cstdint>
 
-class PhysxEvent
+namespace PhysicsEngine
 {
-protected:
-	PhysxEvent(uint64_t id);
-	uint64_t m_eventId;
+	class PhysxEvent
+	{
+	protected:
+		PhysxEvent(uint64_t id);
+		uint64_t m_eventId;
 
-public:
-	virtual void Apply() = 0;
-	virtual void Invert() = 0;
-	virtual void Serialize() = 0;
-};
+	public:
+		virtual void Apply() = 0;
+		virtual void Invert() = 0;
+		virtual void Serialize() = 0;
+	};
+}
 
 #endif

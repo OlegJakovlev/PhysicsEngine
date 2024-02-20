@@ -6,15 +6,18 @@
 #include "PxPhysicsAPI.h"
 #include "Dispatcher.h"
 
-// Unfortunately due to the current linking, this class can not be utilized
-class TaskManager
+namespace PhysicsEngine
 {
-private:
-	physx::PxTaskManager* g_taskManager;
+	// Unfortunately due to the current Physx version (?) this class can not be utilized
+	class TaskManager
+	{
+	private:
+		physx::PxTaskManager* g_taskManager;
 
-public:
-	bool Init(const physx::PxFoundation* foundation, const Dispatcher* dispatcher);
-	const physx::PxTaskManager* GetTaskManager() const;
-};
+	public:
+		bool Init(const physx::PxFoundation* foundation, const Dispatcher* dispatcher);
+		const physx::PxTaskManager* GetTaskManager() const;
+	};
+}
 
 #endif

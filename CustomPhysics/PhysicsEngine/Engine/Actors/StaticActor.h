@@ -5,12 +5,15 @@
 
 #include "Actor.h"
 
-class StaticActor : public Actor
+namespace PhysicsEngine
 {
-    friend class ActorFactory;
+    class StaticActor : public Actor
+    {
+        friend class ActorFactory;
 
-private:
-    StaticActor(uint64_t id);
-};
+    private:
+        StaticActor(uint64_t id);
+    };
+}
 
 #endif

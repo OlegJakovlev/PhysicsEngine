@@ -1,28 +1,31 @@
 #include "Physics.h"
 
-bool Physics::Init(const physx::PxFoundation* foundation,
-				   const physx::PxPvd* visualDebugger)
+namespace PhysicsEngine
 {
-	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, const_cast<physx::PxFoundation&>(*foundation),
-							   physx::PxTolerancesScale(),
-							   true,
-							   const_cast<physx::PxPvd*>(visualDebugger));
-
-	if (gPhysics == nullptr)
+	bool Physics::Init(const physx::PxFoundation* foundation,
+					   const physx::PxPvd* visualDebugger)
 	{
-		std::printf("Physics init failed!\n");
+		gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, const_cast<physx::PxFoundation&>(*foundation),
+								   physx::PxTolerancesScale(),
+								   true,
+								   const_cast<physx::PxPvd*>(visualDebugger));
+
+		if (gPhysics == nullptr)
+		{
+			std::printf("Physics init failed!\n");
+		}
+
+		return gPhysics != nullptr;
 	}
 
-	return gPhysics != nullptr;
-}
+	void Physics::Release()
+	{
+		gPhysics->release();
+		gPhysics = nullptr;
+	}
 
-void Physics::Release()
-{
-	gPhysics->release();
-	gPhysics = nullptr;
-}
-
-const physx::PxPhysics* Physics::GetPhysics() const
-{
-	return gPhysics;
+	const physx::PxPhysics* Physics::GetPhysics() const
+	{
+		return gPhysics;
+	}
 }

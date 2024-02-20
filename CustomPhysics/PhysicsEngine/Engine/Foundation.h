@@ -5,17 +5,20 @@
 
 #include "PxPhysicsAPI.h"
 
-class Foundation
+namespace PhysicsEngine
 {
-private:
-	physx::PxDefaultErrorCallback gDefaultErrorCallback;
-	physx::PxDefaultAllocator gDefaultAllocatorCallback;
-	physx::PxFoundation* gFoundation;
+	class Foundation
+	{
+	private:
+		physx::PxDefaultErrorCallback gDefaultErrorCallback;
+		physx::PxDefaultAllocator gDefaultAllocatorCallback;
+		physx::PxFoundation* gFoundation;
 
-public:
-	bool Init();
-	void Release();
-	const physx::PxFoundation* GetFoundationService() const;
-};
+	public:
+		bool Init();
+		void Release();
+		const physx::PxFoundation* GetFoundationService() const;
+	};
+}
 
 #endif

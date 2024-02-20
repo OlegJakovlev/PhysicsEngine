@@ -1,29 +1,33 @@
 #include "HUD.h"
 
-bool HUD::Init()
+namespace CustomApplication
 {
-	return true;
-}
-
-void HUD::Render()
-{
-	/*
-	if (m_hudShow)
+	bool HUD::Init()
 	{
-		if (scene->Pause())
+		return true;
+	}
+
+	void HUD::Render()
+	{
+		/*
+		if (m_hudShow)
 		{
-			ActiveScreen(PAUSE);
+			if (scene->Pause())
+			{
+				ActiveScreen(PAUSE);
+			}
+			else
+			{
+				ActiveScreen(HELP);
+			}
 		}
 		else
 		{
-			ActiveScreen(HELP);
+			ActiveScreen(EMPTY);
 		}
+		*/
 	}
-	else
-	{
-		ActiveScreen(EMPTY);
-	}
-	*/
+
 }
 
 

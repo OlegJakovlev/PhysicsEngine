@@ -6,22 +6,25 @@
 #include "PhysxEvent.h"
 #include "../../Actors/Actor.h"
 
-class AddActorEvent : public PhysxEvent
+namespace PhysicsEngine
 {
-	friend class EventFactory;
-
-protected:
-	struct Data
+	class AddActorEvent : public PhysxEvent
 	{
+		friend class EventFactory;
 
+	protected:
+		struct Data
+		{
+
+		};
+
+		AddActorEvent(uint64_t id, const Actor* actor);
+
+	public:
+		void Apply() override;
+		void Invert() override;
+		void Serialize() override;
 	};
-
-	AddActorEvent(uint64_t id, const Actor* actor);
-
-public:
-	void Apply() override;
-	void Invert() override;
-	void Serialize() override;
-};
+}
 
 #endif

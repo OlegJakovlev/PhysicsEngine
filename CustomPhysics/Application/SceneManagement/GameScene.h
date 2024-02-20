@@ -9,34 +9,38 @@
 #include "../../PhysicsEngine/Engine/PhysicsEngine.h"
 #include "../GameObjects/GameObjectFactory.h"
 
-class GameScene
+namespace CustomApplication
 {
-private:
-	GameObject** m_staticGameObjects;
-	GameObject** m_dynamicGameObjects;
-	uint32_t m_staticGameObjectCount;
-	uint32_t m_dynamicGameObjectCount;
+	class GameScene
+	{
+	private:
+		GameObject** m_staticGameObjects;
+		GameObject** m_dynamicGameObjects;
+		uint32_t m_staticGameObjectCount;
+		uint32_t m_dynamicGameObjectCount;
 
-	void AddGameActorInternal(StaticGameObject* staticGameObject);
-	void AddGameActorInternal(DynamicGameObject* dynamicGameObject);
+		void AddGameActorInternal(StaticGameObject* staticGameObject);
+		void AddGameActorInternal(DynamicGameObject* dynamicGameObject);
 
-protected:
-	const int k_maxStaticGameObjects = 512;
-	const int k_maxDynamicGameObjects = 512;
+	protected:
+		const int k_maxStaticGameObjects = 512;
+		const int k_maxDynamicGameObjects = 512;
 
-	GameObjectFactory* gameObjectFactory;
-	void* m_physicsScene;
+		GameObjectFactory* gameObjectFactory;
+		void* m_physicsScene;
 
-	void AddGameActor(GameObject* gameObject);
+		void AddGameActor(GameObject* gameObject);
 
-public:
-	virtual void Init(const PhysicsEngine* physicsEngine);
-	const void* GetPhysicsScene() const;
+	public:
+		virtual void Init(const PhysicsEngine::PhysicsEngine* physicsEngine);
+		const void* GetPhysicsScene() const;
 
-	const GameObject** GetStaticActors() const;
-	const uint32_t GetStaticActorCount() const;
-	const GameObject** GetDynamicActors() const;
-	const uint32_t GetDynamicActorCount() const;
-};
+		const GameObject** GetStaticActors() const;
+		const uint32_t GetStaticActorCount() const;
+		const GameObject** GetDynamicActors() const;
+		const uint32_t GetDynamicActorCount() const;
+	};
+}
+
 
 #endif

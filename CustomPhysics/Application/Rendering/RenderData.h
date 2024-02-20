@@ -5,10 +5,13 @@
 
 #include "PxPhysicsAPI.h"
 
-struct RenderData
+namespace CustomApplication
 {
-	physx::PxVec3* m_color;
-	physx::PxClothMeshDesc* m_clothMeshDesc;
-};
+	struct RenderData
+	{
+		physx::PxVec3* m_color;
+		physx::PxClothMeshDesc* m_clothMeshDesc;
+	};
+}
 
 #endif

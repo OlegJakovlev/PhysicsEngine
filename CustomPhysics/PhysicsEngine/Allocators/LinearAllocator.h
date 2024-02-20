@@ -3,8 +3,11 @@
 #ifndef LinearAllocator_H
 #define LinearAllocator_H
 
-class LinearAllocator
+namespace PhysicsEngine
 {
-};
+	class LinearAllocator
+	{
+	};
+}
 
 #endif

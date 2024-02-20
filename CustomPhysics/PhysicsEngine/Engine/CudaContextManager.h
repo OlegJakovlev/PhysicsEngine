@@ -5,14 +5,17 @@
 
 #include "PxPhysicsAPI.h"
 
-class CudaContextManager
+namespace PhysicsEngine
 {
-private:
-	physx::PxCudaContextManager* m_cudaContextManager;
+	class CudaContextManager
+	{
+	private:
+		physx::PxCudaContextManager* m_cudaContextManager;
 
-public:
-	bool Init();
-	const physx::PxCudaContextManager* GetContextManager() const;
-};
+	public:
+		bool Init();
+		const physx::PxCudaContextManager* GetContextManager() const;
+	};
+}
 
 #endif

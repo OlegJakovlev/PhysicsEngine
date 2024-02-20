@@ -5,13 +5,16 @@
 
 #include "GameObject.h"
 
-class StaticGameObject : public GameObject
+namespace CustomApplication
 {
-	friend class GameObjectFactory;
+	class StaticGameObject : public GameObject
+	{
+		friend class GameObjectFactory;
 
-private:
-	StaticGameObject() = delete;
-	StaticGameObject(const uint64_t id, physx::PxTransform& transform);
-};
+	private:
+		StaticGameObject() = delete;
+		StaticGameObject(const uint64_t id, physx::PxTransform& transform);
+	};
+}
 
 #endif

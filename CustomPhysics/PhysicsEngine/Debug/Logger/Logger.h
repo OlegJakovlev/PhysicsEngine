@@ -3,10 +3,15 @@
 #ifndef Logger_H
 #define Logger_H
 
-class Logger
+#include "spdlog.h"
+
+namespace PhysicsEngine
 {
-public:
-    bool Init();
-};
+	class Logger
+	{
+	protected:
+		std::shared_ptr<spdlog::logger> logger;
+	};
+}
 
 #endif

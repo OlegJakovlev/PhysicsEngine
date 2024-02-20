@@ -1,11 +1,14 @@
 #include "DemoRecorder.h"
 
-bool DemoRecorder::Init()
+namespace PhysicsEngine
 {
-    return true;
-}
+    bool DemoRecorder::Init()
+    {
+        return true;
+    }
 
-void DemoRecorder::Record(PhysxEvent* eventToRecord)
-{
-    eventToRecord->Serialize();
+    void DemoRecorder::Record(PhysxEvent* eventToRecord)
+    {
+        eventToRecord->Serialize();
+    }
 }

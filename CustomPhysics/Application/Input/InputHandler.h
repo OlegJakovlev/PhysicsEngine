@@ -3,27 +3,30 @@
 #ifndef InputHandler_H
 #define InputHandler_H
 
-class InputHandler
+namespace CustomApplication
 {
-private:
-	const int MAX_KEYS = 256;
-	bool* m_keyState;
-	int m_mouseX = 0;
-	int m_mouseY = 0;
+	class InputHandler
+	{
+	private:
+		const int MAX_KEYS = 256;
+		bool* m_keyState;
+		int m_mouseX = 0;
+		int m_mouseY = 0;
 
-public:
-	InputHandler() = default;
+	public:
+		InputHandler() = default;
 
-	bool Init();
-	void PostInit();
-	void Release();
-	void HandleInput();
+		bool Init();
+		void PostInit();
+		void Release();
+		void HandleInput();
 
-	void KeyPress(unsigned char key, int x, int y);
-	void KeySpecial(int key, int x, int y);
-	void KeyRelease(int key, int x, int y);
-	void MouseMotion(int x, int y);
-	void MouseEvent(int button, int state, int x, int y);
-};
+		void KeyPress(unsigned char key, int x, int y);
+		void KeySpecial(int key, int x, int y);
+		void KeyRelease(int key, int x, int y);
+		void MouseMotion(int x, int y);
+		void MouseEvent(int button, int state, int x, int y);
+	};
+}
 
 #endif

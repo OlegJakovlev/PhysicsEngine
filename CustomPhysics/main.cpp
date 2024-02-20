@@ -3,7 +3,7 @@
 // Test application that uses direct approach instead of DLL calls
 int main()
 {
-	GlutApp* app = GlutApp::Get();
+	CustomApplication::GlutApp* app = CustomApplication::GlutApp::Get();
 
 	if (!app->Init("Olegs Jakovlevs", 800, 600))
 	{
@@ -13,6 +13,6 @@ int main()
 	app->PostInit();
 	app->Start();
 
-	GlutApp::Release();
+	CustomApplication::GlutApp::Release();
 	return 0;
 }

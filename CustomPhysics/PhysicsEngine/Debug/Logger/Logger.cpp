@@ -1,6 +1,5 @@
 #include "Logger.h"
 
-bool Logger::Init()
+namespace PhysicsEngine
 {
-    return true;
 }
