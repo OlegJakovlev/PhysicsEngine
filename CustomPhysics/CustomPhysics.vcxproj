@@ -1,0 +1,273 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Application\Rendering\Renderers\GlutRenderer.cpp" />
+    <ClCompile Include="Application\SceneManagement\GameScene.cpp" />
+    <ClCompile Include="Application\GameObjects\GameObject.cpp" />
+    <ClCompile Include="Application\SceneManagement\GameSceneManager.cpp" />
+    <ClCompile Include="Application\Scenes\GameSceneExample.cpp" />
+    <ClCompile Include="Application\GameObjects\DynamicGameObject.cpp" />
+    <ClCompile Include="Application\GameObjects\GameObjectFactory.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Actors\GeometryFactory.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\EventTracker\EventTypes\AddActorEvent.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Actors\ActorFactory.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\EventTracker\EventFactory.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\EventTracker\EventTracker.cpp" />
+    <ClCompile Include="Application\AppLoop.cpp" />
+    <ClCompile Include="PhysicsEngine\DemoRecorder\DemoRecorder.cpp" />
+    <ClCompile Include="PhysicsEngine\API\IPhysicsEngine.cpp" />
+    <ClCompile Include="Application\GlutApp.cpp" />
+    <ClCompile Include="Application\UI\HUD.cpp" />
+    <ClCompile Include="Application\Rendering\Renderers\IRender.cpp" />
+    <ClCompile Include="PhysicsEngine\Allocators\DoubleBufferAllocator.cpp" />
+    <ClCompile Include="PhysicsEngine\Allocators\LinearAllocator.cpp" />
+    <ClCompile Include="Application\Input\InputHandler.cpp" />
+    <ClCompile Include="PhysicsEngine\Debug\Logger\Logger.cpp" />
+    <ClCompile Include="PhysicsEngine\Debug\Logger\GraphicsLogger.cpp" />
+    <ClCompile Include="PhysicsEngine\Debug\Logger\InputLogger.cpp" />
+    <ClCompile Include="PhysicsEngine\Debug\Logger\ApplicationLogger.cpp" />
+    <ClCompile Include="PhysicsEngine\Debug\Logger\EventLogger.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\CudaContextManager.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\CollisionFilter.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Cooking.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Dispatcher.cpp" />
+    <ClCompile Include="PhysicsEngine\Databases\MaterialDatabase.cpp" />
+    <ClCompile Include="PhysicsEngine\Utility\CLZ.cpp" />
+    <ClCompile Include="PhysicsEngine\Utility\Hashing.cpp" />
+    <ClCompile Include="PhysicsEngine\Databases\Database.cpp" />
+    <ClCompile Include="Application\Rendering\Camera.cpp" />
+    <ClCompile Include="PhysicsEngine\Debug\VisualDebugger.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Actors\Actor.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Actors\DynamicActor.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Actors\StaticActor.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\PhysicsEngine.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Scene.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Foundation.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Physics.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\SceneManager.cpp" />
+    <ClCompile Include="PhysicsEngine\Allocators\StackAllocator.cpp" />
+    <ClCompile Include="PhysicsEngine\Allocators\PoolAllocator.cpp" />
+    <ClCompile Include="PhysicsEngine\Allocators\SingleFrameAllocator.cpp" />
+    <ClCompile Include="Application\Rendering\Renderer.cpp" />
+    <ClCompile Include="Application\Rendering\RendererFactory.cpp" />
+    <ClCompile Include="Application\Rendering\RendererType.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\TaskManager.cpp" />
+    <ClCompile Include="PhysicsEngine\Utility\Timer.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\EventTracker\EventTypes\PhysxEvent.cpp" />
+    <ClCompile Include="Application\Rendering\RenderData.cpp" />
+    <ClCompile Include="PhysicsEngine\Utility\ShapeCreator.cpp" />
+    <ClCompile Include="Application\GameObjects\StaticGameObject.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Application\Rendering\Renderers\GlutRenderer.h" />
+    <ClInclude Include="Application\SceneManagement\GameScene.h" />
+    <ClInclude Include="Application\GameObjects\GameObject.h" />
+    <ClInclude Include="Application\SceneManagement\GameSceneManager.h" />
+    <ClInclude Include="Application\Scenes\GameSceneExample.h" />
+    <ClInclude Include="Application\GameObjects\DynamicGameObject.h" />
+    <ClInclude Include="Application\GameObjects\GameObjectFactory.h" />
+    <ClInclude Include="Dependencies\LZ4\include\lz4.h" />
+    <ClInclude Include="Dependencies\LZ4\include\lz4frame.h" />
+    <ClInclude Include="Dependencies\LZ4\include\lz4hc.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Actors\GeometryFactory.h" />
+    <ClInclude Include="PhysicsEngine\Engine\EventTracker\EventTypes\AddActorEvent.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Actors\ActorFactory.h" />
+    <ClInclude Include="PhysicsEngine\Engine\EventTracker\EventFactory.h" />
+    <ClInclude Include="PhysicsEngine\Engine\EventTracker\EventTracker.h" />
+    <ClInclude Include="Application\AppLoop.h" />
+    <ClInclude Include="PhysicsEngine\DemoRecorder\DemoRecorder.h" />
+    <ClInclude Include="PhysicsEngine\API\IPhysicsEngine.h" />
+    <ClInclude Include="Application\GlutApp.h" />
+    <ClInclude Include="Application\UI\HUD.h" />
+    <ClInclude Include="Application\Rendering\Renderers\IRender.h" />
+    <ClInclude Include="PhysicsEngine\Allocators\DoubleBufferAllocator.h" />
+    <ClInclude Include="PhysicsEngine\Allocators\LinearAllocator.h" />
+    <ClInclude Include="Application\Input\InputHandler.h" />
+    <ClInclude Include="PhysicsEngine\Debug\Logger\Logger.h" />
+    <ClInclude Include="PhysicsEngine\Debug\Logger\GraphicsLogger.h" />
+    <ClInclude Include="PhysicsEngine\Debug\Logger\InputLogger.h" />
+    <ClInclude Include="PhysicsEngine\Debug\Logger\ApplicationLogger.h" />
+    <ClInclude Include="PhysicsEngine\Debug\Logger\EventLogger.h" />
+    <ClInclude Include="PhysicsEngine\Engine\CudaContextManager.h" />
+    <ClInclude Include="PhysicsEngine\Engine\CollisionFilter.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Cooking.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Dispatcher.h" />
+    <ClInclude Include="PhysicsEngine\Databases\MaterialDatabase.h" />
+    <ClInclude Include="PhysicsEngine\Utility\CLZ.h" />
+    <ClInclude Include="PhysicsEngine\Utility\Hashing.h" />
+    <ClInclude Include="PhysicsEngine\Databases\Database.h" />
+    <ClInclude Include="Application\Rendering\Camera.h" />
+    <ClInclude Include="PhysicsEngine\Debug\VisualDebugger.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Actors\Actor.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Actors\DynamicActor.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Actors\StaticActor.h" />
+    <ClInclude Include="PhysicsEngine\Engine\PhysicsEngine.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Scene.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Foundation.h" />
+    <ClInclude Include="PhysicsEngine\GlobalDefine.h" />
+    <ClInclude Include="Dependencies\Graphics\include\win32\GL\glut.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Physics.h" />
+    <ClInclude Include="PhysicsEngine\Engine\SceneManager.h" />
+    <ClInclude Include="PhysicsEngine\Allocators\StackAllocator.h" />
+    <ClInclude Include="PhysicsEngine\Allocators\PoolAllocator.h" />
+    <ClInclude Include="PhysicsEngine\Allocators\SingleFrameAllocator.h" />
+    <ClInclude Include="Application\Rendering\Renderer.h" />
+    <ClInclude Include="Application\Rendering\RendererFactory.h" />
+    <ClInclude Include="Application\Rendering\RendererType.h" />
+    <ClInclude Include="PhysicsEngine\Engine\TaskManager.h" />
+    <ClInclude Include="PhysicsEngine\Utility\Timer.h" />
+    <ClInclude Include="PhysicsEngine\Engine\EventTracker\EventTypes\PhysxEvent.h" />
+    <ClInclude Include="Application\Rendering\RenderData.h" />
+    <ClInclude Include="PhysicsEngine\Utility\ShapeCreator.h" />
+    <ClInclude Include="Application\GameObjects\StaticGameObject.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="Dependencies\Graphics\lib\win32\glut\glut32.lib" />
+    <Library Include="Dependencies\Graphics\lib\win64\glut\glut32.lib" />
+    <Library Include="Dependencies\LZ4\static\liblz4_static.lib" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{1a3262a6-c1f2-4f3f-81a4-fb06ebbbb141}</ProjectGuid>
+    <RootNamespace>Workshop1</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>CustomPhysics</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Macros.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Macros.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Macros.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Macros.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(PHYSX_SDK)\include;.\Graphics\include\win32</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(PHYSX_SDK)\lib\vc14win32;.\Graphics\lib\win32\glut</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PhysX3CommonDEBUG_$(PlatformTarget).lib;PhysX3ExtensionsDEBUG.lib;PhysXVisualDebuggerSDKDEBUG.lib;PhysX3DEBUG_$(PlatformTarget).lib;PhysX3CookingDEBUG_$(PlatformTarget).lib;glut32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(PHYSX_SDK)\include;$(PHYSX_SDK)\..\PxShared\include;.\Dependencies\Graphics\include\win32;.\Dependencies\LZ4\include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>CustomPhysics;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(PHYSX_SDK)\Lib\vc15win64;$(PHYSX_SDK)\..\PxShared\Lib\vc15win64;.\Dependencies\Graphics\lib\win64\glut;.\Dependencies\LZ4\static</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PxFoundationDEBUG_$(PlatformTarget).lib;PhysX3DEBUG_$(PlatformTarget).lib;PhysX3ExtensionsDEBUG.lib;PxPvdSDKDEBUG_$(PlatformTarget).lib;PhysX3CommonDEBUG_$(PlatformTarget).lib;PhysX3CookingDEBUG_$(PlatformTarget).lib;glut32.lib;liblz4_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(PHYSX_SDK)\include;.\Graphics\include\win32</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>NDEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(PHYSX_SDK)\lib\vc14win32;.\Graphics\lib\win32\glut</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PhysX3Common_$(PlatformTarget).lib;PhysX3Extensions.lib;PhysXVisualDebuggerSDK.lib;PhysX3_$(PlatformTarget).lib;PhysX3Cooking_$(PlatformTarget).lib;glut32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(PHYSX_SDK)\include;$(PHYSX_SDK)\..\PxShared\include;.\Graphics\include\win32</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>NDEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(PHYSX_SDK)\Lib\vc15win64;$(PHYSX_SDK)\..\PxShared\Lib\vc15win64;.\Graphics\lib\win64\glut</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PhysX3Common_$(PlatformTarget).lib;PhysX3Extensions.lib;PhysX3_$(PlatformTarget).lib;PhysX3Cooking_$(PlatformTarget).lib;PxFoundation_$(PlatformTarget).lib;PxPvdSDK_$(PlatformTarget).lib;glut32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>
