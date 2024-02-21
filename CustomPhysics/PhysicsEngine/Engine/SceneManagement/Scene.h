@@ -5,14 +5,16 @@
 
 #include "PxPhysicsAPI.h"
 #include <PxScene.h>
-#include "../GlobalDefine.h"
-#include "Physics.h"
-#include "Dispatcher.h"
-#include "CollisionFilter.h"
-#include "Actors/StaticActor.h"
-#include "Actors/DynamicActor.h"
-#include "EventTracker/EventTracker.h"
+#include "../../GlobalDefine.h"
+#include "../Services/Physics.h"
+#include "../Services/Dispatcher.h"
+#include "../Physics/CollisionFilter.h"
+#include "../Actors/StaticActor.h"
+#include "../Actors/DynamicActor.h"
+#include "../EventTracker/EventTracker.h"
 #include <common/PxRenderBuffer.h>
+#include <vector>
+#include <mutex>
 
 namespace PhysicsEngine
 {
@@ -28,33 +30,41 @@ namespace PhysicsEngine
 			PAUSED,
 		};
 
+		static const uint32_t k_maxStaticActors = 128;
+		static const uint32_t k_maxDynamicActors = 255;
+
 	public:
 		struct alignas(8) SceneConfiguration
 		{
-			CollisionFilter m_collisionFilter;
+			CollisionFilter* m_collisionFilter;
 			physx::PxVec3 m_gravity;
 			bool m_enableDemo;
 			bool _padding[3];
-		};
 
-		const uint32_t m_maxStaticActors = 128;
-		const uint32_t m_maxDynamicActors = 255;
+			SceneConfiguration();
+			SceneConfiguration(const SceneConfiguration& sceneConfig);
+			~SceneConfiguration();
+		};
 
 	private:
 		physx::PxScene* m_physxScene;
 		const SceneConfiguration* m_configuration;
-
-#ifdef DEBUG_MODE
 		void* m_engineScene;
-#endif
 
 		EventTracker* m_tracker;
 		State m_state;
+		std::mutex m_mutex;
 
 		Actor** m_staticActors;
 		Actor** m_dynamicActors;
+
 		uint32_t m_staticActorCount;
 		uint32_t m_dynamicActorCount;
+
+#ifdef PHYSICS_DEBUG_MODE
+		std::vector<Actor*> m_staticActorsDebug;
+		std::vector<Actor*> m_dynamicActorsDebug;
+#endif
 
 		bool Init(const SceneConfiguration* configuration);
 		bool PostInit(const physx::PxPhysics* physxObject,
@@ -64,11 +74,15 @@ namespace PhysicsEngine
 		void Release();
 
 		void RegisterActor(const Actor* actor);
+		void StaticSync(Scene* sourceScene);
+		void DynamicSync(Scene* sourceScene);
 
+		Scene();
 	public:
-#ifdef DEBUG_MODE
+		// TODO: API Expose
+		void Lock();
+		void Unlock();
 		void LinkEngineScene(void* gameScenePointer);
-#endif
 
 		void AddActor(StaticActor* actor);
 		void AddActor(DynamicActor* actor);

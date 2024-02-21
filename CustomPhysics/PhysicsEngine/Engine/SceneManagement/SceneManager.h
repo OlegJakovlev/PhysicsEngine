@@ -4,6 +4,7 @@
 #define SceneManager_H
 
 #include <unordered_set>
+#include <unordered_map>
 #include "Scene.h"
 
 namespace PhysicsEngine
@@ -11,18 +12,26 @@ namespace PhysicsEngine
 	class SceneManager
 	{
 	private:
-		std::unordered_set<Scene*> m_activeScenes;
+		std::unordered_set<Scene*> m_currentScenes;
+		std::unordered_set<Scene*> m_renderScenes;
+
+		// Contains (physics, render) scene pairs
+		std::unordered_map<Scene*, Scene*> m_sceneBuffer;
+
+		bool CreatePhysicsScene(Scene*& renderScene,
+								const physx::PxPhysics* physxObject,
+								const physx::PxCpuDispatcher* dispatcherObject);
 
 	public:
 		bool PostInit(const physx::PxPhysics* physxObject,
 					  const physx::PxCpuDispatcher* dispatcherObject);
 		void Update(float dt);
+		void Sync();
 		void Release();
 
 		// TODO: API Exposed
 		Scene* CreateScene(const Scene::SceneConfiguration* config) const;
 		void AddActiveScene(Scene* scene);
-		void RemoveActiveScene(Scene* scene);
 	};
 }
 

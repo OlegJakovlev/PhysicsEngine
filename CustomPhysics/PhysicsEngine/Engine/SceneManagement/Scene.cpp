@@ -1,14 +1,45 @@
 #include "Scene.h"
-#include "../Utility/CLZ.h"
+#include "../../Utility/CLZ.h"
 
 namespace PhysicsEngine
 {
+	Scene::SceneConfiguration::SceneConfiguration()
+	{
+		m_collisionFilter = new CollisionFilter();
+		m_gravity = physx::PxVec3();
+		m_enableDemo = false;
+	}
+
+	Scene::SceneConfiguration::SceneConfiguration(const SceneConfiguration& sceneConfig)
+	{
+		m_collisionFilter = sceneConfig.m_collisionFilter;
+		m_gravity = sceneConfig.m_gravity;
+		m_enableDemo = sceneConfig.m_enableDemo;
+	}
+
+	Scene::SceneConfiguration::~SceneConfiguration()
+	{
+		delete m_collisionFilter;
+	}
+
+	Scene::Scene()
+	{
+		m_staticActors = new Actor* [k_maxStaticActors];
+		for (std::uint32_t i = 0; i < k_maxStaticActors; i++)
+		{
+			m_staticActors[i] = nullptr;
+		}
+
+		m_dynamicActors = new Actor* [k_maxDynamicActors];
+		for (std::uint32_t i = 0; i < k_maxDynamicActors; i++)
+		{
+			m_dynamicActors[i] = nullptr;
+		}
+	}
+
 	bool Scene::Init(const SceneConfiguration* configuration)
 	{
 		m_configuration = configuration;
-
-		m_staticActors = new Actor * [m_maxStaticActors];
-		m_dynamicActors = new Actor * [m_maxDynamicActors];
 
 		m_tracker = new EventTracker();
 		m_tracker->Init(configuration->m_enableDemo);
@@ -21,7 +52,7 @@ namespace PhysicsEngine
 	{
 		physx::PxSceneDesc sceneDesc(physxObject->getTolerancesScale());
 		sceneDesc.gravity = m_configuration->m_gravity;
-		sceneDesc.filterShader = m_configuration->m_collisionFilter.GetFilter();
+		sceneDesc.filterShader = m_configuration->m_collisionFilter->GetFilter();
 		sceneDesc.cpuDispatcher = const_cast<physx::PxCpuDispatcher*>(dispatcherObject);
 
 		sceneDesc.kineKineFilteringMode = physx::PxPairFilteringMode::eKEEP; // Kinematic-Kinematic contacts
@@ -98,7 +129,7 @@ namespace PhysicsEngine
 		// Count leading zeros and invert so we get an layer id
 		uint32_t collisionIndex = CLZ::CLZ1(~(uint32_t) collisionLayer);
 
-		physx::PxRigidActor* rigidPxActor = (physx::PxRigidActor*) const_cast<physx::PxActor*>(actor->GetPhysicsActor());
+		physx::PxRigidActor* rigidPxActor = (physx::PxRigidActor*) const_cast<physx::PxActor*>(actor->GetCurrentPhysxActor());
 
 		physx::PxU32 numShapes = rigidPxActor->getNbShapes();
 		physx::PxShape** shapes = new physx::PxShape * [numShapes];
@@ -109,7 +140,7 @@ namespace PhysicsEngine
 		{
 			filterData = shapes[i]->getSimulationFilterData();
 			filterData.word0 = (uint32_t) collisionLayer;
-			filterData.word1 = m_configuration->m_collisionFilter.GetCollisionMask(collisionIndex);
+			filterData.word1 = m_configuration->m_collisionFilter->GetCollisionMask(collisionIndex);
 			shapes[i]->setSimulationFilterData(filterData);
 		}
 
@@ -118,14 +149,13 @@ namespace PhysicsEngine
 
 	void Scene::Update(float dt)
 	{
-		if (m_state == State::RUNNING)
-		{
-			// When this call returns, the simulation step has begun in a separate thread
-			m_physxScene->simulate(dt);
+		if (m_state != State::RUNNING) return;
 
-			// Wait until simulation completes
-			m_physxScene->fetchResults(true);
-		}
+		// When this call returns, the simulation step has begun in a separate thread
+		m_physxScene->simulate(dt);
+
+		// Wait until simulation completes
+		m_physxScene->fetchResults(true);
 	}
 
 	void Scene::Release()
@@ -138,6 +168,82 @@ namespace PhysicsEngine
 		m_state = State::UNLOADED;
 	}
 
+	void Scene::RegisterActor(const Actor* actor)
+	{
+		m_physxScene->addActor(*const_cast<physx::PxActor*>(actor->GetCurrentPhysxActor()));
+		m_tracker->RegisterAddActorEvent(actor);
+	}
+
+	void Scene::StaticSync(Scene* sourceScene)
+	{
+		std::unique_lock<std::mutex> lock(m_mutex);
+
+		for (uint32_t i = 0; i < m_staticActorCount; i++)
+		{
+			m_staticActors[i]->Release();
+			delete m_staticActors[i];
+		}
+
+		m_staticActorCount = 0;
+#ifdef PHYSICS_DEBUG_MODE
+		m_staticActorsDebug.clear();
+#endif
+
+		for (uint32_t i = 0; i < sourceScene->m_staticActorCount; i++)
+		{
+			if (sourceScene->m_engineScene == nullptr)
+			{
+				m_staticActors[i] = sourceScene->m_staticActors[i]->CloneToRender();
+			}
+			else
+			{
+				m_staticActors[i] = sourceScene->m_staticActors[i]->CloneToPhysics();
+			}
+
+			AddActor((StaticActor*) m_staticActors[i]);
+		}
+	}
+
+	void Scene::DynamicSync(Scene* sourceScene)
+	{
+		std::unique_lock<std::mutex> lock(m_mutex);
+
+		for (uint32_t i = 0; i < m_dynamicActorCount; i++)
+		{
+			m_dynamicActors[i]->Release();
+			delete m_dynamicActors[i];
+		}
+
+		m_dynamicActorCount = 0;
+#ifdef PHYSICS_DEBUG_MODE
+		m_dynamicActorsDebug.clear();
+#endif
+
+		for (uint32_t i = 0; i < sourceScene->m_dynamicActorCount; i++)
+		{
+			if (sourceScene->m_engineScene == nullptr)
+			{
+				m_dynamicActors[i] = sourceScene->m_dynamicActors[i]->CloneToRender();
+			}
+			else
+			{
+				m_dynamicActors[i] = sourceScene->m_dynamicActors[i]->CloneToPhysics();
+			}
+
+			AddActor((DynamicActor*) m_dynamicActors[i]);
+		}
+	}
+
+	void Scene::Lock()
+	{
+		m_mutex.lock();
+	}
+
+	void Scene::Unlock()
+	{
+		m_mutex.unlock();
+	}
+
 	void Scene::LinkEngineScene(void* gameScenePointer)
 	{
 		m_engineScene = gameScenePointer;
@@ -145,24 +251,26 @@ namespace PhysicsEngine
 
 	void Scene::AddActor(StaticActor* actor)
 	{
+#ifdef PHYSICS_DEBUG_MODE
+		m_staticActorsDebug.push_back(actor);
+#endif
+		
 		m_staticActors[m_staticActorCount] = actor;
 		m_staticActorCount++;
 
 		if (m_state == State::RUNNING)
 		{
-			printf("Added static actor in runtime! Warning: Very costly operation!");
+			printf("Added static actor in runtime! Warning: Very costly operation! \n");
 			RegisterActor(actor);
 		}
 	}
 
-	void Scene::RegisterActor(const Actor* actor)
-	{
-		m_physxScene->addActor(*const_cast<physx::PxActor*>(actor->GetPhysicsActor()));
-		m_tracker->RegisterAddActorEvent(actor);
-	}
-
 	void Scene::AddActor(DynamicActor* actor)
 	{
+#ifdef PHYSICS_DEBUG_MODE
+		m_dynamicActorsDebug.push_back(actor);
+#endif
+
 		m_dynamicActors[m_dynamicActorCount] = actor;
 		m_dynamicActorCount++;
 

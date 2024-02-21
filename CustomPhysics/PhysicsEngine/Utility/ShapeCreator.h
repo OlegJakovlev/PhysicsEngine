@@ -22,6 +22,9 @@ namespace PhysicsEngine
 		bool Init(const MaterialDatabase* database);
 
 		// TODO: API Exposed
+#ifdef PHYSICS_DEBUG_MODE
+		void CreateShapeDebug(Actor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const;
+#endif
 		void CreateShape(void* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const;
 		void CreateTrigger(void* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const;
 	};

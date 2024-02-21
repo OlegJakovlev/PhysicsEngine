@@ -21,10 +21,19 @@ namespace CustomApplication
     GameObject* GameObjectFactory::CreateStaticActor(physx::PxTransform& transform, GameObject::Layer layer)
     {
         StaticGameObject* staticObject = new StaticGameObject(GenerateId(), transform);
-        PhysicsEngine::StaticActor* physicsActor = (PhysicsEngine::StaticActor*) m_actorFactory->CreateStaticActor(staticObject->GetTransform());
+        PhysicsEngine::Actor* physicsActor = (PhysicsEngine::StaticActor*) m_actorFactory->CreateStaticActor(staticObject->GetTransform());
 
         staticObject->SetPhysicsActor(physicsActor);
         physicsActor->SetCollisionLayer((uint32_t) layer);
+        physicsActor->SetGameEnginePointerToPhysicsActor(staticObject->m_physicsActorPointer);
+
+#ifdef APPLICATION_DEBUG_MODE
+        staticObject->SetPhysicsActorDebug(physicsActor);
+
+#ifdef PHYSICS_DEBUG_MODE
+        physicsActor->SetGameEnginePointerToPhysicsActorDebug(staticObject->m_physicsActorPointerDebug);
+#endif
+#endif
 
         return staticObject;
     }
@@ -32,10 +41,19 @@ namespace CustomApplication
     GameObject* GameObjectFactory::CreateDynamicActor(physx::PxTransform& transform, GameObject::Layer layer)
     {
         DynamicGameObject* dynamicObject = new DynamicGameObject(GenerateId(), transform);
-        PhysicsEngine::DynamicActor* dynamicExample = (PhysicsEngine::DynamicActor*) m_actorFactory->CreateDynamicActor(dynamicObject->GetTransform());
+        PhysicsEngine::Actor* physicsActor = (PhysicsEngine::DynamicActor*) m_actorFactory->CreateDynamicActor(dynamicObject->GetTransform());
 
-        dynamicObject->SetPhysicsActor(dynamicExample);
-        dynamicExample->SetCollisionLayer((uint32_t) layer);
+        dynamicObject->SetPhysicsActor(physicsActor);
+        physicsActor->SetCollisionLayer((uint32_t) layer);
+        physicsActor->SetGameEnginePointerToPhysicsActor(dynamicObject->m_physicsActorPointer);
+
+#ifdef APPLICATION_DEBUG_MODE
+        dynamicObject->SetPhysicsActorDebug(physicsActor);
+
+#ifdef PHYSICS_DEBUG_MODE
+        physicsActor->SetGameEnginePointerToPhysicsActorDebug(dynamicObject->m_physicsActorPointerDebug);
+#endif
+#endif
 
         return dynamicObject;
     }
@@ -43,10 +61,19 @@ namespace CustomApplication
     GameObject* GameObjectFactory::CreateKinematicActor(physx::PxTransform& transform, GameObject::Layer layer)
     {
         DynamicGameObject* dynamicObject = new DynamicGameObject(GenerateId(), transform);
-        PhysicsEngine::DynamicActor* dynamicExample = (PhysicsEngine::DynamicActor*) m_actorFactory->CreateKinematicActor(dynamicObject->GetTransform());
+        PhysicsEngine::Actor* physicsActor = (PhysicsEngine::DynamicActor*) m_actorFactory->CreateKinematicActor(dynamicObject->GetTransform());
 
-        dynamicObject->SetPhysicsActor(dynamicExample);
-        dynamicExample->SetCollisionLayer((uint32_t) layer);
+        dynamicObject->SetPhysicsActor(physicsActor);
+        physicsActor->SetCollisionLayer((uint32_t) layer);
+        physicsActor->SetGameEnginePointerToPhysicsActor(dynamicObject->m_physicsActorPointer);
+
+#ifdef APPLICATION_DEBUG_MODE
+        dynamicObject->SetPhysicsActorDebug(physicsActor);
+
+#ifdef PHYSICS_DEBUG_MODE
+        physicsActor->SetGameEnginePointerToPhysicsActorDebug(dynamicObject->m_physicsActorPointerDebug);
+#endif
+#endif
 
         return dynamicObject;
     }

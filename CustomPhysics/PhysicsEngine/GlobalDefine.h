@@ -7,7 +7,7 @@
 #endif
 
 // Print outs, logs
-#define DEBUG_MODE
+#define PHYSICS_DEBUG_MODE
 
 // Do we want to have remote visual debug (PhysX Visual Debugger)
-#define REMOTE_VISUAL_DEBUG
+//#define REMOTE_VISUAL_DEBUG

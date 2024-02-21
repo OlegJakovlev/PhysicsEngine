@@ -19,5 +19,4 @@ namespace CustomApplication
 	{
 		return &m_activeGameScenes;
 	}
-
 }

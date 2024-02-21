@@ -2,6 +2,19 @@
 
 namespace PhysicsEngine
 {
+	PhysicsEngine* PhysicsEngine::s_instance = nullptr;
+	std::once_flag PhysicsEngine::s_initialized;
+
+	PhysicsEngine* PhysicsEngine::Instance()
+	{
+		std::call_once(s_initialized, []()
+		{
+			s_instance = new PhysicsEngine();
+		});
+
+		return s_instance;
+	}
+
 	void PhysicsEngine::Release()
 	{
 		m_sceneManager->Release();
@@ -16,11 +29,9 @@ namespace PhysicsEngine
 		delete m_foundation;
 		m_foundation = nullptr;
 
-#ifdef REMOTE_VISUAL_DEBUG
-		m_visualDebuger->Release();
-		delete m_visualDebuger;
-		m_visualDebuger = nullptr;
-#endif
+		m_visualDebugger->Release();
+		delete m_visualDebugger;
+		m_visualDebugger = nullptr;
 
 		// Materials are deallocated by m_physics
 		delete m_materialDatabase;
@@ -32,26 +43,24 @@ namespace PhysicsEngine
 		m_foundation = new Foundation();
 		if (!m_foundation->Init())
 		{
-			printf("Foundation creation failed!");
+			printf("Foundation creation failed!\n");
 			return false;
 		}
 
-#ifdef REMOTE_VISUAL_DEBUG
-		m_visualDebuger = new VisualDebugger();
-		m_visualDebuger->Init(m_foundation->GetFoundationService());
-#endif
+		m_visualDebugger = new VisualDebugger();
+		m_visualDebugger->Init(m_foundation->GetFoundationService());
 
 		m_physics = new Physics();
-		if (!m_physics->Init(m_foundation->GetFoundationService(), m_visualDebuger ? m_visualDebuger->GetPVDService() : nullptr))
+		if (!m_physics->Init(m_foundation->GetFoundationService(), m_visualDebugger->GetPVDService()))
 		{
-			printf("Physics creation failed!");
+			printf("Physics creation failed!\n");
 			return false;
 		}
 
 		m_dispatcher = new Dispatcher();
 		if (!m_dispatcher->Init())
 		{
-			printf("Dispatcher creation failed!");
+			printf("Dispatcher creation failed!\n");
 			return false;
 		}
 
@@ -66,7 +75,7 @@ namespace PhysicsEngine
 		m_materialDatabase = new MaterialDatabase();
 		if (!m_materialDatabase->Init(m_physics->GetPhysics()))
 		{
-			printf("MaterialDatabase creation failed!");
+			printf("MaterialDatabase creation failed!\n");
 			return false;
 		}
 
@@ -75,7 +84,7 @@ namespace PhysicsEngine
 		m_actorFactory = new ActorFactory();
 		if (!m_actorFactory->Init(m_physics->GetPhysics()))
 		{
-			printf("ActorFactory creation failed!");
+			printf("ActorFactory creation failed!\n");
 			return false;
 		}
 
@@ -84,7 +93,7 @@ namespace PhysicsEngine
 		m_shapeCreator = new ShapeCreator();
 		if (!m_shapeCreator->Init(m_materialDatabase))
 		{
-			printf("ShapeCreator creation failed!");
+			printf("ShapeCreator creation failed!\n");
 			return false;
 		}
 
@@ -95,7 +104,7 @@ namespace PhysicsEngine
 	{
 		if (!m_sceneManager->PostInit(m_physics->GetPhysics(), m_dispatcher->GetCPU()))
 		{
-			printf("SceneManager creation failed!");
+			printf("SceneManager creation failed!\n");
 			return false;
 		}
 	}
@@ -113,6 +122,8 @@ namespace PhysicsEngine
 			//std::printf("PhysicsEngine::Update(%f), Substep: %i\n", dt, i);
 			m_sceneManager->Update(dt / k_substeps);
 		}
+
+		m_sceneManager->Sync();
 	}
 
 	const SceneManager* PhysicsEngine::GetSceneManager() const

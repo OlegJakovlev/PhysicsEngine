@@ -5,6 +5,8 @@
 
 #include "PxPhysicsAPI.h"
 #include "../Rendering/RenderData.h"
+#include "../../PhysicsEngine/Engine/Actors/Actor.h"
+#include "../GlobalDefine.h"
 
 namespace CustomApplication
 {
@@ -46,6 +48,7 @@ namespace CustomApplication
 			Layer_30 = (1 << 30),
 			Layer_31 = (1 << 31),
 		};
+
 		enum Type
 		{
 			Static,
@@ -58,14 +61,27 @@ namespace CustomApplication
 		Type m_type;
 
 		void* m_physicsActor;
+		void** m_physicsActorPointer;
+
+#ifdef APPLICATION_DEBUG_MODE
+		PhysicsEngine::Actor* m_physicsActorDebug;
+		PhysicsEngine::Actor** m_physicsActorPointerDebug;
+#endif
+
 		RenderData* m_renderData;
 
 		GameObject() = delete;
 		GameObject(const uint64_t id, const Type type, physx::PxTransform& transform);
 
 	public:
+		void** GetPhysicsActorPointer() const;
 		void SetPhysicsActor(void* actor);
-		const void* GetPhysicsActor() const;
+
+#ifdef APPLICATION_DEBUG_MODE
+		PhysicsEngine::Actor** GetPhysicsActorPointerDebug() const;
+		void SetPhysicsActorDebug(PhysicsEngine::Actor* actor);
+#endif
+
 		const RenderData* GetRenderData() const;
 		const physx::PxTransform& GetTransform() const;
 		const Type GetType() const;

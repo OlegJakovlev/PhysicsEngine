@@ -3,9 +3,6 @@
 #ifndef VisualDebugger_H
 #define VisualDebugger_H
 
-#include "../GlobalDefine.h"
-
-#ifdef REMOTE_VISUAL_DEBUG
 #include "PxPhysicsAPI.h"
 
 namespace PhysicsEngine
@@ -26,5 +23,4 @@ namespace PhysicsEngine
 	};
 }
 
-#endif
 #endif

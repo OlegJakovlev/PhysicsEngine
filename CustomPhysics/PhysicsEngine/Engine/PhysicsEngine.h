@@ -2,22 +2,18 @@
 
 #include "../GlobalDefine.h"
 #include "../API/IPhysicsEngine.h"
-#include "Foundation.h"
-#include "Physics.h"
-#include "Dispatcher.h"
-#include "SceneManager.h"
-#include "TaskManager.h"
+#include "Services/Foundation.h"
+#include "Services/Physics.h"
+#include "Services/Dispatcher.h"
+#include "SceneManagement/SceneManager.h"
+#include "Services/TaskManager.h"
 #include "../Databases/MaterialDatabase.h"
 #include "../Allocators/SingleFrameAllocator.h"
 #include "../Allocators/DoubleBufferAllocator.h"
-
-#ifdef REMOTE_VISUAL_DEBUG
-#include "../Debug/VisualDebugger.h"
-#endif
-
 #include "Actors/ActorFactory.h"
 #include "Actors/GeometryFactory.h"
 #include "../Utility/ShapeCreator.h"
+#include "../Debug/VisualDebugger.h"
 
 namespace PhysicsEngine
 {
@@ -25,6 +21,9 @@ namespace PhysicsEngine
 	class PhysicsEngine : public IPhysicsEngine
 	{
 	private:
+		static PhysicsEngine* s_instance;
+		static std::once_flag s_initialized;
+
 		static constexpr float k_deltaTime = 1.0f / 60.0f;
 		static constexpr int k_substeps = 4;
 
@@ -34,9 +33,7 @@ namespace PhysicsEngine
 		Dispatcher* m_dispatcher;
 		SceneManager* m_sceneManager;
 		TaskManager* m_taskManager;
-#ifdef REMOTE_VISUAL_DEBUG
-		VisualDebugger* m_visualDebuger;
-#endif
+		VisualDebugger* m_visualDebugger;
 
 		// Factories and databases
 		ActorFactory* m_actorFactory;
@@ -48,11 +45,12 @@ namespace PhysicsEngine
 		SingleFrameAllocator g_singleFrameAllocator;
 		DoubleBufferAllocator g_doubleBufferAllocator;
 
-#ifdef DEBUG_MODE
-		void RunUpdate();
-#endif
+		PhysicsEngine() = default;
+		PhysicsEngine(const PhysicsEngine&) = delete;
+		PhysicsEngine& operator=(const PhysicsEngine&) = delete;
 
 	public:
+		static PhysicsEngine* Instance();
 		void Release();
 
 		bool Init() override;

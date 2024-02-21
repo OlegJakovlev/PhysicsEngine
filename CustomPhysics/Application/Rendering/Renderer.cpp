@@ -1,6 +1,6 @@
 #include "Renderer.h"
 #include <vector>
-#include "../../PhysicsEngine/Engine/Scene.h"
+#include "../../PhysicsEngine/Engine/SceneManagement/Scene.h"
 #include "../SceneManagement/GameScene.h"
 
 namespace CustomApplication
@@ -33,8 +33,10 @@ namespace CustomApplication
 	{
 	}
 
-	void Renderer::Render(const GameScene* gameScene) const
+	void Renderer::Render(GameScene* gameScene) const
 	{
+		GameScene::ScopedLock lock(gameScene);
+
 		if (m_renderMode == RenderMode::DEBUG || m_renderMode == RenderMode::BOTH)
 		{
 			const PhysicsEngine::Scene* scene = (PhysicsEngine::Scene*) gameScene->GetPhysicsScene();

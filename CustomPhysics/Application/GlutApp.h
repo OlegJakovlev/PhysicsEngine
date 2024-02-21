@@ -8,7 +8,6 @@
 #include "Rendering/Renderer.h"
 #include "SceneManagement/GameSceneManager.h"
 #include <thread>
-#include <mutex>
 
 // I hate that original Glut does not have glutMainLoopEvent to use it just for rendering
 // Because I'm not going to implement custom renderers for now, whole app will be based on this garbage
@@ -19,6 +18,7 @@ namespace CustomApplication
 	{
 	private:
 		static GlutApp* s_instance;
+		const double s_timeStep = 1.0 / 60.0;
 
 		InputHandler* m_input;
 		PhysicsEngine::PhysicsEngine* m_physicsEngine;
@@ -27,8 +27,6 @@ namespace CustomApplication
 		GameSceneManager* m_sceneManager;
 
 		// Glut is running on main thread, so input and renderer would not be separated :(
-		std::mutex m_physicsMutex;
-		std::condition_variable m_cv;
 		std::thread m_physicsThread;
 		bool m_running;
 

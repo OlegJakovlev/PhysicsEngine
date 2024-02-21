@@ -40,22 +40,16 @@ namespace CustomApplication
 	void GlutApp::StartPhysics()
 	{
 		std::chrono::steady_clock::time_point prevTime = std::chrono::steady_clock::now();
-		double timeStep = 1.0 / 60.0;
 
 		while (m_running)
 		{
 			std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
 			std::chrono::duration<double> elapsedTime = currentTime - prevTime;
 
-			if (elapsedTime.count() >= timeStep)
+			if (elapsedTime.count() >= s_timeStep)
 			{
-				// Update the previous time
 				prevTime = currentTime;
-
-				// Perform physics update
-				m_physicsEngine->Update(timeStep);
-
-				m_cv.notify_one();
+				m_physicsEngine->Update(s_timeStep);
 			}
 		}
 	}
@@ -76,9 +70,6 @@ namespace CustomApplication
 		s_instance->m_input->HandleInput();
 
 		// Render
-		std::unique_lock<std::mutex> lock(s_instance->m_physicsMutex);
-		s_instance->m_cv.wait(lock);
-
 		const std::unordered_set<GameScene*> activeScenesMap = *s_instance->m_sceneManager->GetActiveGameScenes();
 		s_instance->m_renderer->Clear();
 
@@ -128,7 +119,7 @@ namespace CustomApplication
 			return false;
 		}
 
-		m_physicsEngine = new PhysicsEngine::PhysicsEngine();
+		m_physicsEngine = PhysicsEngine::PhysicsEngine::Instance();
 		if (!m_physicsEngine->Init())
 		{
 			return false;

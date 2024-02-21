@@ -1,12 +1,12 @@
 #include "VisualDebugger.h"
-
-#ifdef REMOTE_VISUAL_DEBUG
+#include "../GlobalDefine.h"
 #include "../Engine/PhysicsEngine.h"
 
 namespace PhysicsEngine
 {
 	bool VisualDebugger::Init(const physx::PxFoundation* foundation)
 	{
+#ifdef REMOTE_VISUAL_DEBUG
 		m_pvd = physx::PxCreatePvd(const_cast<physx::PxFoundation&>(*foundation));
 		m_transport = physx::PxDefaultPvdSocketTransportCreate(host, connectionPort, timeoutMillis);
 
@@ -24,15 +24,20 @@ namespace PhysicsEngine
 		}
 
 		return connectionSuccesful;
+#else
+		return true;
+#endif
 	}
 
 	void VisualDebugger::Release()
 	{
+#ifdef REMOTE_VISUAL_DEBUG
 		m_transport->release();
 		m_pvd->release();
 
 		m_transport = nullptr;
 		m_pvd = nullptr;
+#endif
 	}
 
 	const physx::PxPvd* VisualDebugger::GetPVDService() const
@@ -40,5 +45,3 @@ namespace PhysicsEngine
 		return m_pvd;
 	}
 }
-
-#endif

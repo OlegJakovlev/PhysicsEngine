@@ -40,6 +40,7 @@ namespace CustomApplication
 		void SetupLighting();
 		void RenderBuffer(float* pVertList, float* pColorList, int type, int num) const;
 		void UpdateCameraRender(const physx::PxVec3& cameraEye, const physx::PxVec3& cameraDir) const;
+		void RenderShapes(physx::PxRigidActor* rigidActor, const CustomApplication::RenderData* renderData) const;
 
 	protected:
 		void DrawPlane() const override;

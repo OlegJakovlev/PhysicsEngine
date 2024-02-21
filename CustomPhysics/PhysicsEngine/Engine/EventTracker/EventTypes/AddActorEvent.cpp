@@ -6,7 +6,7 @@ namespace PhysicsEngine
 	{
 		auto actorId = actor->GetActorID();
 
-		const physx::PxActor* physicsActor = actor->GetPhysicsActor();
+		const physx::PxActor* physicsActor = actor->GetCurrentPhysxActor();
 
 		auto actorBounds = physicsActor->getWorldBounds();
 

@@ -20,19 +20,19 @@ namespace CustomApplication
 
 		if (underlayingType == GameObject::Type::Static)
 		{
-			StaticGameObject* staticGameObject = static_cast<StaticGameObject*>(gameObject);
+			StaticGameObject* staticGameObject = (StaticGameObject*) gameObject;
 			AddGameActorInternal(staticGameObject);
 			return;
 		}
 
 		if (underlayingType == GameObject::Type::Dynamic)
 		{
-			DynamicGameObject* dynamicGameObject = static_cast<DynamicGameObject*>(gameObject);
+			DynamicGameObject* dynamicGameObject = (DynamicGameObject*) gameObject;
 			AddGameActorInternal(dynamicGameObject);
 			return;
 		}
 
-		std::printf("Unknown underlaying GameObject type!");
+		std::printf("Unknown underlaying GameObject type!\n");
 		return;
 	}
 
@@ -41,11 +41,21 @@ namespace CustomApplication
 		m_staticGameObjectCount = 0;
 		m_dynamicGameObjectCount = 0;
 
-		m_staticGameObjects = new GameObject * [k_maxStaticGameObjects];
-		m_dynamicGameObjects = new GameObject * [k_maxDynamicGameObjects];
+		m_staticGameObjects = new GameObject* [k_maxStaticGameObjects];
+		m_dynamicGameObjects = new GameObject* [k_maxDynamicGameObjects];
 
-		gameObjectFactory = new GameObjectFactory();
-		gameObjectFactory->Init(const_cast<PhysicsEngine::ActorFactory*>(physicsEngine->GetActorFactory()));
+		m_gameObjectFactory = new GameObjectFactory();
+		m_gameObjectFactory->Init(const_cast<PhysicsEngine::ActorFactory*>(physicsEngine->GetActorFactory()));
+	}
+
+	void GameScene::Lock()
+	{
+		((PhysicsEngine::Scene*) m_physicsScene)->Lock();
+	}
+
+	void GameScene::Unlock()
+	{
+		((PhysicsEngine::Scene*) m_physicsScene)->Unlock();
 	}
 
 	const void* GameScene::GetPhysicsScene() const

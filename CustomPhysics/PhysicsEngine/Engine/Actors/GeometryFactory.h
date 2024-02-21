@@ -12,6 +12,8 @@ namespace PhysicsEngine
 	{
 	public:
 		// TODO: API Exposed
+		physx::PxGeometry* Create(uint32_t geoType) const;
+
 		physx::PxGeometry* CreatePlane() const;
 
 		physx::PxGeometry* CreateSphere(physx::PxReal radius = 1.f) const;

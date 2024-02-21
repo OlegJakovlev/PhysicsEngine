@@ -2,6 +2,35 @@
 
 namespace PhysicsEngine
 {
+	physx::PxGeometry* GeometryFactory::Create(uint32_t geoType) const
+	{
+		switch (geoType)
+		{
+			case physx::PxGeometryType::eBOX:
+				break;
+
+			case physx::PxGeometryType::eCAPSULE:
+				break;
+
+			case physx::PxGeometryType::eCONVEXMESH:
+				break;
+
+			case physx::PxGeometryType::eHEIGHTFIELD:
+				break;
+
+			case physx::PxGeometryType::ePLANE:
+				break;
+
+			case physx::PxGeometryType::eSPHERE:
+				break;
+
+			case physx::PxGeometryType::eTRIANGLEMESH:
+				break;
+		}
+
+		return nullptr;
+	}
+
 	physx::PxGeometry* GeometryFactory::CreatePlane() const
 	{
 		return new physx::PxPlaneGeometry();

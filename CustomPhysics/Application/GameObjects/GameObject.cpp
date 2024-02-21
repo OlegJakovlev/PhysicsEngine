@@ -12,12 +12,26 @@ namespace CustomApplication
 	void GameObject::SetPhysicsActor(void* actor)
 	{
 		m_physicsActor = actor;
+		m_physicsActorPointer = &m_physicsActor;
 	}
 
-	const void* GameObject::GetPhysicsActor() const
+	void** GameObject::GetPhysicsActorPointer() const
 	{
-		return m_physicsActor;
+		return m_physicsActorPointer;
 	}
+
+#ifdef APPLICATION_DEBUG_MODE
+	void GameObject::SetPhysicsActorDebug(PhysicsEngine::Actor* actor)
+	{
+		m_physicsActorDebug = actor;
+		m_physicsActorPointerDebug = &m_physicsActorDebug;
+	}
+
+	PhysicsEngine::Actor** GameObject::GetPhysicsActorPointerDebug() const
+	{
+		return m_physicsActorPointerDebug;
+	}
+#endif
 
 	const RenderData* GameObject::GetRenderData() const
 	{

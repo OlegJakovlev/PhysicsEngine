@@ -13,6 +13,24 @@ namespace CustomApplication
 {
 	class GameScene
 	{
+	public:
+		class ScopedLock
+		{
+		public:
+			ScopedLock(GameScene* gameScene) : m_gameScene(gameScene)
+			{
+				m_gameScene->Lock();
+			}
+
+			~ScopedLock()
+			{
+				m_gameScene->Unlock();
+			}
+
+		private:
+			GameScene* m_gameScene;
+		};
+
 	private:
 		GameObject** m_staticGameObjects;
 		GameObject** m_dynamicGameObjects;
@@ -26,15 +44,18 @@ namespace CustomApplication
 		const int k_maxStaticGameObjects = 512;
 		const int k_maxDynamicGameObjects = 512;
 
-		GameObjectFactory* gameObjectFactory;
+		GameObjectFactory* m_gameObjectFactory;
 		void* m_physicsScene;
 
 		void AddGameActor(GameObject* gameObject);
 
 	public:
 		virtual void Init(const PhysicsEngine::PhysicsEngine* physicsEngine);
-		const void* GetPhysicsScene() const;
 
+		void Lock();
+		void Unlock();
+
+		const void* GetPhysicsScene() const;
 		const GameObject** GetStaticActors() const;
 		const uint32_t GetStaticActorCount() const;
 		const GameObject** GetDynamicActors() const;

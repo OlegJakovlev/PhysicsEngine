@@ -1,4 +1,5 @@
 #include "ShapeCreator.h"
+#include "../GlobalDefine.h"
 #include "Hashing.h"
 #include "../Engine/PhysicsEngine.h"
 
@@ -6,8 +7,8 @@ namespace PhysicsEngine
 {
 	physx::PxShape* ShapeCreator::CreateShapeInternal(StaticActor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const
 	{
-		const physx::PxActor* physxActor = actor->GetPhysicsActor();
-		physx::PxRigidStatic* rigidActor = const_cast<physx::PxRigidStatic*>(physxActor->is<physx::PxRigidStatic>());
+		physx::PxActor* physxActor = const_cast<physx::PxActor*>(actor->GetCurrentPhysxActor());
+		physx::PxRigidStatic* rigidActor = physxActor->is<physx::PxRigidStatic>();
 
 		if (!rigidActor)
 		{
@@ -31,7 +32,7 @@ namespace PhysicsEngine
 
 	physx::PxShape* ShapeCreator::CreateShapeInternal(DynamicActor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const
 	{
-		physx::PxActor* physxActor = const_cast<physx::PxActor*>(actor->GetPhysicsActor());
+		physx::PxActor* physxActor = const_cast<physx::PxActor*>(actor->GetCurrentPhysxActor());
 		physx::PxRigidDynamic* rigidActor = physxActor->is<physx::PxRigidDynamic>();
 		if (!rigidActor)
 		{
@@ -78,6 +79,36 @@ namespace PhysicsEngine
 		return true;
 	}
 
+#ifdef PHYSICS_DEBUG_MODE
+	void ShapeCreator::CreateShapeDebug(Actor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const
+	{
+		Actor* castedActor = static_cast<Actor*>(actor);
+		if (!castedActor)
+		{
+			std::printf("Create shape casting to Actor* failed!");
+			return;
+		}
+
+		Actor::Type underlayingType = castedActor->GetType();
+
+		if (underlayingType == Actor::Type::Dynamic)
+		{
+			DynamicActor* dynamicActor = (DynamicActor*) castedActor;
+			CreateShapeInternal(dynamicActor, geometry, materialKey);
+			return;
+		}
+
+		if (underlayingType == Actor::Type::Static)
+		{
+			StaticActor* staticActor = (StaticActor*) castedActor;
+			CreateShapeInternal(staticActor, geometry, materialKey);
+			return;
+		}
+
+		std::printf("ShapeCreator::CreateShape Unknown underlaying type!");
+	}
+#endif
+
 	void ShapeCreator::CreateShape(void* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const
 	{
 		Actor* castedActor = static_cast<Actor*>(actor);
@@ -91,19 +122,19 @@ namespace PhysicsEngine
 
 		if (underlayingType == Actor::Type::Dynamic)
 		{
-			DynamicActor* dynamicActor = static_cast<DynamicActor*>(castedActor);
+			DynamicActor* dynamicActor = (DynamicActor*) castedActor;
 			CreateShapeInternal(dynamicActor, geometry, materialKey);
 			return;
 		}
 
 		if (underlayingType == Actor::Type::Static)
 		{
-			StaticActor* staticActor = static_cast<StaticActor*>(castedActor);
+			StaticActor* staticActor = (StaticActor*) castedActor;
 			CreateShapeInternal(staticActor, geometry, materialKey);
 			return;
 		}
 
-		std::printf("Unknown underlaying type!");
+		std::printf("ShapeCreator::CreateShape Unknown underlaying type!");
 	}
 
 	void ShapeCreator::CreateTrigger(void* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const
@@ -120,13 +151,13 @@ namespace PhysicsEngine
 
 		if (underlayingType == Actor::Type::Dynamic)
 		{
-			DynamicActor* dynamicActor = static_cast<DynamicActor*>(castedActor);
+			DynamicActor* dynamicActor = (DynamicActor*) castedActor;
 			shape = CreateShapeInternal(dynamicActor, geometry, materialKey);
 		}
 
 		if (underlayingType == Actor::Type::Static)
 		{
-			StaticActor* staticActor = static_cast<StaticActor*>(castedActor);
+			StaticActor* staticActor = (StaticActor*) castedActor;
 			shape = CreateShapeInternal(staticActor, geometry, materialKey);
 		}
 

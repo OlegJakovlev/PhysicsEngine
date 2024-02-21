@@ -20,14 +20,14 @@ namespace PhysicsEngine
 	Actor* ActorFactory::CreateStaticActor(const physx::PxTransform& transform)
 	{
 		StaticActor* actor = new StaticActor(GenerateId());
-		actor->m_physicsActor = m_physics->createRigidStatic(transform);
+		actor->m_currentPhysxActor = m_physics->createRigidStatic(transform);
 		return actor;
 	}
 
 	Actor* ActorFactory::CreateDynamicActor(const physx::PxTransform& transform)
 	{
 		DynamicActor* actor = new DynamicActor(GenerateId());
-		actor->m_physicsActor = m_physics->createRigidDynamic(transform);
+		actor->m_currentPhysxActor = m_physics->createRigidDynamic(transform);
 		return actor;
 	}
 
@@ -36,7 +36,7 @@ namespace PhysicsEngine
 		DynamicActor* actor = new DynamicActor(GenerateId());
 		auto dynamicPhysxActor = m_physics->createRigidDynamic(transform);
 		dynamicPhysxActor->setRigidBodyFlags(physx::PxRigidBodyFlag::eKINEMATIC);
-		actor->m_physicsActor = dynamicPhysxActor;
+		actor->m_currentPhysxActor = dynamicPhysxActor;
 		return actor;
 	}
 }
