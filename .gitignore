@@ -27,4 +27,7 @@ data/
 Docs/html
 Docs/latex
 
+# Demos
+*.dem
+
 

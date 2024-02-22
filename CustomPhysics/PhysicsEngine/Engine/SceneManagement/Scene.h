@@ -53,7 +53,7 @@ namespace PhysicsEngine
 
 		EventTracker* m_tracker;
 		State m_state;
-		uint32_t m_id;
+		const uint32_t m_id;
 
 		std::mutex m_mutex;
 

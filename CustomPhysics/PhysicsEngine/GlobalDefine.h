@@ -8,7 +8,7 @@
 
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 #define isBigEndian
-#else
+#elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 #define isSmallEndian
 #endif
 

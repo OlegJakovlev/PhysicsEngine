@@ -6,7 +6,7 @@
 class EndianChecker
 {
 public:
-    static inline int IsBigEndian()
+    static bool IsBigEndian()
     {
         int i = 1;
         return !*((char*)&i);

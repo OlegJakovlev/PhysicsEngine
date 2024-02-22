@@ -19,6 +19,8 @@ namespace PhysicsEngine
 		bool m_enableDemoRecord;
 
 	public:
+		~EventTracker();
+
 		bool Init(uint32_t sceneId, bool enableDemoRecord);
 
 		// Exposed API calls
