@@ -17,7 +17,7 @@ namespace CustomApplication
 	{
 	}
 
-	void InputHandler::HandleInput()
+	void InputHandler::HandleInput(double dt)
 	{
 		for (int i = 0; i < MAX_KEYS; i++)
 		{

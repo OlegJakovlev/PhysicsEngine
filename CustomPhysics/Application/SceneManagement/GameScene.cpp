@@ -48,6 +48,13 @@ namespace CustomApplication
 		m_gameObjectFactory->Init(const_cast<PhysicsEngine::ActorFactory*>(physicsEngine->GetActorFactory()));
 	}
 
+	void GameScene::Update(float dt)
+	{
+		// TODO: Instead of forcing gameobjects to update, do more data oriented appoarch
+		// PhysicsComponets->Update(); CustomComponentA->Update();
+		// Maybe it is worth having all custom components in separate container?
+	}
+
 	void GameScene::Lock()
 	{
 		((PhysicsEngine::Scene*) m_physicsScene)->Lock();

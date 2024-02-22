@@ -46,10 +46,10 @@ namespace CustomApplication
 			std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
 			std::chrono::duration<double> elapsedTime = currentTime - prevTime;
 
-			if (elapsedTime.count() >= s_timeStep)
+			if (elapsedTime.count() >= k_timeStep)
 			{
 				prevTime = currentTime;
-				m_physicsEngine->Update(s_timeStep);
+				m_physicsEngine->Update(k_timeStep);
 			}
 		}
 	}
@@ -66,16 +66,35 @@ namespace CustomApplication
 
 	void GlutApp::RenderSceneCallback()
 	{
+		std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
+		std::chrono::duration<double> elapsedTime = currentTime - s_instance->m_previousTime;
+		double dt = elapsedTime.count();
+
+		// Ensure we are not in breakpoint or having a performance drop
+		if (dt > s_instance->k_maxAllowedDeltaTime)
+		{
+			dt = s_instance->k_maxAllowedDeltaTime;
+		}
+
+		s_instance->m_previousTime = currentTime;
+
 		// Input
-		s_instance->m_input->HandleInput();
+		s_instance->m_input->HandleInput(dt);
+
+		const std::unordered_set<GameScene*> activeScenesMap = *s_instance->m_sceneManager->GetActiveGameScenes();
+		
+		// Game update
+		for (auto it = activeScenesMap.cbegin(); it != activeScenesMap.cend(); it++)
+		{
+			(*it)->Update(dt);
+		}
 
 		// Render
-		const std::unordered_set<GameScene*> activeScenesMap = *s_instance->m_sceneManager->GetActiveGameScenes();
 		s_instance->m_renderer->Clear();
 
 		for (auto it = activeScenesMap.cbegin(); it != activeScenesMap.cend(); it++)
 		{
-			s_instance->m_renderer->Render(*it);
+			s_instance->m_renderer->Render(*it, dt);
 		}
 
 		s_instance->m_renderer->RenderHUD();

@@ -2,7 +2,7 @@
 
 namespace PhysicsEngine
 {
-	bool EventTracker::Init(bool enableDemoRecord)
+	bool EventTracker::Init(uint32_t sceneId, bool enableDemoRecord)
 	{
 		m_enableDemoRecord = enableDemoRecord;
 
@@ -10,7 +10,7 @@ namespace PhysicsEngine
 		{
 			m_demoRecorder = new DemoRecorder();
 
-			if (!m_demoRecorder->Init())
+			if (!m_demoRecorder->Init(sceneId))
 			{
 				return false;
 			}

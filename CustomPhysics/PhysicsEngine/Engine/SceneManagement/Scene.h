@@ -53,6 +53,8 @@ namespace PhysicsEngine
 
 		EventTracker* m_tracker;
 		State m_state;
+		uint32_t m_id;
+
 		std::mutex m_mutex;
 
 		Actor** m_staticActors;
@@ -77,7 +79,9 @@ namespace PhysicsEngine
 		void StaticSync(Scene* sourceScene);
 		void DynamicSync(Scene* sourceScene);
 
-		Scene();
+		Scene() = delete;
+		Scene(uint32_t id);
+
 	public:
 		// TODO: API Expose
 		void Lock();

@@ -15,15 +15,17 @@ namespace PhysicsEngine
 	protected:
 		struct Data
 		{
-
+			uint64_t actorId;
 		};
+
+		Data m_data;
 
 		AddActorEvent(uint64_t id, const Actor* actor);
 
 	public:
-		void Apply() override;
-		void Invert() override;
-		void Serialize() override;
+		void Apply() const override;
+		void Invert() const override;
+		void Serialize(char* buffer) const override;
 	};
 }
 

@@ -51,6 +51,7 @@ namespace CustomApplication
 
 	public:
 		virtual void Init(const PhysicsEngine::PhysicsEngine* physicsEngine);
+		virtual void Update(float dt);
 
 		void Lock();
 		void Unlock();

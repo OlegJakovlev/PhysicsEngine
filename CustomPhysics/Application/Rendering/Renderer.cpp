@@ -33,7 +33,7 @@ namespace CustomApplication
 	{
 	}
 
-	void Renderer::Render(GameScene* gameScene) const
+	void Renderer::Render(GameScene* gameScene, double dt) const
 	{
 		GameScene::ScopedLock lock(gameScene);
 

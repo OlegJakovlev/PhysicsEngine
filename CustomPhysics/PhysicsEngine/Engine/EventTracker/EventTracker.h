@@ -3,7 +3,7 @@
 #ifndef EventTracker_H
 #define EventTracker_H
 
-#include "../../DemoRecorder/DemoRecorder.h"
+#include "../../Demo/DemoRecorder.h"
 #include "EventFactory.h"
 #include "../Actors/Actor.h"
 
@@ -19,7 +19,7 @@ namespace PhysicsEngine
 		bool m_enableDemoRecord;
 
 	public:
-		bool Init(bool enableDemoRecord);
+		bool Init(uint32_t sceneId, bool enableDemoRecord);
 
 		// Exposed API calls
 		void RegisterAddActorEvent(const Actor* actor) const;

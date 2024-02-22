@@ -12,6 +12,8 @@ namespace PhysicsEngine
 	class SceneManager
 	{
 	private:
+		static uint32_t s_lastSceneId;
+
 		std::unordered_set<Scene*> m_currentScenes;
 		std::unordered_set<Scene*> m_renderScenes;
 

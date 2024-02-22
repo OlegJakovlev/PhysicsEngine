@@ -22,8 +22,10 @@ namespace PhysicsEngine
 		delete m_collisionFilter;
 	}
 
-	Scene::Scene()
+	Scene::Scene(uint32_t id)
 	{
+		m_id = id;
+
 		m_staticActors = new Actor* [k_maxStaticActors];
 		for (std::uint32_t i = 0; i < k_maxStaticActors; i++)
 		{
@@ -42,7 +44,7 @@ namespace PhysicsEngine
 		m_configuration = configuration;
 
 		m_tracker = new EventTracker();
-		m_tracker->Init(configuration->m_enableDemo);
+		m_tracker->Init(m_id, configuration->m_enableDemo);
 
 		return true;
 	}
