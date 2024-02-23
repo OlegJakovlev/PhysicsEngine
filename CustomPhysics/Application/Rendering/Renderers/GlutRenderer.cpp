@@ -157,6 +157,7 @@ namespace CustomApplication
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glBegin(GL_QUADS);
+
 		for (int i = 0; i < heightField->getNbRows() - 1; ++i)
 		{
 			for (int j = 0; j < heightField->getNbColumns() - 1; ++j)
@@ -169,6 +170,7 @@ namespace CustomApplication
 				glVertex3f(i, heightField->getHeight(i, j + 1), j + 1);
 			}
 		}
+
 		glEnd();
 	}
 

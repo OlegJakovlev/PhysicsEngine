@@ -96,13 +96,11 @@ namespace PhysicsEngine
 		}
 
 		m_geoFactory = new GeometryFactory();
-		/*
 		if (!m_geoFactory->Init(m_physics->GetPhysics(), m_cooking->GetCooking()))
 		{
 			printf("GeometryFactory creation failed!\n");
 			return false;
 		}
-		*/
 
 		m_shapeCreator = new ShapeCreator();
 		if (!m_shapeCreator->Init(m_materialDatabase))

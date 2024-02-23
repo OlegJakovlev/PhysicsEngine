@@ -108,39 +108,7 @@ namespace PhysicsEngine
 
 		for (uint32_t i = 0; i < shapes.size(); i++)
 		{
-			physx::PxGeometryHolder geom = shapes[i]->getGeometry();
-			physx::PxGeometry* geometry = nullptr;
-
-			switch (geom.getType())
-			{
-				case physx::PxGeometryType::eBOX:
-					geometry = geoFactory->CreateBox(geom.box().halfExtents);
-					break;
-
-				case physx::PxGeometryType::eCAPSULE:
-					geometry = geoFactory->CreateCapsule(physx::PxVec2(geom.capsule().radius, geom.capsule().halfHeight));
-					break;
-
-				case physx::PxGeometryType::eCONVEXMESH:
-					//geometry = geoFactory->CreateConvexMesh(geom.convexMesh().convexMesh->getVertices());
-					break;
-
-				case physx::PxGeometryType::eHEIGHTFIELD:
-					//physx::PxHeightFieldGeometry& heightfieldData = geom.heightField();
-					break;
-
-				case physx::PxGeometryType::ePLANE:
-					geometry = geoFactory->CreatePlane();
-					break;
-
-				case physx::PxGeometryType::eSPHERE:
-					geometry = geoFactory->CreateSphere(geom.sphere().radius);
-					break;
-
-				case physx::PxGeometryType::eTRIANGLEMESH:
-					//geometry = geoFactory->CreateTriangleMesh(geom.triangleMesh().getVertices(), geom.triangleMesh().getTriangles());
-					break;
-			}
+			physx::PxGeometry* geometry = geoFactory->Create(shapes[i]->getGeometry());
 
 			// Create either trigger or normal shape
 			physx::PxShapeFlags activeShapeFlags = shapes[i]->getFlags();
