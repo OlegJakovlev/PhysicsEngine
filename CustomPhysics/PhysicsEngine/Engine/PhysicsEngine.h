@@ -14,6 +14,7 @@
 #include "Actors/GeometryFactory.h"
 #include "../Utility/ShapeCreator.h"
 #include "../Debug/VisualDebugger.h"
+#include "Services/Cooking.h"
 
 namespace PhysicsEngine
 {
@@ -34,6 +35,7 @@ namespace PhysicsEngine
 		SceneManager* m_sceneManager;
 		TaskManager* m_taskManager;
 		VisualDebugger* m_visualDebugger;
+		Cooking* m_cooking;
 
 		// Factories and databases
 		ActorFactory* m_actorFactory;

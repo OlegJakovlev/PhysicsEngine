@@ -3,6 +3,8 @@
 
 namespace PhysicsEngine
 {
+	uint32_t SceneManager::s_lastSceneId = 0;
+
 	bool SceneManager::PostInit(const physx::PxPhysics* physxObject,
 								const physx::PxCpuDispatcher* dispatcherObject)
 	{
@@ -31,7 +33,7 @@ namespace PhysicsEngine
 		renderScene->Init(renderConfiguration);
 		renderScene->PostInit(physxObject, dispatcherObject);
 
-		Scene* realScene = new Scene();
+		Scene* realScene = new Scene(s_lastSceneId++);
 
 		if (!realScene->Init(realSceneConfiguration))
 		{
@@ -87,7 +89,7 @@ namespace PhysicsEngine
 
 	Scene* SceneManager::CreateScene(const Scene::SceneConfiguration* config) const
 	{
-		Scene* newScene = new Scene();
+		Scene* newScene = new Scene(s_lastSceneId++);
 
 		// We don't Init, so we save resources, as we may never add to the active scene pool
 		newScene->m_configuration = config;

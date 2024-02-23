@@ -6,15 +6,20 @@ namespace PhysicsEngine
 	{
 		physx::PxFoundation* foundationObject = const_cast<physx::PxFoundation*>(foundation);
 
-		gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundationObject, physx::PxCookingParams(physics->getTolerancesScale()));
+		m_cooking = PxCreateCooking(PX_PHYSICS_VERSION, *foundationObject, physx::PxCookingParams(physics->getTolerancesScale()));
 
 		return true;
 	}
 
 	void Cooking::Release()
 	{
-		gCooking->release();
-		gCooking = nullptr;
+		m_cooking->release();
+		m_cooking = nullptr;
+	}
+
+	const physx::PxCooking* Cooking::GetCooking() const
+	{
+		return m_cooking;
 	}
 }
 

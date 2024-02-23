@@ -18,7 +18,10 @@ namespace CustomApplication
 	{
 	private:
 		static GlutApp* s_instance;
-		const double s_timeStep = 1.0 / 60.0;
+
+		const double k_timeStep = 1.0 / 60.0;
+		const float k_maxAllowedDeltaTime = 1.0f;
+		bool m_running;
 
 		InputHandler* m_input;
 		PhysicsEngine::PhysicsEngine* m_physicsEngine;
@@ -28,7 +31,7 @@ namespace CustomApplication
 
 		// Glut is running on main thread, so input and renderer would not be separated :(
 		std::thread m_physicsThread;
-		bool m_running;
+		std::chrono::steady_clock::time_point m_previousTime;
 
 		static void ReshapeCallback(int width, int height);
 		static void IdleCallback();
@@ -41,7 +44,6 @@ namespace CustomApplication
 		static void ExitCallback(void);
 
 		void LinkCallbacks();
-
 		void StartPhysics();
 
 	public:

@@ -64,6 +64,13 @@ namespace PhysicsEngine
 			return false;
 		}
 
+		m_cooking = new Cooking();
+		if (!m_cooking->Init(m_foundation->GetFoundationService(), m_physics->GetPhysics()))
+		{
+			printf("Cooking creation failed!\n");
+			return false;
+		}
+
 		/* Is not supported because of linker and physx :(
 		m_taskManager = new TaskManager();
 		if (!m_taskManager->Init(m_foundation->GetFoundationService(), m_dispatcher))
@@ -89,6 +96,13 @@ namespace PhysicsEngine
 		}
 
 		m_geoFactory = new GeometryFactory();
+		/*
+		if (!m_geoFactory->Init(m_physics->GetPhysics(), m_cooking->GetCooking()))
+		{
+			printf("GeometryFactory creation failed!\n");
+			return false;
+		}
+		*/
 
 		m_shapeCreator = new ShapeCreator();
 		if (!m_shapeCreator->Init(m_materialDatabase))

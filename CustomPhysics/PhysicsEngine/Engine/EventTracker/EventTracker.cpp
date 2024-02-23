@@ -2,18 +2,27 @@
 
 namespace PhysicsEngine
 {
-	bool EventTracker::Init(bool enableDemoRecord)
+	EventTracker::~EventTracker()
+	{
+		delete m_demoRecorder;
+		delete m_eventFactory;
+	}
+
+	bool EventTracker::Init(uint32_t sceneId, bool enableDemoRecord)
 	{
 		m_enableDemoRecord = enableDemoRecord;
 
-		if (m_enableDemoRecord)
+		if (!m_enableDemoRecord)
 		{
-			m_demoRecorder = new DemoRecorder();
+			return true;
+		}
 
-			if (!m_demoRecorder->Init())
-			{
-				return false;
-			}
+		m_demoRecorder = new DemoRecorder();
+
+		if (!m_demoRecorder->Init(sceneId))
+		{
+			std::printf("DemoRecorder init failed!\n");
+			return false;
 		}
 
 		m_eventFactory = new EventFactory();
@@ -23,6 +32,14 @@ namespace PhysicsEngine
 		}
 
 		return true;
+	}
+
+	void EventTracker::Release()
+	{
+		if (m_enableDemoRecord)
+		{
+			m_demoRecorder->StopRecord();
+		}
 	}
 
 	void EventTracker::RegisterAddActorEvent(const Actor* actor) const

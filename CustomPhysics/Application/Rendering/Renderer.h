@@ -37,7 +37,7 @@ namespace CustomApplication
 		void Reshape(int width, int height) const;
 		void Idle() const;
 		void Clear() const;
-		void Render(GameScene* gameScene) const;
+		void Render(GameScene* gameScene, double dt) const;
 		void RenderHUD() const;
 		void FinishRender() const;
 	};

@@ -19,7 +19,7 @@ namespace CustomApplication
 		bool Init();
 		void PostInit();
 		void Release();
-		void HandleInput();
+		void HandleInput(double dt);
 
 		void KeyPress(unsigned char key, int x, int y);
 		void KeySpecial(int key, int x, int y);

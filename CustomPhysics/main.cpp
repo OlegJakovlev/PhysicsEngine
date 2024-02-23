@@ -13,6 +13,5 @@ int main()
 	app->PostInit();
 	app->Start();
 
-	CustomApplication::GlutApp::Release();
 	return 0;
 }

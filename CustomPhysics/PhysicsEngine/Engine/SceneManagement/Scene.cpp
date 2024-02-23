@@ -22,7 +22,7 @@ namespace PhysicsEngine
 		delete m_collisionFilter;
 	}
 
-	Scene::Scene()
+	Scene::Scene(uint32_t id) : m_id(id)
 	{
 		m_staticActors = new Actor* [k_maxStaticActors];
 		for (std::uint32_t i = 0; i < k_maxStaticActors; i++)
@@ -42,7 +42,11 @@ namespace PhysicsEngine
 		m_configuration = configuration;
 
 		m_tracker = new EventTracker();
-		m_tracker->Init(configuration->m_enableDemo);
+		if (!m_tracker->Init(m_id, configuration->m_enableDemo))
+		{
+			std::printf("EventTracker init failed!\n");
+			return false;
+		}
 
 		return true;
 	}
@@ -160,10 +164,23 @@ namespace PhysicsEngine
 
 	void Scene::Release()
 	{
+		m_tracker->Release();
+		delete m_tracker;
+
+		for (uint32_t i = 0; i < m_staticActorCount; i++)
+		{
+			m_staticActors[i]->Release();
+			delete m_staticActors[i];
+		}
+
+		for (uint32_t i = 0; i < m_dynamicActorCount; i++)
+		{
+			m_dynamicActors[i]->Release();
+			delete m_dynamicActors[i];
+		}
+
 		m_physxScene->release();
 		m_physxScene = nullptr;
-
-		// TODO: Release staticActors and dynamic actors memory?
 
 		m_state = State::UNLOADED;
 	}
