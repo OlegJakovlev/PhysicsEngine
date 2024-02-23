@@ -4,6 +4,7 @@
 #define PhysxEvent_H
 
 #include <cstdint>
+#include <string>
 
 namespace PhysicsEngine
 {
@@ -26,6 +27,7 @@ namespace PhysicsEngine
 		virtual void Apply() const = 0;
 		virtual void Invert() const = 0;
 		virtual void Serialize(char* buffer) const = 0;
+		virtual std::string SerializeDebug() const = 0;
 
 		uint32_t GetSize() const;
 		uint32_t GetType() const;

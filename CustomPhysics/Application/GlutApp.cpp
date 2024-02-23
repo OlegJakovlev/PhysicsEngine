@@ -128,6 +128,8 @@ namespace CustomApplication
 
 	void GlutApp::ExitCallback(void)
 	{
+		s_instance->m_running = false;
+		Release();
 	}
 
 	bool GlutApp::Init(const char* name, int width, int height)

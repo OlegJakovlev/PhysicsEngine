@@ -7,11 +7,6 @@
 
 namespace PhysicsEngine
 {
-    DemoRecorder::~DemoRecorder()
-    {
-        StopRecord();
-    }
-
     bool DemoRecorder::Init(uint32_t sceneId)
     {
 
@@ -52,12 +47,11 @@ namespace PhysicsEngine
         char* buffer = new char[byteSize];
         eventToRecord->Serialize(buffer);
 
-        //m_demoFile << eventToRecord->GetType();
-        //m_demoFile << byteSize;
-        //m_demoFile << EventDataCompressor::Compress(buffer, byteSize);
+        m_demoFile << byteSize;
+        m_demoFile << EventDataCompressor::Compress(buffer, byteSize);
 
 #ifdef PHYSICS_DEBUG_MODE
-        //m_debugDemoFile << buffer;
+        m_debugDemoFile << eventToRecord->SerializeDebug();
 #endif
     }
 

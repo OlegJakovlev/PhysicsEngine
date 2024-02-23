@@ -164,10 +164,23 @@ namespace PhysicsEngine
 
 	void Scene::Release()
 	{
+		m_tracker->Release();
+		delete m_tracker;
+
+		for (uint32_t i = 0; i < m_staticActorCount; i++)
+		{
+			m_staticActors[i]->Release();
+			delete m_staticActors[i];
+		}
+
+		for (uint32_t i = 0; i < m_dynamicActorCount; i++)
+		{
+			m_dynamicActors[i]->Release();
+			delete m_dynamicActors[i];
+		}
+
 		m_physxScene->release();
 		m_physxScene = nullptr;
-
-		// TODO: Release staticActors and dynamic actors memory?
 
 		m_state = State::UNLOADED;
 	}

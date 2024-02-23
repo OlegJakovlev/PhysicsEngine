@@ -5,13 +5,7 @@ namespace PhysicsEngine
 {
 	bool Foundation::Init()
 	{
-#if PX_PHYSICS_VERSION < 0x304000 // SDK 3.3
-		gFoundation = PxCreateFoundation(
-			PX_PHYSICS_VERSION, gDefaultAllocatorCallback, gDefaultErrorCallback);
-#else
-		gFoundation = PxCreateFoundation(
-			PX_FOUNDATION_VERSION, gDefaultAllocatorCallback, gDefaultErrorCallback);
-#endif
+		gFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, gDefaultAllocatorCallback, gDefaultErrorCallback);
 
 		if (gFoundation == nullptr)
 		{

@@ -34,11 +34,19 @@ namespace PhysicsEngine
 		return true;
 	}
 
+	void EventTracker::Release()
+	{
+		if (m_enableDemoRecord)
+		{
+			m_demoRecorder->StopRecord();
+		}
+	}
+
 	void EventTracker::RegisterAddActorEvent(const Actor* actor) const
 	{
 		if (!m_enableDemoRecord) return;
 
-		//m_demoRecorder->Record(m_eventFactory->CreateAddActorEvent(actor));
+		m_demoRecorder->Record(m_eventFactory->CreateAddActorEvent(actor));
 	}
 
 	void EventTracker::RegisterAddForceEvent()

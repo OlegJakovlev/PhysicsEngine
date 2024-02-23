@@ -1,9 +1,12 @@
 #include "AddActorEvent.h"
+#include <sstream>
 
 namespace PhysicsEngine
 {
 	AddActorEvent::AddActorEvent(uint64_t id, const Actor* actor) : PhysxEvent(id)
 	{
+		m_data.eventType = m_type;
+
 		// TODO: Remove, just for demo purposes
 		m_data.actorId = actor->GetActorID();
 
@@ -41,6 +44,19 @@ namespace PhysicsEngine
 
 	void AddActorEvent::Serialize(char* buffer) const
 	{
-		memcpy(buffer, this, sizeof(*this));
+		memcpy(buffer, this, sizeof(m_data));
+	}
+
+	std::string AddActorEvent::SerializeDebug() const
+	{
+		std::ostringstream s;
+
+#ifdef PHYSICS_DEBUG_MODE
+		s << "<AddActorEvent>\n";
+		s << "\t<ID>" << m_data.actorId << "</ID>\n";
+		s << "</AddActorEvent>\n";
+#endif
+
+		return s.str();
 	}
 }

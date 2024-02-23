@@ -22,6 +22,7 @@ namespace PhysicsEngine
 		~EventTracker();
 
 		bool Init(uint32_t sceneId, bool enableDemoRecord);
+		void Release();
 
 		// Exposed API calls
 		void RegisterAddActorEvent(const Actor* actor) const;

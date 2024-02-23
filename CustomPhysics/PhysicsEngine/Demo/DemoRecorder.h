@@ -29,8 +29,6 @@ namespace PhysicsEngine
 
         };
 
-        ~DemoRecorder();
-
         bool Init(uint32_t sceneId);
         void Record(PhysxEvent* eventToRecord);
         void StopRecord();

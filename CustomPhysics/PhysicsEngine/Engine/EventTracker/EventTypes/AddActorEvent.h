@@ -15,6 +15,7 @@ namespace PhysicsEngine
 	protected:
 		struct Data
 		{
+			Type eventType;
 			uint64_t actorId;
 		};
 
@@ -26,6 +27,7 @@ namespace PhysicsEngine
 		void Apply() const override;
 		void Invert() const override;
 		void Serialize(char* buffer) const override;
+		std::string SerializeDebug() const override;
 	};
 }
 
