@@ -211,12 +211,12 @@ namespace CustomApplication
 		}
 	}
 
-	void GlutRenderer::RenderCloth(const physx::PxCloth* cloth, const physx::PxClothMeshDesc* meshDesc, const RenderData* renderData) const
+	void GlutRenderer::RenderCloth(const physx::PxCloth* cloth, const RenderData* renderData) const
 	{
 		physx::PxVec3* color = renderData->m_color;
 
-		physx::PxU32 quad_count = meshDesc->quads.count;
-		physx::PxU32* quads = (physx::PxU32*) meshDesc->quads.data;
+		physx::PxU32 quad_count = clothRenderData->quadAmount;
+		physx::PxU32* quads = (physx::PxU32*) clothRenderData->quads;
 
 		std::vector<physx::PxVec3> verts(cloth->getNbParticles());
 		std::vector<physx::PxVec3> norms(verts.size(), physx::PxVec3(0.f, 0.f, 0.f));
@@ -322,7 +322,8 @@ namespace CustomApplication
 
 			if (physicsActor->is<physx::PxCloth>())
 			{
-				RenderCloth((physx::PxCloth*) physicsActor, nullptr, renderData);
+
+				RenderCloth((physx::PxCloth*) physicsActor, renderData);
 				return;
 			}
 

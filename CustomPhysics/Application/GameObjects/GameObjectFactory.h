@@ -20,10 +20,10 @@ namespace CustomApplication
 
 	public:
 		void Init(PhysicsEngine::ActorFactory* factory);
-		GameObject* CreateStaticActor(physx::PxTransform& transform, GameObject::Layer layer);
-		GameObject* CreateDynamicActor(physx::PxTransform& transform, GameObject::Layer layer);
-		GameObject* CreateKinematicActor(physx::PxTransform& transform, GameObject::Layer layer);
-		GameObject* CreateClothActor(physx::PxTransform& transform, GameObject::Layer layer);
+		GameObject* CreateStaticGameObject(physx::PxTransform& transform, GameObject::Layer layer);
+		GameObject* CreateDynamicGameObject(physx::PxTransform& transform, GameObject::Layer layer);
+		GameObject* CreateKinematicGameObject(physx::PxTransform& transform, GameObject::Layer layer);
+		GameObject* CreateClothGameObject(physx::PxTransform& transform, GameObject::Layer layer);
 	};
 }
 

@@ -123,6 +123,8 @@ namespace PhysicsEngine
 			printf("SceneManager creation failed!\n");
 			return false;
 		}
+
+		return true;
 	}
 
 	void PhysicsEngine::Update(float dt)

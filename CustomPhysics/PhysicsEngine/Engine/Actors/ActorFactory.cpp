@@ -41,7 +41,7 @@ namespace PhysicsEngine
 		return actor;
 	}
 
-	Actor* ActorFactory::CreateClothActor(physx::PxU32*& quads, const physx::PxTransform& transform, const physx::PxVec2& size, physx::PxU32 width, physx::PxU32 height)
+	Actor* ActorFactory::CreateClothActor(physx::PxU32*& quadContainer, const physx::PxTransform& transform, const physx::PxVec2& size, const physx::PxU32 width, const physx::PxU32 height)
 	{
 		ClothActor* actor = new ClothActor(GenerateId());
 
@@ -49,7 +49,7 @@ namespace PhysicsEngine
 		physx::PxReal h_step = size.y / height;
 
 		physx::PxClothParticle* vertices = new physx::PxClothParticle[(width + 1) * (height + 1) * 4];
-		quads = new physx::PxU32[width * height * 4];
+		quadContainer = new physx::PxU32[width * height * 4];
 
 		// Create virtual particles
 		for (physx::PxU32 j = 0; j < (height + 1); j++)
@@ -66,10 +66,10 @@ namespace PhysicsEngine
 				for (physx::PxU32 i = 0; i < width; i++)
 				{
 					physx::PxU32 offset = (i + j * width) * 4;
-					quads[offset + 0] = (i + 0) + (j + 0) * (width + 1);
-					quads[offset + 1] = (i + 1) + (j + 0) * (width + 1);
-					quads[offset + 2] = (i + 1) + (j + 1) * (width + 1);
-					quads[offset + 3] = (i + 0) + (j + 1) * (width + 1);
+					quadContainer[offset + 0] = (i + 0) + (j + 0) * (width + 1);
+					quadContainer[offset + 1] = (i + 1) + (j + 0) * (width + 1);
+					quadContainer[offset + 2] = (i + 1) + (j + 1) * (width + 1);
+					quadContainer[offset + 3] = (i + 0) + (j + 1) * (width + 1);
 				}
 			}
 		}
@@ -83,7 +83,7 @@ namespace PhysicsEngine
 		meshDesc.invMasses.count = (width + 1) * (height + 1);
 		meshDesc.invMasses.stride = sizeof(physx::PxClothParticle);
 
-		meshDesc.quads.data = quads;
+		meshDesc.quads.data = quadContainer;
 		meshDesc.quads.count = width * height;
 		meshDesc.quads.stride = sizeof(physx::PxU32) * 4;
 

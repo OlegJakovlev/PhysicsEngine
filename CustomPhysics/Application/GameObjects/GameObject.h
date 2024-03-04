@@ -60,6 +60,7 @@ namespace CustomApplication
 		uint64_t m_actorID;
 		physx::PxTransform m_transform;
 		Type m_type;
+		RenderData* m_renderData;
 
 		void* m_physicsActor;
 		void** m_physicsActorPointer;

@@ -83,7 +83,7 @@ namespace CustomApplication
     GameObject* GameObjectFactory::CreateClothGameObject(physx::PxTransform& transform, GameObject::Layer layer)
     {
         ClothGameObject* clothObject = new ClothGameObject(GenerateId(), transform);
-        PhysicsEngine::Actor* physicsActor = m_actorFactory->CreateClothActor(clothObject->quads, clothObject->GetTransform());
+        PhysicsEngine::Actor* physicsActor = m_actorFactory->CreateClothActor(clothObject->GetTransform());
 
         clothObject->SetPhysicsActor(physicsActor);
         physicsActor->SetCollisionLayer((uint32_t) layer);

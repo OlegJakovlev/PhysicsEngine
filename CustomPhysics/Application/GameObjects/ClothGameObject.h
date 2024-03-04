@@ -10,14 +10,9 @@ namespace CustomApplication
 	{
 		friend class GameObjectFactory;
 
-	private:
-		ClothRenderData* m_renderData;
-
 	public:
 		ClothGameObject() = delete;
 		ClothGameObject(const uint64_t id, physx::PxTransform& transform);
-
-		const ClothRenderData* GetRenderData() const;
 	};
 }
 

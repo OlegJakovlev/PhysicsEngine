@@ -198,6 +198,12 @@ namespace PhysicsEngine
 			delete m_dynamicActors[i];
 		}
 
+		for (uint32_t i = 0; i < m_clothActorCount; i++)
+		{
+			m_clothActors[i]->Release();
+			delete m_clothActors[i];
+		}
+
 		m_physxScene->release();
 		m_physxScene = nullptr;
 

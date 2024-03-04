@@ -108,7 +108,9 @@ namespace PhysicsEngine
 		if (m_type == Type::Cloth)
 		{
 			physx::PxCloth* clothActor = (physx::PxCloth*) m_currentPhysxActor;
-			clone = actorFactory->CreateClothActor(clothActor->getGlobalPose());
+
+			physx::PxU32* quadContainer;
+			clone = actorFactory->CreateClothActor(quadContainer, clothActor->getGlobalPose());
 			return;
 		}
 
