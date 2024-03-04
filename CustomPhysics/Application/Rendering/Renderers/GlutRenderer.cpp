@@ -211,13 +211,12 @@ namespace CustomApplication
 		}
 	}
 
-	void GlutRenderer::RenderCloth(const physx::PxCloth* cloth, const RenderData* renderData) const
+	void GlutRenderer::RenderCloth(const physx::PxCloth* cloth, const physx::PxClothMeshDesc* meshDesc, const RenderData* renderData) const
 	{
-		physx::PxClothMeshDesc* mesh_desc = renderData->m_clothMeshDesc;
 		physx::PxVec3* color = renderData->m_color;
 
-		physx::PxU32 quad_count = mesh_desc->quads.count;
-		physx::PxU32* quads = (physx::PxU32*) mesh_desc->quads.data;
+		physx::PxU32 quad_count = meshDesc->quads.count;
+		physx::PxU32* quads = (physx::PxU32*) meshDesc->quads.data;
 
 		std::vector<physx::PxVec3> verts(cloth->getNbParticles());
 		std::vector<physx::PxVec3> norms(verts.size(), physx::PxVec3(0.f, 0.f, 0.f));
@@ -323,7 +322,7 @@ namespace CustomApplication
 
 			if (physicsActor->is<physx::PxCloth>())
 			{
-				RenderCloth((physx::PxCloth*) physicsActor, renderData);
+				RenderCloth((physx::PxCloth*) physicsActor, nullptr, renderData);
 				return;
 			}
 
@@ -331,7 +330,10 @@ namespace CustomApplication
 			{
 				physx::PxRigidActor* rigidActor = (physx::PxRigidActor*) physicsActor;
 				RenderShapes(rigidActor, renderData);
+				return;
 			}
+
+			std::printf("Missing implementation for rendering!");
 		}
 	}
 

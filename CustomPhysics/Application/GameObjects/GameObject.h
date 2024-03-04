@@ -53,6 +53,7 @@ namespace CustomApplication
 		{
 			Static,
 			Dynamic,
+			Cloth,
 		};
 
 	protected:
@@ -67,8 +68,6 @@ namespace CustomApplication
 		PhysicsEngine::Actor* m_physicsActorDebug;
 		PhysicsEngine::Actor** m_physicsActorPointerDebug;
 #endif
-
-		RenderData* m_renderData;
 
 		GameObject() = delete;
 		GameObject(const uint64_t id, const Type type, physx::PxTransform& transform);

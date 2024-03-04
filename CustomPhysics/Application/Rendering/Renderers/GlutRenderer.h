@@ -51,7 +51,7 @@ namespace CustomApplication
 		void DrawTriangleMesh(const physx::PxGeometryHolder& geometry) const override;
 		void DrawHeightField(const physx::PxGeometryHolder& geometry) const override;
 		void RenderGeometry(const physx::PxGeometryHolder& geometry) const override;
-		void RenderCloth(const physx::PxCloth* cloth, const RenderData* renderData) const override;
+		void RenderCloth(const physx::PxCloth* cloth, const physx::PxClothMeshDesc* meshDesc, const RenderData* renderData) const override;
 
 	public:
 		bool Init(const char* window_name, int width, int height) override;

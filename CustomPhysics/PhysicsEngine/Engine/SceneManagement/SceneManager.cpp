@@ -25,7 +25,6 @@ namespace PhysicsEngine
 	{
 		const Scene::SceneConfiguration* realSceneConfiguration = renderScene->m_configuration;
 
-
 		Scene::SceneConfiguration* renderConfiguration = new Scene::SceneConfiguration(*renderScene->m_configuration);
 		renderConfiguration->m_collisionFilter = realSceneConfiguration->m_collisionFilter;
 		renderConfiguration->m_gravity = realSceneConfiguration->m_gravity;
@@ -45,9 +44,7 @@ namespace PhysicsEngine
 			return false;
 		}
 
-		// First sync should copy both static and dynamic actors
-		realScene->StaticSync(renderScene);
-		realScene->DynamicSync(renderScene);
+		realScene->Sync(renderScene, Scene::SyncState::ALL);
 
 		m_currentScenes.emplace(realScene);
 		m_sceneBuffer.emplace(realScene, renderScene);
@@ -67,7 +64,7 @@ namespace PhysicsEngine
 	{
 		for (Scene* physicsScene : m_currentScenes)
 		{
-			m_sceneBuffer[physicsScene]->DynamicSync(physicsScene);
+			m_sceneBuffer[physicsScene]->Sync(physicsScene, Scene::SyncState::RUNTIME_UPDATE);
 		}
 	}
 

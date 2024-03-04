@@ -10,7 +10,6 @@ namespace CustomApplication
 	struct RenderData
 	{
 		physx::PxVec3* m_color;
-		physx::PxClothMeshDesc* m_clothMeshDesc;
 	};
 }
 

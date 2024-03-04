@@ -45,8 +45,9 @@ namespace CustomApplication
 
 		if (m_renderMode == RenderMode::NORMAL || m_renderMode == RenderMode::BOTH)
 		{
-			m_impl->Render(gameScene->GetStaticActors(), gameScene->GetStaticActorCount());
-			m_impl->Render(gameScene->GetDynamicActors(), gameScene->GetDynamicActorCount());
+			m_impl->Render(gameScene->GetStaticGameObjects(), gameScene->GetStaticGameObjectsCount());
+			m_impl->Render(gameScene->GetDynamicGameObjects(), gameScene->GetDynamicGameObjectCount());
+			m_impl->Render(gameScene->GetClothGameObjects(), gameScene->GetClothGameObjectCount());
 		}
 	}
 

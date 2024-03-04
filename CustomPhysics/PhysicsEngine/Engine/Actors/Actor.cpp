@@ -32,10 +32,13 @@ namespace PhysicsEngine
 		clone->m_gameEnginePointerToPhysicsActor = m_gameEnginePointerToPhysicsActor;
 		clone->m_collisionData = m_collisionData;
 
-		physx::PxRigidActor* rigidActor = (physx::PxRigidActor*) m_currentPhysxActor;
-		physx::PxRigidActor* cloneRigidActor = (physx::PxRigidActor*) clone->m_currentPhysxActor;
+		if (m_currentPhysxActor->is<physx::PxRigidActor>())
+		{
+			physx::PxRigidActor* rigidActor = (physx::PxRigidActor*)m_currentPhysxActor;
+			physx::PxRigidActor* cloneRigidActor = (physx::PxRigidActor*)clone->m_currentPhysxActor;
 
-		CloneShapes(rigidActor, clone);
+			CloneShapes(rigidActor, clone);
+		}
 
 		return clone;
 	}
@@ -55,10 +58,13 @@ namespace PhysicsEngine
 		clone->m_gameEnginePointerToPhysicsActor = m_gameEnginePointerToPhysicsActor;
 		clone->m_collisionData = m_collisionData;
 
-		physx::PxRigidActor* rigidActor = (physx::PxRigidActor*) m_currentPhysxActor;
-		physx::PxRigidActor* cloneRigidActor = (physx::PxRigidActor*) clone->m_currentPhysxActor;
-		
-		CloneShapes(rigidActor, clone);
+		if (m_currentPhysxActor->is<physx::PxRigidActor>())
+		{
+			physx::PxRigidActor* rigidActor = (physx::PxRigidActor*) m_currentPhysxActor;
+			physx::PxRigidActor* cloneRigidActor = (physx::PxRigidActor*)clone->m_currentPhysxActor;
+
+			CloneShapes(rigidActor, clone);
+		}
 
 		return clone;
 	}
@@ -76,6 +82,7 @@ namespace PhysicsEngine
 
 			//cloneStaticActor->setActorFlags(rigidStaticActor->getActorFlags());
 			//cloneStaticActor->setBaseFlags(rigidStaticActor->getBaseFlags());
+			return;
 		}
 
 		if (m_type == Type::Dynamic)
@@ -95,7 +102,17 @@ namespace PhysicsEngine
 			//cloneDynamicActor->setMassSpaceInertiaTensor(rigidDynamicActor->getMassSpaceInertiaTensor());
 			cloneDynamicActor->setRigidBodyFlags(rigidDynamicActor->getRigidBodyFlags());
 			//cloneDynamicActor->setRigidDynamicLockFlags(rigidDynamicActor->getRigidDynamicLockFlags());
+			return;
 		}
+
+		if (m_type == Type::Cloth)
+		{
+			physx::PxCloth* clothActor = (physx::PxCloth*) m_currentPhysxActor;
+			clone = actorFactory->CreateClothActor(clothActor->getGlobalPose());
+			return;
+		}
+
+		std::printf("Actor::CloneActor failed! Unknown m_type!");
 	}
 
 	void Actor::CloneShapes(physx::PxRigidActor* rigidActor, Actor* clone)

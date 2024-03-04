@@ -24,16 +24,25 @@ namespace PhysicsEngine
 
 	Scene::Scene(uint32_t id) : m_id(id)
 	{
+		m_staticActorCount = 0;
 		m_staticActors = new Actor* [k_maxStaticActors];
 		for (std::uint32_t i = 0; i < k_maxStaticActors; i++)
 		{
 			m_staticActors[i] = nullptr;
 		}
 
+		m_dynamicActorCount = 0;
 		m_dynamicActors = new Actor* [k_maxDynamicActors];
 		for (std::uint32_t i = 0; i < k_maxDynamicActors; i++)
 		{
 			m_dynamicActors[i] = nullptr;
+		}
+
+		m_clothActorCount = 0;
+		m_clothActors = new Actor* [k_maxClothActors];
+		for (std::uint32_t i = 0; i < k_maxClothActors; i++)
+		{
+			m_clothActors[i] = nullptr;
 		}
 	}
 
@@ -121,6 +130,11 @@ namespace PhysicsEngine
 			RegisterActor(m_dynamicActors[i]);
 		}
 
+		for (size_t i = 0; i < m_clothActorCount; i++)
+		{
+			RegisterActor(m_clothActors[i]);
+		}
+
 		m_state = State::RUNNING;
 
 		return true;
@@ -133,22 +147,27 @@ namespace PhysicsEngine
 		// Count leading zeros and invert so we get an layer id
 		uint32_t collisionIndex = CLZ::CLZ1(~(uint32_t) collisionLayer);
 
-		physx::PxRigidActor* rigidPxActor = (physx::PxRigidActor*) const_cast<physx::PxActor*>(actor->GetCurrentPhysxActor());
-
-		physx::PxU32 numShapes = rigidPxActor->getNbShapes();
-		physx::PxShape** shapes = new physx::PxShape * [numShapes];
-		rigidPxActor->getShapes(shapes, numShapes, 0);
-
-		physx::PxFilterData filterData;
-		for (physx::PxU32 i = 0; i < numShapes; ++i)
+		physx::PxActor* castedPhysxActor = const_cast<physx::PxActor*>(actor->GetCurrentPhysxActor());
+		
+		if (castedPhysxActor->is<physx::PxRigidActor>())
 		{
-			filterData = shapes[i]->getSimulationFilterData();
-			filterData.word0 = (uint32_t) collisionLayer;
-			filterData.word1 = m_configuration->m_collisionFilter->GetCollisionMask(collisionIndex);
-			shapes[i]->setSimulationFilterData(filterData);
-		}
+			physx::PxRigidActor* rigidPxActor = (physx::PxRigidActor*) castedPhysxActor;
 
-		delete[] shapes;
+			physx::PxU32 numShapes = rigidPxActor->getNbShapes();
+			physx::PxShape** shapes = new physx::PxShape * [numShapes];
+			rigidPxActor->getShapes(shapes, numShapes, 0);
+
+			physx::PxFilterData filterData;
+			for (physx::PxU32 i = 0; i < numShapes; ++i)
+			{
+				filterData = shapes[i]->getSimulationFilterData();
+				filterData.word0 = (uint32_t)collisionLayer;
+				filterData.word1 = m_configuration->m_collisionFilter->GetCollisionMask(collisionIndex);
+				shapes[i]->setSimulationFilterData(filterData);
+			}
+
+			delete[] shapes;
+		}
 	}
 
 	void Scene::Update(float dt)
@@ -189,6 +208,24 @@ namespace PhysicsEngine
 	{
 		m_physxScene->addActor(*const_cast<physx::PxActor*>(actor->GetCurrentPhysxActor()));
 		m_tracker->RegisterAddActorEvent(actor);
+	}
+
+	void Scene::Sync(Scene* sourceScene, SyncState syncState)
+	{
+		if (syncState & SyncState::STATIC)
+		{
+			StaticSync(sourceScene);
+		}
+
+		if (syncState & SyncState::DYNAMIC)
+		{
+			DynamicSync(sourceScene);
+		}
+
+		if (syncState & SyncState::CLOTH)
+		{
+			ClothSync(sourceScene);
+		}
 	}
 
 	void Scene::StaticSync(Scene* sourceScene)
@@ -251,6 +288,36 @@ namespace PhysicsEngine
 		}
 	}
 
+	void Scene::ClothSync(Scene* sourceScene)
+	{
+		std::unique_lock<std::mutex> lock(m_mutex);
+
+		for (uint32_t i = 0; i < m_clothActorCount; i++)
+		{
+			m_clothActors[i]->Release();
+			delete m_clothActors[i];
+		}
+
+		m_clothActorCount = 0;
+#ifdef PHYSICS_DEBUG_MODE
+		m_clothActorsDebug.clear();
+#endif
+
+		for (uint32_t i = 0; i < sourceScene->m_clothActorCount; i++)
+		{
+			if (sourceScene->m_engineScene == nullptr)
+			{
+				m_clothActors[i] = sourceScene->m_clothActors[i]->CloneToRender();
+			}
+			else
+			{
+				m_clothActors[i] = sourceScene->m_clothActors[i]->CloneToPhysics();
+			}
+
+			AddActor((ClothActor*) m_clothActors[i]);
+		}
+	}
+
 	void Scene::Lock()
 	{
 		m_mutex.lock();
@@ -297,6 +364,21 @@ namespace PhysicsEngine
 		}
 	}
 
+	void Scene::AddActor(ClothActor* actor)
+	{
+#ifdef PHYSICS_DEBUG_MODE
+		m_clothActorsDebug.push_back(actor);
+#endif
+
+		m_clothActors[m_clothActorCount] = actor;
+		m_clothActorCount++;
+
+		if (m_state == State::RUNNING)
+		{
+			RegisterActor(actor);
+		}
+	}
+
 	const Actor** Scene::GetStaticActors() const
 	{
 		return const_cast<const Actor**>(m_staticActors);
@@ -315,6 +397,16 @@ namespace PhysicsEngine
 	const uint32_t Scene::GetDynamicActorCount() const
 	{
 		return m_dynamicActorCount;
+	}
+
+	const Actor** Scene::GetClothActors() const
+	{
+		return const_cast<const Actor**>(m_clothActors);
+	}
+
+	const uint32_t Scene::GetClothActorCount() const
+	{
+		return m_clothActorCount;
 	}
 
 	const physx::PxScene* Scene::GetPhysxScene() const

@@ -2,6 +2,7 @@
 #include "../Utility/Hashing.h"
 #include "../GameObjects/StaticGameObject.h"
 #include "../GameObjects/DynamicGameObject.h"
+#include "../GameObjects/ClothGameObject.h"
 #include "../GameObjects/GameObjectFactory.h"
 
 namespace CustomApplication
@@ -25,26 +26,29 @@ namespace CustomApplication
 		physx::PxGeometry* box = geoFactory->CreateBox(physx::PxVec3(0.5, 0.5, 0.5));
 
 		// Game Objects
-		GameObject* gamePlane = m_gameObjectFactory->CreateStaticActor(physx::PxTransformFromPlaneEquation(physx::PxPlane(physx::PxVec3(0, 1, 0), 0)), GameObject::Layer::Layer_Default);
+		GameObject* gamePlane = m_gameObjectFactory->CreateStaticGameObject(physx::PxTransformFromPlaneEquation(physx::PxPlane(physx::PxVec3(0, 1, 0), 0)), GameObject::Layer::Layer_Default);
 		shapeCreator->CreateShape(*gamePlane->GetPhysicsActorPointer(), planeGeo, CRC32_STR("Test"));
 
-		GameObject* gameStatic = m_gameObjectFactory->CreateStaticActor(physx::PxTransform(physx::PxVec3(0, 0.5f, 0)), GameObject::Layer::Layer_1);
+		GameObject* gameStatic = m_gameObjectFactory->CreateStaticGameObject(physx::PxTransform(physx::PxVec3(0, 0.5f, 0)), GameObject::Layer::Layer_1);
 		shapeCreator->CreateShape(*gameStatic->GetPhysicsActorPointer(), longBox, CRC32_STR("Test"));
 
-		GameObject* gameDynamic = m_gameObjectFactory->CreateDynamicActor(physx::PxTransform(physx::PxVec3(0, 25, 0)), GameObject::Layer::Layer_2);
+		GameObject* gameDynamic = m_gameObjectFactory->CreateDynamicGameObject(physx::PxTransform(physx::PxVec3(0, 25, 0)), GameObject::Layer::Layer_2);
 		shapeCreator->CreateShape(*gameDynamic->GetPhysicsActorPointer(), box, CRC32_STR("Bouncy"));
 
-		GameObject* gameKinematic = m_gameObjectFactory->CreateKinematicActor(physx::PxTransform(physx::PxVec3(5, 0, 0)), GameObject::Layer::Layer_3);
+		GameObject* gameKinematic = m_gameObjectFactory->CreateKinematicGameObject(physx::PxTransform(physx::PxVec3(5, 0, 0)), GameObject::Layer::Layer_3);
 		shapeCreator->CreateShape(*gameKinematic->GetPhysicsActorPointer(), box, CRC32_STR("Test"));
 
-		GameObject* gameTrigger = m_gameObjectFactory->CreateStaticActor(physx::PxTransform(physx::PxVec3(0, 10, 0)), GameObject::Layer::Layer_4);
+		GameObject* gameTrigger = m_gameObjectFactory->CreateStaticGameObject(physx::PxTransform(physx::PxVec3(0, 10, 0)), GameObject::Layer::Layer_4);
 		shapeCreator->CreateTrigger(*gameTrigger->GetPhysicsActorPointer(), box, CRC32_STR("Default"));
+
+		GameObject* clothGameObject = m_gameObjectFactory->CreateClothGameObject(physx::PxTransform(physx::PxVec3(0, 0.5f, 0)), GameObject::Layer::Layer_1);
 
 		AddGameActor(gamePlane);
 		AddGameActor(gameStatic);
 		AddGameActor(gameDynamic);
 		AddGameActor(gameKinematic);
 		AddGameActor(gameTrigger);
+		AddGameActor(clothGameObject);
 
 		delete planeGeo;
 		delete longBox;
@@ -70,18 +74,22 @@ namespace CustomApplication
 		physicsSceneReplica->LinkEngineScene(this);
 
 		// Add actors to the scene
-		const GameObject** allStaticActors = GetStaticActors();
-		const GameObject* test = allStaticActors[0];
-
-		for (uint32_t i = 0; i < GetStaticActorCount(); i++)
+		const GameObject** allStaticActors = GetStaticGameObjects();
+		for (uint32_t i = 0; i < GetStaticGameObjectsCount(); i++)
 		{
 			physicsSceneReplica->AddActor((PhysicsEngine::StaticActor*) *allStaticActors[i]->GetPhysicsActorPointer());
 		}
 
-		auto allDynamicActors = GetDynamicActors();
-		for (uint32_t i = 0; i < GetDynamicActorCount(); i++)
+		const GameObject** allDynamicActors = GetDynamicGameObjects();
+		for (uint32_t i = 0; i < GetDynamicGameObjectCount(); i++)
 		{
 			physicsSceneReplica->AddActor((PhysicsEngine::DynamicActor*) *allDynamicActors[i]->GetPhysicsActorPointer());
+		}
+
+		const GameObject** allClothActors = GetClothGameObjects();
+		for (uint32_t i = 0; i < GetClothGameObjectCount(); i++)
+		{
+			physicsSceneReplica->AddActor((PhysicsEngine::ClothActor*) *allClothActors[i]->GetPhysicsActorPointer());
 		}
 
 		// Activate the scene

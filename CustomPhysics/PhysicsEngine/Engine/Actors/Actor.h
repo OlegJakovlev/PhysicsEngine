@@ -17,7 +17,8 @@ namespace PhysicsEngine
 		{
 			Default,
 			Static,
-			Dynamic
+			Dynamic,
+			Cloth,
 		};
 
 	private:

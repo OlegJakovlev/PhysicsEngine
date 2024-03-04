@@ -23,6 +23,7 @@ namespace CustomApplication
 		GameObject* CreateStaticActor(physx::PxTransform& transform, GameObject::Layer layer);
 		GameObject* CreateDynamicActor(physx::PxTransform& transform, GameObject::Layer layer);
 		GameObject* CreateKinematicActor(physx::PxTransform& transform, GameObject::Layer layer);
+		GameObject* CreateClothActor(physx::PxTransform& transform, GameObject::Layer layer);
 	};
 }
 

@@ -21,7 +21,7 @@ namespace CustomApplication
 		virtual void DrawTriangleMesh(const physx::PxGeometryHolder& geometry) const = 0;
 		virtual void DrawHeightField(const physx::PxGeometryHolder& geometry) const = 0;
 		virtual void RenderGeometry(const physx::PxGeometryHolder& geometry) const = 0;
-		virtual void RenderCloth(const physx::PxCloth* cloth, const RenderData* renderData) const = 0;
+		virtual void RenderCloth(const physx::PxCloth* cloth, const physx::PxClothMeshDesc* meshDesc, const RenderData* renderData) const = 0;
 
 	public:
 		virtual bool Init(const char* window_name, int width, int height) = 0;
