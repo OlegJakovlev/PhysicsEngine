@@ -109,8 +109,15 @@ namespace PhysicsEngine
 		{
 			physx::PxCloth* clothActor = (physx::PxCloth*) m_currentPhysxActor;
 
-			physx::PxU32* quadContainer;
-			clone = actorFactory->CreateClothActor(quadContainer, clothActor->getGlobalPose());
+			physx::PxU32* quadContainer = nullptr;
+			physx::PxU32 quadAmount;
+			clone = actorFactory->CreateClothActor(clothActor->getGlobalPose());
+			
+			if (quadContainer)
+			{
+				delete quadContainer;
+			}
+
 			return;
 		}
 

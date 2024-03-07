@@ -4,6 +4,7 @@
 #include "../GameObjects/DynamicGameObject.h"
 #include "../GameObjects/ClothGameObject.h"
 #include "../GameObjects/GameObjectFactory.h"
+#include "../GlutApp.h"
 
 namespace CustomApplication
 {
@@ -13,12 +14,18 @@ namespace CustomApplication
 
 		// Materials
 		PhysicsEngine::MaterialDatabase* materialDatabase = const_cast<PhysicsEngine::MaterialDatabase*>(physicsEngine->GetMaterialDatabase());
-		PhysicsEngine::MaterialDatabase::QueryResult materialQueryResult;
-		materialQueryResult = materialDatabase->AddEntry(CRC32_STR("Test"), physx::PxVec3(0, 0, 0.25));
-		materialQueryResult = materialDatabase->AddEntry(CRC32_STR("Bouncy"), physx::PxVec3(1, 1, 1));
+		materialDatabase->AddEntry(CRC32_STR("Test"), physx::PxVec3(0, 0, 0.25));
+		materialDatabase->AddEntry(CRC32_STR("Bouncy"), physx::PxVec3(1, 1, 1));
 
 		const PhysicsEngine::GeometryFactory* geoFactory = physicsEngine->GetGeometryFactory();
 		const PhysicsEngine::ShapeCreator* shapeCreator = physicsEngine->GetShapeCreator();
+
+		// Colors
+		ColorDatabase* colorDatabase = const_cast<ColorDatabase*>(GlutApp::Get()->GetColorDatabase());
+		auto asphaltColorEntry = colorDatabase->AddEntry(CRC32_STR("Asphalt"), physx::PxVec3(0.5607, 0.5529, 0.5372));
+		auto redColorEntry = colorDatabase->AddEntry(CRC32_STR("Red"), physx::PxVec3(1, 0, 0));
+		auto greenColorEntry = colorDatabase->AddEntry(CRC32_STR("Green"), physx::PxVec3(0, 1, 0));
+		auto blueColorEntry = colorDatabase->AddEntry(CRC32_STR("Blue"), physx::PxVec3(0, 0, 1));
 
 		// Geometry
 		physx::PxGeometry* planeGeo = geoFactory->CreatePlane();
@@ -41,7 +48,14 @@ namespace CustomApplication
 		GameObject* gameTrigger = m_gameObjectFactory->CreateStaticGameObject(physx::PxTransform(physx::PxVec3(0, 10, 0)), GameObject::Layer::Layer_4);
 		shapeCreator->CreateTrigger(*gameTrigger->GetPhysicsActorPointer(), box, CRC32_STR("Default"));
 
-		GameObject* clothGameObject = m_gameObjectFactory->CreateClothGameObject(physx::PxTransform(physx::PxVec3(0, 0.5f, 0)), GameObject::Layer::Layer_1);
+		GameObject* clothGameObject = m_gameObjectFactory->CreateClothGameObject(physx::PxTransform(physx::PxVec3(-4.f, 9.f, 0.f)), physx::PxVec2(8.f, 8.f), 40, 40, GameObject::Layer::Layer_1);
+
+		// Create render data
+		RenderData& planeRenderData = gamePlane->GetRenderData();
+		planeRenderData.SetColour(asphaltColorEntry.data);
+
+		RenderData& triggerRenderData = gameTrigger->GetRenderData();
+		triggerRenderData.SetColour(redColorEntry.data);
 
 		AddGameActor(gamePlane);
 		AddGameActor(gameStatic);

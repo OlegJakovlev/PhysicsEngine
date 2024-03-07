@@ -4,6 +4,7 @@
 #include "../../GameObjects/GameObject.h"
 #include "../../../PhysicsEngine/Engine/Actors/Actor.h"
 #include <string>
+#include "../../GameObjects/ClothGameObject.h"
 
 namespace CustomApplication
 {
@@ -211,19 +212,22 @@ namespace CustomApplication
 		}
 	}
 
-	void GlutRenderer::RenderCloth(const physx::PxCloth* cloth, const RenderData* renderData) const
+	void GlutRenderer::RenderCloth(const PhysicsEngine::ClothActor* clothActor, const RenderData& renderData) const
 	{
-		physx::PxVec3* color = renderData->m_color;
+		auto physxClothActor = (physx::PxCloth*) clothActor->GetCurrentPhysxActor();
+		physx::PxClothMeshDesc meshDesc = clothActor->GetMeshDesc();
 
-		physx::PxU32 quad_count = clothRenderData->quadAmount;
-		physx::PxU32* quads = (physx::PxU32*) clothRenderData->quads;
+		physx::PxVec3 color = *renderData.GetColor();
 
-		std::vector<physx::PxVec3> verts(cloth->getNbParticles());
+		physx::PxU32 quad_count = meshDesc.quads.count;
+		physx::PxU32* quads = (physx::PxU32*) meshDesc.quads.data;
+
+		std::vector<physx::PxVec3> verts(physxClothActor->getNbParticles());
 		std::vector<physx::PxVec3> norms(verts.size(), physx::PxVec3(0.f, 0.f, 0.f));
 
 		// Get verts data
-		cloth->lockParticleData();
-		physx::PxClothParticleData* particle_data = cloth->lockParticleData();
+		physxClothActor->lockParticleData();
+		physx::PxClothParticleData* particle_data = physxClothActor->lockParticleData();
 		if (!particle_data)
 		{
 			return;
@@ -255,10 +259,10 @@ namespace CustomApplication
 			norms[i].normalize();
 		}
 
-		physx::PxTransform pose = cloth->getGlobalPose();
+		physx::PxTransform pose = physxClothActor->getGlobalPose();
 		physx::PxMat44 shapePose(pose);
 
-		glColor4f(color->x, color->y, color->z, 1.f);
+		glColor4f(color.x, color.y, color.z, 1.f);
 
 		glPushMatrix();
 		glMultMatrixf((float*) &shapePose);
@@ -315,31 +319,33 @@ namespace CustomApplication
 		for (physx::PxU32 i = 0; i < numActors; i++)
 		{
 			PhysicsEngine::Actor* actor = (PhysicsEngine::Actor*) (*gameActors[i]->GetPhysicsActorPointer());
-			const physx::PxActor* physicsActor = actor->GetCurrentPhysxActor();
-			const RenderData* renderData = gameActors[i]->GetRenderData();
+			const RenderData& renderData = gameActors[i]->GetRenderData();
 
-			if (!physicsActor) continue;
-
-			if (physicsActor->is<physx::PxCloth>())
+			if (actor->GetType() == PhysicsEngine::Actor::Type::Cloth)
 			{
-
-				RenderCloth((physx::PxCloth*) physicsActor, renderData);
-				return;
+				RenderCloth((PhysicsEngine::ClothActor*) actor, renderData);
+				continue;
 			}
 
-			if (physicsActor->is<physx::PxRigidActor>())
+			if (actor->GetType() == PhysicsEngine::Actor::Type::Static || actor->GetType() == PhysicsEngine::Actor::Type::Dynamic)
 			{
-				physx::PxRigidActor* rigidActor = (physx::PxRigidActor*) physicsActor;
-				RenderShapes(rigidActor, renderData);
-				return;
+				RenderShapes(actor, renderData);
+				continue;
 			}
 
 			std::printf("Missing implementation for rendering!");
 		}
 	}
 
-	void GlutRenderer::RenderShapes(physx::PxRigidActor* rigidActor, const CustomApplication::RenderData* renderData) const
+	void GlutRenderer::RenderShapes(PhysicsEngine::Actor* actor, const RenderData& renderData) const
 	{
+		physx::PxRigidActor* rigidActor = (physx::PxRigidActor*) actor->GetCurrentPhysxActor();
+		if (!rigidActor)
+		{
+			std::printf("PxActor cast to PxRigidActor failed!");
+			return;
+		}
+
 		std::vector<physx::PxShape*> shapes(rigidActor->getNbShapes());
 		rigidActor->getShapes(&shapes.front(), shapes.size());
 
@@ -362,19 +368,16 @@ namespace CustomApplication
 			glPushMatrix();
 			glMultMatrixf((float*) &shapePose);
 
-			physx::PxVec3 shape_color = *m_defaultColour;
-
-			if (renderData)
-			{
-				shape_color = *(renderData->m_color);
-			}
-
 			if (h.getType() == physx::PxGeometryType::ePLANE)
 			{
 				glDisable(GL_LIGHTING);
 			}
 
-			glColor4f(shape_color.x, shape_color.y, shape_color.z, 1.f);
+			physx::PxVec3 shapeColor = *renderData.GetColor();
+			physx::PxVec3 shadowColor = shapeColor * 0.9;
+
+			glColor4f(shapeColor.x, shapeColor.y, shapeColor.z, 1.f);
+
 			RenderGeometry(h);
 
 			if (h.getType() == physx::PxGeometryType::ePLANE)
@@ -390,7 +393,7 @@ namespace CustomApplication
 				glMultMatrixf(k_shadowMat);
 				glMultMatrixf((float*) &shapePose);
 				glDisable(GL_LIGHTING);
-				//glColor4f(shadow_color.x, shadow_color.y, shadow_color.z, 1.f);
+				glColor4f(shadowColor.x, shadowColor.y, shadowColor.z, 1.f);
 				RenderGeometry(h);
 				glEnable(GL_LIGHTING);
 				glPopMatrix();
@@ -539,11 +542,9 @@ namespace CustomApplication
 	}
 
 	void GlutRenderer::PostInit(const Camera* camera,
-								const physx::PxVec3* defaultColor,
 								const physx::PxVec3* backgroundColor)
 	{
 		m_camera = camera;
-		m_defaultColour = defaultColor;
 		m_backgroundColour = backgroundColor;
 	}
 

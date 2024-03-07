@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Application\Database\ColorDatabase.cpp" />
     <ClCompile Include="Application\Logger\ApplicationLogger.cpp" />
     <ClCompile Include="Application\Logger\EventLogger.cpp" />
     <ClCompile Include="Application\Logger\GraphicsLogger.cpp" />
@@ -86,6 +87,7 @@
     <ClCompile Include="Application\GameObjects\StaticGameObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\Database\ColorDatabase.h" />
     <ClInclude Include="Application\GlobalDefine.h" />
     <ClInclude Include="Application\Logger\ApplicationLogger.h" />
     <ClInclude Include="Application\Logger\EventLogger.h" />

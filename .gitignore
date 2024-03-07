@@ -19,6 +19,7 @@ data/
 *.vcxproj.*
 *.sdf
 *.filters
+**/debug.log
 
 #codeblocks files
 */*/*.layout

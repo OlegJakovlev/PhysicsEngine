@@ -2,7 +2,7 @@
 
 namespace CustomApplication
 {
-	StaticGameObject::StaticGameObject(const uint64_t id, physx::PxTransform& transform) : GameObject(id, GameObject::Type::Static, transform)
+	StaticGameObject::StaticGameObject(const uint64_t id, const physx::PxTransform& transform) : GameObject(id, GameObject::Type::Static, transform)
 	{
 	}
 }

@@ -2,7 +2,6 @@
 #define ClothGameObject_H
 
 #include "GameObject.h"
-#include "../Rendering/ClothRenderData.h"
 
 namespace CustomApplication
 {
@@ -12,7 +11,7 @@ namespace CustomApplication
 
 	public:
 		ClothGameObject() = delete;
-		ClothGameObject(const uint64_t id, physx::PxTransform& transform);
+		ClothGameObject(const uint64_t id, const physx::PxTransform& transform);
 	};
 }
 

@@ -22,7 +22,7 @@ namespace PhysicsEngine
 		Actor* CreateStaticActor(const physx::PxTransform& transform);
 		Actor* CreateDynamicActor(const physx::PxTransform& transform);
 		Actor* CreateKinematicActor(const physx::PxTransform& transform);
-		Actor* CreateClothActor(physx::PxU32*& quadContainer, const physx::PxTransform& transform, const physx::PxVec2& size = physx::PxVec2(1.f, 1.f), const physx::PxU32 width = 1, const physx::PxU32 height = 1);
+		Actor* CreateClothActor(const physx::PxTransform& transform, const physx::PxVec2& size = physx::PxVec2(1.f, 1.f), const physx::PxU32 width = 1, const physx::PxU32 height = 1);
 	};
 }
 

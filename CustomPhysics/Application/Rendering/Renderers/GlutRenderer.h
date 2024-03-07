@@ -29,7 +29,6 @@ namespace CustomApplication
 		};
 
 		const Camera* m_camera;
-		const physx::PxVec3* m_defaultColour;
 		const physx::PxVec3* m_backgroundColour;
 
 		int m_renderDetail;
@@ -40,7 +39,7 @@ namespace CustomApplication
 		void SetupLighting();
 		void RenderBuffer(float* pVertList, float* pColorList, int type, int num) const;
 		void UpdateCameraRender(const physx::PxVec3& cameraEye, const physx::PxVec3& cameraDir) const;
-		void RenderShapes(physx::PxRigidActor* rigidActor, const CustomApplication::RenderData* renderData) const;
+		void RenderShapes(PhysicsEngine::Actor* actor, const RenderData& renderData) const;
 
 	protected:
 		void DrawPlane() const override;
@@ -51,11 +50,11 @@ namespace CustomApplication
 		void DrawTriangleMesh(const physx::PxGeometryHolder& geometry) const override;
 		void DrawHeightField(const physx::PxGeometryHolder& geometry) const override;
 		void RenderGeometry(const physx::PxGeometryHolder& geometry) const override;
-		void RenderCloth(const physx::PxCloth* cloth, const RenderData* renderData) const override;
+		void RenderCloth(const PhysicsEngine::ClothActor* cloth, const RenderData& renderData) const override;
 
 	public:
 		bool Init(const char* window_name, int width, int height) override;
-		void PostInit(const Camera* camera, const physx::PxVec3* defaultColor, const physx::PxVec3* backgroundColor) override;
+		void PostInit(const Camera* camera, const physx::PxVec3* backgroundColor) override;
 
 		void Clear() override;
 		void Render(const GameObject** gameActors, const physx::PxU32 numActors) override;

@@ -16,7 +16,6 @@ namespace CustomApplication
 							  physx::PxVec3(0.f, -.1f, -1.f),
 							  5.f);
 
-		m_defaultColor = new physx::PxVec3(0.8f, 0.8f, 0.8f);
 		m_backgroundColor = new physx::PxVec3(150.f / 255.f, 150.f / 255.f, 150.f / 255.f);
 
 		m_renderMode = RenderMode::BOTH;
@@ -26,7 +25,7 @@ namespace CustomApplication
 
 	void Renderer::PostInit()
 	{
-		m_impl->PostInit(m_camera, m_defaultColor, m_backgroundColor);
+		m_impl->PostInit(m_camera, m_backgroundColor);
 	}
 
 	void Renderer::Release()

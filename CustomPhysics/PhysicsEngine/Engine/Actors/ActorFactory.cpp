@@ -41,7 +41,7 @@ namespace PhysicsEngine
 		return actor;
 	}
 
-	Actor* ActorFactory::CreateClothActor(physx::PxU32*& quadContainer, const physx::PxTransform& transform, const physx::PxVec2& size, const physx::PxU32 width, const physx::PxU32 height)
+	Actor* ActorFactory::CreateClothActor(const physx::PxTransform& transform, const physx::PxVec2& size, const physx::PxU32 width, const physx::PxU32 height)
 	{
 		ClothActor* actor = new ClothActor(GenerateId());
 
@@ -49,7 +49,8 @@ namespace PhysicsEngine
 		physx::PxReal h_step = size.y / height;
 
 		physx::PxClothParticle* vertices = new physx::PxClothParticle[(width + 1) * (height + 1) * 4];
-		quadContainer = new physx::PxU32[width * height * 4];
+		physx::PxU32* quadContainer = new physx::PxU32[width * height * 4];
+		physx::PxU32 quadAmount = width * height * 4;
 
 		// Create virtual particles
 		for (physx::PxU32 j = 0; j < (height + 1); j++)
@@ -74,7 +75,8 @@ namespace PhysicsEngine
 			}
 		}
 
-		physx::PxClothMeshDesc meshDesc;
+		physx::PxClothMeshDesc meshDesc = actor->meshDesc;
+
 		meshDesc.points.data = vertices;
 		meshDesc.points.count = (width + 1) * (height + 1);
 		meshDesc.points.stride = sizeof(physx::PxClothParticle);

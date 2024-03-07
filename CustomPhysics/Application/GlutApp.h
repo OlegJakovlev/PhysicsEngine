@@ -8,6 +8,7 @@
 #include "Rendering/Renderer.h"
 #include "SceneManagement/GameSceneManager.h"
 #include <thread>
+#include "Database/ColorDatabase.h"
 
 // I hate that original Glut does not have glutMainLoopEvent to use it just for rendering
 // Because I'm not going to implement custom renderers for now, whole app will be based on this garbage
@@ -27,6 +28,7 @@ namespace CustomApplication
 		PhysicsEngine::PhysicsEngine* m_physicsEngine;
 		Renderer* m_renderer;
 
+		ColorDatabase* m_colorDatabase;
 		GameSceneManager* m_sceneManager;
 
 		// Glut is running on main thread, so input and renderer would not be separated :(
@@ -53,6 +55,8 @@ namespace CustomApplication
 		bool Init(const char* window_name, int width, int height);
 		bool PostInit();
 		void Start();
+
+		const ColorDatabase const* GetColorDatabase() const;
 	};
 }
 

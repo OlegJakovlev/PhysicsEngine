@@ -5,4 +5,9 @@ namespace PhysicsEngine
 	ClothActor::ClothActor(uint64_t id) : Actor(id, Actor::Type::Cloth)
 	{
 	}
+
+	const physx::PxClothMeshDesc& ClothActor::GetMeshDesc() const
+	{
+		return meshDesc;
+	}
 }

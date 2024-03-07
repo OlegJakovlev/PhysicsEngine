@@ -2,7 +2,7 @@
 
 namespace CustomApplication
 {
-	GameObject::GameObject(const uint64_t id, const Type type, physx::PxTransform& transform)
+	GameObject::GameObject(const uint64_t id, const Type type, const physx::PxTransform& transform)
 	{
 		m_actorID = id;
 		m_type = type;
@@ -33,7 +33,12 @@ namespace CustomApplication
 	}
 #endif
 
-	const RenderData* GameObject::GetRenderData() const
+	RenderData& GameObject::GetRenderData()
+	{
+		return m_renderData;
+	}
+
+	const RenderData& GameObject::GetRenderData() const
 	{
 		return m_renderData;
 	}

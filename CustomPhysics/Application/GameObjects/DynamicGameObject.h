@@ -13,7 +13,7 @@ namespace CustomApplication
 
 	protected:
 		DynamicGameObject() = delete;
-		DynamicGameObject(const uint64_t id, physx::PxTransform& transform);
+		DynamicGameObject(const uint64_t id, const physx::PxTransform& transform);
 	};
 }
 

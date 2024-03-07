@@ -60,7 +60,7 @@ namespace CustomApplication
 		uint64_t m_actorID;
 		physx::PxTransform m_transform;
 		Type m_type;
-		RenderData* m_renderData;
+		RenderData m_renderData;
 
 		void* m_physicsActor;
 		void** m_physicsActorPointer;
@@ -71,7 +71,7 @@ namespace CustomApplication
 #endif
 
 		GameObject() = delete;
-		GameObject(const uint64_t id, const Type type, physx::PxTransform& transform);
+		GameObject(const uint64_t id, const Type type, const physx::PxTransform& transform);
 
 	public:
 		void** GetPhysicsActorPointer() const;
@@ -82,7 +82,8 @@ namespace CustomApplication
 		void SetPhysicsActorDebug(PhysicsEngine::Actor* actor);
 #endif
 
-		const RenderData* GetRenderData() const;
+		RenderData& GetRenderData();
+		const RenderData& GetRenderData() const;
 		const physx::PxTransform& GetTransform() const;
 		const Type GetType() const;
 	};
