@@ -58,7 +58,6 @@ namespace CustomApplication
 
 	protected:
 		uint64_t m_actorID;
-		physx::PxTransform m_transform;
 		Type m_type;
 		RenderData m_renderData;
 
@@ -71,7 +70,7 @@ namespace CustomApplication
 #endif
 
 		GameObject() = delete;
-		GameObject(const uint64_t id, const Type type, const physx::PxTransform& transform);
+		GameObject(const uint64_t id, const Type type);
 
 	public:
 		void** GetPhysicsActorPointer() const;
@@ -84,7 +83,6 @@ namespace CustomApplication
 
 		RenderData& GetRenderData();
 		const RenderData& GetRenderData() const;
-		const physx::PxTransform& GetTransform() const;
 		const Type GetType() const;
 	};
 }

@@ -11,7 +11,7 @@ namespace CustomApplication
 
 	public:
 		ClothGameObject() = delete;
-		ClothGameObject(const uint64_t id, const physx::PxTransform& transform);
+		ClothGameObject(const uint64_t id);
 	};
 }
 

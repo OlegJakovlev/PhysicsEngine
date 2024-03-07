@@ -57,6 +57,10 @@ namespace CustomApplication
 		RenderData& triggerRenderData = gameTrigger->GetRenderData();
 		triggerRenderData.SetColour(redColorEntry.data);
 
+		RenderData& clothRenderData = clothGameObject->GetRenderData();
+		clothRenderData.SetColour(greenColorEntry.data);
+
+		// Add game objects to the scene
 		AddGameActor(gamePlane);
 		AddGameActor(gameStatic);
 		AddGameActor(gameDynamic);
@@ -64,6 +68,7 @@ namespace CustomApplication
 		AddGameActor(gameTrigger);
 		AddGameActor(clothGameObject);
 
+		// Clean up
 		delete planeGeo;
 		delete longBox;
 		delete box;

@@ -111,6 +111,7 @@ namespace PhysicsEngine
 
 			physx::PxU32* quadContainer = nullptr;
 			physx::PxU32 quadAmount;
+
 			clone = actorFactory->CreateClothActor(clothActor->getGlobalPose());
 			
 			if (quadContainer)

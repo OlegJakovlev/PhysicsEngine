@@ -22,8 +22,8 @@ namespace CustomApplication
 
     GameObject* GameObjectFactory::CreateStaticGameObject(const physx::PxTransform& transform, const GameObject::Layer layer)
     {
-        StaticGameObject* staticObject = new StaticGameObject(GenerateId(), transform);
-        PhysicsEngine::Actor* physicsActor = m_actorFactory->CreateStaticActor(staticObject->GetTransform());
+        StaticGameObject* staticObject = new StaticGameObject(GenerateId());
+        PhysicsEngine::Actor* physicsActor = m_actorFactory->CreateStaticActor(transform);
 
         staticObject->SetPhysicsActor(physicsActor);
         physicsActor->SetCollisionLayer((uint32_t) layer);
@@ -42,8 +42,8 @@ namespace CustomApplication
 
     GameObject* GameObjectFactory::CreateDynamicGameObject(const physx::PxTransform& transform, const GameObject::Layer layer)
     {
-        DynamicGameObject* dynamicObject = new DynamicGameObject(GenerateId(), transform);
-        PhysicsEngine::Actor* physicsActor = m_actorFactory->CreateDynamicActor(dynamicObject->GetTransform());
+        DynamicGameObject* dynamicObject = new DynamicGameObject(GenerateId());
+        PhysicsEngine::Actor* physicsActor = m_actorFactory->CreateDynamicActor(transform);
 
         dynamicObject->SetPhysicsActor(physicsActor);
         physicsActor->SetCollisionLayer((uint32_t) layer);
@@ -62,8 +62,8 @@ namespace CustomApplication
 
     GameObject* GameObjectFactory::CreateKinematicGameObject(const physx::PxTransform& transform, const GameObject::Layer layer)
     {
-        DynamicGameObject* dynamicObject = new DynamicGameObject(GenerateId(), transform);
-        PhysicsEngine::Actor* physicsActor = m_actorFactory->CreateKinematicActor(dynamicObject->GetTransform());
+        DynamicGameObject* dynamicObject = new DynamicGameObject(GenerateId());
+        PhysicsEngine::Actor* physicsActor = m_actorFactory->CreateKinematicActor(transform);
 
         dynamicObject->SetPhysicsActor(physicsActor);
         physicsActor->SetCollisionLayer((uint32_t) layer);
@@ -82,7 +82,7 @@ namespace CustomApplication
 
     GameObject* GameObjectFactory::CreateClothGameObject(const physx::PxTransform& transform, const physx::PxVec2& size, const physx::PxU32 width, const physx::PxU32 height, const GameObject::Layer layer)
     {
-        ClothGameObject* clothObject = new ClothGameObject(GenerateId(), transform);
+        ClothGameObject* clothObject = new ClothGameObject(GenerateId());
         PhysicsEngine::Actor* physicsActor = m_actorFactory->CreateClothActor(transform, size, width, height);
 
         clothObject->SetPhysicsActor(physicsActor);

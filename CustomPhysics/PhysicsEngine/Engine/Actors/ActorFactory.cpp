@@ -75,7 +75,7 @@ namespace PhysicsEngine
 			}
 		}
 
-		physx::PxClothMeshDesc meshDesc = actor->meshDesc;
+		physx::PxClothMeshDesc& meshDesc = actor->meshDesc;
 
 		meshDesc.points.data = vertices;
 		meshDesc.points.count = (width + 1) * (height + 1);
