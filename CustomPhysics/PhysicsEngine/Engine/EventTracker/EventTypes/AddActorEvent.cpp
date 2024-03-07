@@ -45,7 +45,7 @@ namespace PhysicsEngine
 
 	void AddActorEvent::Serialize(char* buffer) const
 	{
-		memcpy(buffer, this, sizeof(m_data));
+		memcpy(buffer, &m_data, sizeof(m_data));
 	}
 
 	std::string AddActorEvent::SerializeDebug() const
