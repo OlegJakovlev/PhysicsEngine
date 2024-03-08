@@ -80,10 +80,10 @@ namespace CustomApplication
         return dynamicObject;
     }
 
-    GameObject* GameObjectFactory::CreateClothGameObject(const physx::PxTransform& transform, const physx::PxVec2& size, const physx::PxU32 width, const physx::PxU32 height, const GameObject::Layer layer)
+    GameObject* GameObjectFactory::CreateClothGameObject(const physx::PxTransform& transform, const physx::PxVec2& size, const physx::PxVec2& scale, const GameObject::Layer layer)
     {
         ClothGameObject* clothObject = new ClothGameObject(GenerateId());
-        PhysicsEngine::Actor* physicsActor = m_actorFactory->CreateClothActor(transform, size, width, height);
+        PhysicsEngine::Actor* physicsActor = m_actorFactory->CreateClothActor(transform, size, scale);
 
         clothObject->SetPhysicsActor(physicsActor);
         physicsActor->SetCollisionLayer((uint32_t) layer);

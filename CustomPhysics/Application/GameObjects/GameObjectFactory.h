@@ -23,7 +23,7 @@ namespace CustomApplication
 		GameObject* CreateStaticGameObject(const physx::PxTransform& transform, const GameObject::Layer layer);
 		GameObject* CreateDynamicGameObject(const physx::PxTransform& transform, const GameObject::Layer layer);
 		GameObject* CreateKinematicGameObject(const physx::PxTransform& transform, const GameObject::Layer layer);
-		GameObject* CreateClothGameObject(const physx::PxTransform& transform, const physx::PxVec2& size, const physx::PxU32 width, const physx::PxU32 height, const GameObject::Layer layer);
+		GameObject* CreateClothGameObject(const physx::PxTransform& transform, const physx::PxVec2& size, const physx::PxVec2& scale, const GameObject::Layer layer);
 	};
 }
 

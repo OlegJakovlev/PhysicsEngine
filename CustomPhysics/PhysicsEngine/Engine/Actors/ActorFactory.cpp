@@ -1,7 +1,7 @@
 #include "ActorFactory.h"
 #include "StaticActor.h"
 #include "DynamicActor.h"
-#include "ClothActor.h"
+#include <vector>
 
 namespace PhysicsEngine
 {
@@ -41,9 +41,12 @@ namespace PhysicsEngine
 		return actor;
 	}
 
-	Actor* ActorFactory::CreateClothActor(const physx::PxTransform& transform, const physx::PxVec2& size, const physx::PxU32 width, const physx::PxU32 height)
+	Actor* ActorFactory::CreateClothActor(const physx::PxTransform& transform, const physx::PxVec2& size, const physx::PxVec2& scale)
 	{
-		ClothActor* actor = new ClothActor(GenerateId());
+		ClothActor* actor = new ClothActor(GenerateId(), size, scale);
+
+		const physx::PxU32 width = scale.x;
+		const physx::PxU32 height = scale.y;
 
 		physx::PxReal w_step = size.x / width;
 		physx::PxReal h_step = size.y / height;
@@ -52,7 +55,6 @@ namespace PhysicsEngine
 		physx::PxU32* quadContainer = new physx::PxU32[width * height * 4];
 		physx::PxU32 quadAmount = width * height * 4;
 
-		// Create virtual particles
 		for (physx::PxU32 j = 0; j < (height + 1); j++)
 		{
 			for (physx::PxU32 i = 0; i < (width + 1); i++)
@@ -75,7 +77,7 @@ namespace PhysicsEngine
 			}
 		}
 
-		physx::PxClothMeshDesc& meshDesc = actor->meshDesc;
+		physx::PxClothMeshDesc& meshDesc = actor->m_meshDesc;
 
 		meshDesc.points.data = vertices;
 		meshDesc.points.count = (width + 1) * (height + 1);
@@ -89,12 +91,69 @@ namespace PhysicsEngine
 		meshDesc.quads.count = width * height;
 		meshDesc.quads.stride = sizeof(physx::PxU32) * 4;
 
-		physx::PxClothFabric* fabric = physx::PxClothFabricCreate(*m_physics, meshDesc, physx::PxVec3(0, -1, 0));
+		physx::PxClothFabric* fabric = physx::PxClothFabricCreate(*m_physics, meshDesc, physx::PxVec3(0, 0, 0));
 
 		auto physxActor = m_physics->createCloth(transform, *fabric, vertices, physx::PxClothFlag::eSCENE_COLLISION | physx::PxClothFlag::eSWEPT_CONTACT);
+		
+		// https://docs.nvidia.com/gameworks/content/gameworkslibrary/physx/guide/Manual/Cloth.html#specifying-collision-shapes
+		// TODO: Think about custom stretch configs (each constraint type)
+		// physxActor.setStretchConfig(PxClothFabricPhaseType::eVERTICAL, PxClothStretchConfig(1.0f));
+		// physxActor.setStretchConfig(PxClothFabricPhaseType::eHORIZONTAL, PxClothStretchConfig(0.9f));
+		// physxActor.setStretchConfig(PxClothFabricPhaseType::eSHEARING, PxClothStretchConfig(0.75f));
+		// physxActor.setStretchConfig(PxClothFabricPhaseType::eBENDING, PxClothStretchConfig(0.5f));
+
+		// TODO: Think about virtual particles (used only for collision phase)
+		// static PxVec3 weights[] = {}
+		// cloth.setVirtualParticles(numFaces*4, indices, 2, weights);
+
+		// TODO: Collision Shapes?
 
 		actor->m_currentPhysxActor = physxActor;
 		return actor;
+	}
+
+	Actor* ActorFactory::CreateClothActor(const ClothActor* originalActor)
+	{
+		auto originalClothPhysxActor = ((physx::PxCloth*) originalActor->GetCurrentPhysxActor());
+
+		ClothActor* clone = new ClothActor(GenerateId(), originalActor->m_size, originalActor->m_scale);
+		clone->m_meshDesc = originalActor->m_meshDesc;
+
+		const physx::PxU32 width = originalActor->m_scale.x;
+		const physx::PxU32 height = originalActor->m_scale.y;
+
+		auto* vertices = new physx::PxClothParticle[(width + 1) * (height + 1) * 4];
+
+		// Copy particle data
+		{
+			physx::PxClothParticleData* particleData = originalClothPhysxActor->lockParticleData();
+			if (!particleData)
+			{
+				return nullptr;
+			}
+
+			int particleAmount = originalClothPhysxActor->getNbParticles();
+			for (physx::PxU32 j = 0; j < particleAmount; j++)
+			{
+				vertices[j].pos = particleData->particles[j].pos;
+				vertices[j].invWeight = particleData->particles[j].invWeight;
+			}
+
+			particleData->unlock();
+		}
+
+		physx::PxClothFabric* fabric = physx::PxClothFabricCreate(*m_physics, originalActor->m_meshDesc, physx::PxVec3(0, 0, 0));
+
+		auto clothPhysxActor = m_physics->createCloth(originalClothPhysxActor->getGlobalPose(),
+													  *fabric, vertices,
+													  physx::PxClothFlag::eSCENE_COLLISION | physx::PxClothFlag::eSWEPT_CONTACT);
+
+		// Cleanup
+		fabric->release();
+		delete[] vertices;
+
+		clone->m_currentPhysxActor = clothPhysxActor;
+		return clone;
 	}
 }
 

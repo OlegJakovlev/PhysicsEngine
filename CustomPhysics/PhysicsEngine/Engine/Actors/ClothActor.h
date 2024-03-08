@@ -12,12 +12,16 @@ namespace PhysicsEngine
 		friend class ActorFactory;
 
 	private:
-		physx::PxClothMeshDesc meshDesc;
+		physx::PxClothMeshDesc m_meshDesc;
+		physx::PxVec2 m_size;
+		physx::PxVec2 m_scale;
 
-		ClothActor(uint64_t id);
+		ClothActor(uint64_t id, const physx::PxVec2& size, const physx::PxVec2& scale);
 
 	public:
 		const physx::PxClothMeshDesc& GetMeshDesc() const;
+		const physx::PxVec2 const& GetSize() const;
+		const physx::PxVec2 const& GetScale() const;
 	};
 }
 
