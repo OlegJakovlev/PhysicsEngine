@@ -16,7 +16,6 @@ namespace CustomApplication
 							  physx::PxVec3(0.f, -.1f, -1.f),
 							  5.f);
 
-		m_defaultColor = new physx::PxVec3(0.8f, 0.8f, 0.8f);
 		m_backgroundColor = new physx::PxVec3(150.f / 255.f, 150.f / 255.f, 150.f / 255.f);
 
 		m_renderMode = RenderMode::BOTH;
@@ -26,7 +25,7 @@ namespace CustomApplication
 
 	void Renderer::PostInit()
 	{
-		m_impl->PostInit(m_camera, m_defaultColor, m_backgroundColor);
+		m_impl->PostInit(m_camera, m_backgroundColor);
 	}
 
 	void Renderer::Release()
@@ -45,8 +44,9 @@ namespace CustomApplication
 
 		if (m_renderMode == RenderMode::NORMAL || m_renderMode == RenderMode::BOTH)
 		{
-			m_impl->Render(gameScene->GetStaticActors(), gameScene->GetStaticActorCount());
-			m_impl->Render(gameScene->GetDynamicActors(), gameScene->GetDynamicActorCount());
+			m_impl->Render(gameScene->GetStaticGameObjects(), gameScene->GetStaticGameObjectsCount());
+			m_impl->Render(gameScene->GetDynamicGameObjects(), gameScene->GetDynamicGameObjectCount());
+			m_impl->Render(gameScene->GetClothGameObjects(), gameScene->GetClothGameObjectCount());
 		}
 	}
 

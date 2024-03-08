@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Application\Database\ColorDatabase.cpp" />
     <ClCompile Include="Application\Logger\ApplicationLogger.cpp" />
     <ClCompile Include="Application\Logger\EventLogger.cpp" />
     <ClCompile Include="Application\Logger\GraphicsLogger.cpp" />
@@ -32,6 +33,8 @@
     <ClCompile Include="Application\GameObjects\DynamicGameObject.cpp" />
     <ClCompile Include="Application\GameObjects\GameObjectFactory.cpp" />
     <ClCompile Include="Application\Utility\Hashing.cpp" />
+    <ClCompile Include="Application\GameObjects\ClothGameObject.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Actors\ClothActor.cpp" />
     <ClCompile Include="PhysicsEngine\Demo\DemoReader.cpp" />
     <ClCompile Include="PhysicsEngine\Utility\EndianChecker.cpp" />
     <ClCompile Include="PhysicsEngine\Utility\EventDataCompressor.cpp" />
@@ -84,6 +87,7 @@
     <ClCompile Include="Application\GameObjects\StaticGameObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\Database\ColorDatabase.h" />
     <ClInclude Include="Application\GlobalDefine.h" />
     <ClInclude Include="Application\Logger\ApplicationLogger.h" />
     <ClInclude Include="Application\Logger\EventLogger.h" />
@@ -98,6 +102,8 @@
     <ClInclude Include="Application\GameObjects\DynamicGameObject.h" />
     <ClInclude Include="Application\GameObjects\GameObjectFactory.h" />
     <ClInclude Include="Application\Utility\Hashing.h" />
+    <ClInclude Include="Application\GameObjects\ClothGameObject.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Actors\ClothActor.h" />
     <ClInclude Include="PhysicsEngine\Demo\DemoReader.h" />
     <ClInclude Include="Dependencies\LZ4\include\lz4.h" />
     <ClInclude Include="Dependencies\LZ4\include\lz4frame.h" />

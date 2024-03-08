@@ -2,11 +2,10 @@
 
 namespace CustomApplication
 {
-	GameObject::GameObject(const uint64_t id, const Type type, physx::PxTransform& transform)
+	GameObject::GameObject(const uint64_t id, const Type type)
 	{
 		m_actorID = id;
 		m_type = type;
-		m_transform = transform;
 	}
 
 	void GameObject::SetPhysicsActor(void* actor)
@@ -33,14 +32,14 @@ namespace CustomApplication
 	}
 #endif
 
-	const RenderData* GameObject::GetRenderData() const
+	RenderData& GameObject::GetRenderData()
 	{
 		return m_renderData;
 	}
 
-	const physx::PxTransform& GameObject::GetTransform() const
+	const RenderData& GameObject::GetRenderData() const
 	{
-		return m_transform;
+		return m_renderData;
 	}
 
 	const GameObject::Type GameObject::GetType() const

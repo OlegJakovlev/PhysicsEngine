@@ -6,6 +6,7 @@
 #include "../GameObjects/GameObject.h"
 #include "../GameObjects/StaticGameObject.h"
 #include "../GameObjects/DynamicGameObject.h"
+#include "../GameObjects/ClothGameObject.h"
 #include "../../PhysicsEngine/Engine/PhysicsEngine.h"
 #include "../GameObjects/GameObjectFactory.h"
 
@@ -34,15 +35,20 @@ namespace CustomApplication
 	private:
 		GameObject** m_staticGameObjects;
 		GameObject** m_dynamicGameObjects;
+		GameObject** m_clothGameObjects;
+
 		uint32_t m_staticGameObjectCount;
 		uint32_t m_dynamicGameObjectCount;
+		uint32_t m_clothGameObjectCount;
 
 		void AddGameActorInternal(StaticGameObject* staticGameObject);
 		void AddGameActorInternal(DynamicGameObject* dynamicGameObject);
+		void AddGameActorInternal(ClothGameObject* dynamicGameObject);
 
 	protected:
 		const int k_maxStaticGameObjects = 512;
 		const int k_maxDynamicGameObjects = 512;
+		const int k_maxClothGameObjects = 128;
 
 		GameObjectFactory* m_gameObjectFactory;
 		void* m_physicsScene;
@@ -57,10 +63,12 @@ namespace CustomApplication
 		void Unlock();
 
 		const void* GetPhysicsScene() const;
-		const GameObject** GetStaticActors() const;
-		const uint32_t GetStaticActorCount() const;
-		const GameObject** GetDynamicActors() const;
-		const uint32_t GetDynamicActorCount() const;
+		const GameObject** GetStaticGameObjects() const;
+		const uint32_t GetStaticGameObjectsCount() const;
+		const GameObject** GetDynamicGameObjects() const;
+		const uint32_t GetDynamicGameObjectCount() const;
+		const GameObject** GetClothGameObjects() const;
+		const uint32_t GetClothGameObjectCount() const;
 	};
 }
 

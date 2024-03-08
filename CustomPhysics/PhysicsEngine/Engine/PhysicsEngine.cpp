@@ -21,17 +21,21 @@ namespace PhysicsEngine
 		delete m_sceneManager;
 		m_sceneManager = nullptr;
 
+		m_cooking->Release();
+		delete m_cooking;
+		m_cooking = nullptr;
+
 		m_physics->Release();
 		delete m_physics;
 		m_physics = nullptr;
 
-		m_foundation->Release();
-		delete m_foundation;
-		m_foundation = nullptr;
-
 		m_visualDebugger->Release();
 		delete m_visualDebugger;
 		m_visualDebugger = nullptr;
+
+		m_foundation->Release();
+		delete m_foundation;
+		m_foundation = nullptr;
 
 		// Materials are deallocated by m_physics
 		delete m_materialDatabase;
@@ -96,13 +100,11 @@ namespace PhysicsEngine
 		}
 
 		m_geoFactory = new GeometryFactory();
-		/*
 		if (!m_geoFactory->Init(m_physics->GetPhysics(), m_cooking->GetCooking()))
 		{
 			printf("GeometryFactory creation failed!\n");
 			return false;
 		}
-		*/
 
 		m_shapeCreator = new ShapeCreator();
 		if (!m_shapeCreator->Init(m_materialDatabase))
@@ -121,6 +123,8 @@ namespace PhysicsEngine
 			printf("SceneManager creation failed!\n");
 			return false;
 		}
+
+		return true;
 	}
 
 	void PhysicsEngine::Update(float dt)
@@ -130,7 +134,7 @@ namespace PhysicsEngine
 		g_doubleBufferAllocator.SwapBuffers();
 
 		// Do subticks for better stability
-		// Info from:https://gameworksdocs.nvidia.com/PhysX/3.4/PhysXGuide/Manual/Simulation.html#substepping)
+		// Info from: https://gameworksdocs.nvidia.com/PhysX/3.4/PhysXGuide/Manual/Simulation.html#substepping)
 		for (int i = 0; i < k_substeps; i++)
 		{
 			//std::printf("PhysicsEngine::Update(%f), Substep: %i\n", dt, i);

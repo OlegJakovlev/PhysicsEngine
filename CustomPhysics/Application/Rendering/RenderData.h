@@ -7,10 +7,18 @@
 
 namespace CustomApplication
 {
-	struct RenderData
+	class RenderData
 	{
-		physx::PxVec3* m_color;
-		physx::PxClothMeshDesc* m_clothMeshDesc;
+	private:
+		const physx::PxVec3* m_color;
+
+	public:
+		RenderData();
+		RenderData(const RenderData&) = delete;
+		RenderData& operator=(const RenderData&) = delete;
+		void SetColour(const physx::PxVec3* newColor);
+		
+		const physx::PxVec3 const* GetColor() const;
 	};
 }
 

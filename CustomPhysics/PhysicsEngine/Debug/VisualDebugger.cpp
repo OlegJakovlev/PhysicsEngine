@@ -32,24 +32,26 @@ namespace PhysicsEngine
 	void VisualDebugger::Release()
 	{
 #ifdef REMOTE_VISUAL_DEBUG
-		if (m_transport)
-		{
-			if (m_transport->isConnected())
-			{
-				m_transport->disconnect();
-				m_transport->release();
-			}
-		}
-		 
 		if (m_pvd)
 		{
 			if (m_pvd->isConnected())
 			{
 				m_pvd->disconnect();
-				m_pvd->release();
 			}
+
+			m_pvd->release();
 		}
 
+		if (m_transport)
+		{
+			if (m_transport->isConnected())
+			{
+				m_transport->disconnect();
+			}
+
+			m_transport->release();
+		}
+		
 		m_transport = nullptr;
 		m_pvd = nullptr;
 #endif

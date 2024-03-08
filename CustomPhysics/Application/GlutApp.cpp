@@ -146,6 +146,12 @@ namespace CustomApplication
 			return false;
 		}
 
+		m_colorDatabase = new ColorDatabase();
+		if (!m_colorDatabase->Init())
+		{
+			return false;
+		}
+
 		m_renderer = new Renderer();
 		m_renderer->SetImpl(RendererFactory::CreateRenderer(RendererType::Glut));
 
@@ -202,5 +208,10 @@ namespace CustomApplication
 		m_running = true;
 		m_physicsThread = std::thread(&GlutApp::StartPhysics, this);
 		glutMainLoop();
+	}
+
+	ColorDatabase const* GlutApp::GetColorDatabase() const
+	{
+		return m_colorDatabase;
 	}
 }

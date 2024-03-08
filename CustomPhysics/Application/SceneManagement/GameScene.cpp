@@ -1,4 +1,5 @@
 #include "GameScene.h"
+#include "../GameObjects/ClothGameObject.h"
 
 namespace CustomApplication
 {
@@ -12,6 +13,12 @@ namespace CustomApplication
 	{
 		m_dynamicGameObjects[m_dynamicGameObjectCount] = dynamicGameObject;
 		m_dynamicGameObjectCount++;
+	}
+
+	void GameScene::AddGameActorInternal(ClothGameObject* clothGameObject)
+	{
+		m_clothGameObjects[m_clothGameObjectCount] = clothGameObject;
+		m_clothGameObjectCount++;
 	}
 
 	void GameScene::AddGameActor(GameObject* gameObject)
@@ -32,6 +39,13 @@ namespace CustomApplication
 			return;
 		}
 
+		if (underlayingType == GameObject::Type::Cloth)
+		{
+			ClothGameObject* clothGameObject = (ClothGameObject*) gameObject;
+			AddGameActorInternal(clothGameObject);
+			return;
+		}
+
 		std::printf("Unknown underlaying GameObject type!\n");
 		return;
 	}
@@ -43,6 +57,7 @@ namespace CustomApplication
 
 		m_staticGameObjects = new GameObject* [k_maxStaticGameObjects];
 		m_dynamicGameObjects = new GameObject* [k_maxDynamicGameObjects];
+		m_clothGameObjects = new GameObject* [k_maxClothGameObjects];
 
 		m_gameObjectFactory = new GameObjectFactory();
 		m_gameObjectFactory->Init(const_cast<PhysicsEngine::ActorFactory*>(physicsEngine->GetActorFactory()));
@@ -70,24 +85,34 @@ namespace CustomApplication
 		return m_physicsScene;
 	}
 
-	const GameObject** GameScene::GetStaticActors() const
+	const GameObject** GameScene::GetStaticGameObjects() const
 	{
 		return const_cast<const GameObject**>(m_staticGameObjects);
 	}
 
-	const uint32_t GameScene::GetStaticActorCount() const
+	const uint32_t GameScene::GetStaticGameObjectsCount() const
 	{
 		return m_staticGameObjectCount;
 	}
 
-	const GameObject** GameScene::GetDynamicActors() const
+	const GameObject** GameScene::GetDynamicGameObjects() const
 	{
 		return const_cast<const GameObject**>(m_dynamicGameObjects);
 	}
 
-	const uint32_t GameScene::GetDynamicActorCount() const
+	const uint32_t GameScene::GetDynamicGameObjectCount() const
 	{
 		return m_dynamicGameObjectCount;
+	}
+
+	const GameObject** GameScene::GetClothGameObjects() const
+	{
+		return const_cast<const GameObject**>(m_clothGameObjects);
+	}
+
+	const uint32_t GameScene::GetClothGameObjectCount() const
+	{
+		return m_clothGameObjectCount;
 	}
 
 }

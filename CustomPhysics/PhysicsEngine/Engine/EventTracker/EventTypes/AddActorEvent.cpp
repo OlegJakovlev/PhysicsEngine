@@ -9,6 +9,7 @@ namespace PhysicsEngine
 
 		// TODO: Remove, just for demo purposes
 		m_data.actorId = actor->GetActorID();
+		m_data.actorType = actor->GetType();
 
 		/*
 		const physx::PxActor* physicsActor = actor->GetCurrentPhysxActor();
@@ -44,7 +45,7 @@ namespace PhysicsEngine
 
 	void AddActorEvent::Serialize(char* buffer) const
 	{
-		memcpy(buffer, this, sizeof(m_data));
+		memcpy(buffer, &m_data, sizeof(m_data));
 	}
 
 	std::string AddActorEvent::SerializeDebug() const
@@ -54,6 +55,7 @@ namespace PhysicsEngine
 #ifdef PHYSICS_DEBUG_MODE
 		s << "<AddActorEvent>\n";
 		s << "\t<ID>" << m_data.actorId << "</ID>\n";
+		s << "\t<Type>" << m_data.actorType << "</ID>\n";
 		s << "</AddActorEvent>\n";
 #endif
 

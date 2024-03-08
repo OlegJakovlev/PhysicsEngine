@@ -13,7 +13,7 @@ namespace CustomApplication
 
 	private:
 		StaticGameObject() = delete;
-		StaticGameObject(const uint64_t id, physx::PxTransform& transform);
+		StaticGameObject(const uint64_t id);
 	};
 }
 

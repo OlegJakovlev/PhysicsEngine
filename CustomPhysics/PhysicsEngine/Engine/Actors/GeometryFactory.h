@@ -10,9 +10,21 @@ namespace PhysicsEngine
 {
 	class GeometryFactory
 	{
+	private:
+		const physx::PxPhysics* m_physics;
+		const physx::PxCooking* m_cooker;
+
+		physx::PxConvexMesh* CookMesh(const physx::PxConvexMeshDesc& meshDesc) const;
+		physx::PxHeightField* CookMesh(const physx::PxHeightFieldDesc& meshDesc) const;
+
+		physx::PxGeometry* CreateConvexMesh(const physx::PxVec3* verts, const uint32_t vertAmount) const;
+		physx::PxGeometry* CreateHeightFieldMesh(const physx::PxHeightFieldSample* samples, const physx::PxVec2* heightFieldSize, const physx::PxVec3* scaling);
+	
 	public:
+		bool Init(const physx::PxPhysics* physics, const physx::PxCooking* cooking);
+
 		// TODO: API Exposed
-		physx::PxGeometry* Create(uint32_t geoType) const;
+		physx::PxGeometry* Create(const physx::PxGeometryHolder& geoData) const;
 
 		physx::PxGeometry* CreatePlane() const;
 
@@ -25,6 +37,8 @@ namespace PhysicsEngine
 		physx::PxGeometry* CreateConvexMesh(const std::vector<physx::PxVec3>& verts) const;
 
 		physx::PxGeometry* CreateTriangleMesh(const std::vector<physx::PxVec3>& verts, const std::vector<physx::PxU32>& trigs) const;
+
+		physx::PxGeometry* CreateHeightFieldMesh(const std::vector<physx::PxVec3>& verts, const physx::PxVec2* heightFieldSize, const physx::PxVec3* scaling) const;
 	};
 }
 
