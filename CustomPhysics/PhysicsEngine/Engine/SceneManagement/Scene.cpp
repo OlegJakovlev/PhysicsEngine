@@ -320,7 +320,10 @@ namespace PhysicsEngine
 				m_clothActors[i] = sourceScene->m_clothActors[i]->CloneToPhysics();
 			}
 
-			AddActor((ClothActor*) m_clothActors[i]);
+			if (m_clothActors[i])
+			{
+				AddActor((ClothActor*) m_clothActors[i]);
+			}
 		}
 	}
 

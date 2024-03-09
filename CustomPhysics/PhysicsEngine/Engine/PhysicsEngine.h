@@ -15,6 +15,7 @@
 #include "../Utility/ShapeCreator.h"
 #include "../Debug/VisualDebugger.h"
 #include "Services/Cooking.h"
+#include "Services/VehicleSDKWrapper.h"
 
 namespace PhysicsEngine
 {
@@ -36,6 +37,7 @@ namespace PhysicsEngine
 		TaskManager* m_taskManager;
 		VisualDebugger* m_visualDebugger;
 		Cooking* m_cooking;
+		VehicleSDKWrapper* m_vehicleSDK;
 
 		// Factories and databases
 		ActorFactory* m_actorFactory;
@@ -58,6 +60,7 @@ namespace PhysicsEngine
 		bool Init() override;
 		bool PostInit() override;
 		void Update(float dt) override;
+		void Sync() override;
 
 		// TODO: API Exposed
 		const SceneManager* GetSceneManager() const;

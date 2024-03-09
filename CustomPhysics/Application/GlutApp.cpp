@@ -50,6 +50,7 @@ namespace CustomApplication
 			{
 				prevTime = currentTime;
 				m_physicsEngine->Update(k_timeStep);
+				m_physicsEngine->Sync();
 			}
 		}
 	}

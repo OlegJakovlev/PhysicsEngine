@@ -21,6 +21,10 @@ namespace PhysicsEngine
 		delete m_sceneManager;
 		m_sceneManager = nullptr;
 
+		m_vehicleSDK->Release();
+		delete m_vehicleSDK;
+		m_vehicleSDK = nullptr;
+
 		m_cooking->Release();
 		delete m_cooking;
 		m_cooking = nullptr;
@@ -113,6 +117,13 @@ namespace PhysicsEngine
 			return false;
 		}
 
+		m_vehicleSDK = new VehicleSDKWrapper();
+		if (!m_vehicleSDK->Init(m_physics->GetPhysics()))
+		{
+			printf("VehicleSDKWrapper creation failed!\n");
+			return false;
+		}
+
 		return true;
 	}
 
@@ -140,7 +151,10 @@ namespace PhysicsEngine
 			//std::printf("PhysicsEngine::Update(%f), Substep: %i\n", dt, i);
 			m_sceneManager->Update(dt / k_substeps);
 		}
+	}
 
+	void PhysicsEngine::Sync()
+	{
 		m_sceneManager->Sync();
 	}
 

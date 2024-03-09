@@ -32,14 +32,6 @@ namespace PhysicsEngine
 		clone->m_gameEnginePointerToPhysicsActor = m_gameEnginePointerToPhysicsActor;
 		clone->m_collisionData = m_collisionData;
 
-		if (m_currentPhysxActor->is<physx::PxRigidActor>())
-		{
-			physx::PxRigidActor* rigidActor = (physx::PxRigidActor*)m_currentPhysxActor;
-			physx::PxRigidActor* cloneRigidActor = (physx::PxRigidActor*)clone->m_currentPhysxActor;
-
-			CloneShapes(rigidActor, clone);
-		}
-
 		return clone;
 	}
 
@@ -58,14 +50,6 @@ namespace PhysicsEngine
 		clone->m_gameEnginePointerToPhysicsActor = m_gameEnginePointerToPhysicsActor;
 		clone->m_collisionData = m_collisionData;
 
-		if (m_currentPhysxActor->is<physx::PxRigidActor>())
-		{
-			physx::PxRigidActor* rigidActor = (physx::PxRigidActor*) m_currentPhysxActor;
-			physx::PxRigidActor* cloneRigidActor = (physx::PxRigidActor*)clone->m_currentPhysxActor;
-
-			CloneShapes(rigidActor, clone);
-		}
-
 		return clone;
 	}
 
@@ -82,6 +66,9 @@ namespace PhysicsEngine
 
 			//cloneStaticActor->setActorFlags(rigidStaticActor->getActorFlags());
 			//cloneStaticActor->setBaseFlags(rigidStaticActor->getBaseFlags());
+
+			CloneShapes(rigidStaticActor, clone);
+
 			return;
 		}
 
@@ -102,6 +89,9 @@ namespace PhysicsEngine
 			//cloneDynamicActor->setMassSpaceInertiaTensor(rigidDynamicActor->getMassSpaceInertiaTensor());
 			cloneDynamicActor->setRigidBodyFlags(rigidDynamicActor->getRigidBodyFlags());
 			//cloneDynamicActor->setRigidDynamicLockFlags(rigidDynamicActor->getRigidDynamicLockFlags());
+
+			CloneShapes(rigidDynamicActor, clone);
+
 			return;
 		}
 
@@ -109,7 +99,6 @@ namespace PhysicsEngine
 		{
 			ClothActor* clothActor = (ClothActor*) this;
 			clone = actorFactory->CreateClothActor(clothActor);
-
 			return;
 		}
 
