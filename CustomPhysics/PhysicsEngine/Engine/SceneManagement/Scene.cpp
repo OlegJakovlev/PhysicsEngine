@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "../../Utility/CLZ.h"
+#include "../Physics/CustomSimulationEventCallback.h"
 
 namespace PhysicsEngine
 {
@@ -61,12 +62,13 @@ namespace PhysicsEngine
 	}
 
 	bool Scene::PostInit(const physx::PxPhysics* physxObject,
-						 const physx::PxCpuDispatcher* dispatcherObject)
+						 const Dispatcher* dispatcherObject)
 	{
 		physx::PxSceneDesc sceneDesc(physxObject->getTolerancesScale());
 		sceneDesc.gravity = m_configuration->m_gravity;
 		sceneDesc.filterShader = m_configuration->m_collisionFilter->GetFilter();
-		sceneDesc.cpuDispatcher = const_cast<physx::PxCpuDispatcher*>(dispatcherObject);
+		sceneDesc.cpuDispatcher = const_cast<physx::PxCpuDispatcher*>(dispatcherObject->GetCPU());
+		sceneDesc.gpuDispatcher = const_cast<physx::PxGpuDispatcher*>(dispatcherObject->GetGPU());
 
 		sceneDesc.kineKineFilteringMode = physx::PxPairFilteringMode::eKEEP; // Kinematic-Kinematic contacts
 		sceneDesc.staticKineFilteringMode = physx::PxPairFilteringMode::eKEEP; // Static-Kinematic contacts
@@ -91,6 +93,7 @@ namespace PhysicsEngine
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
 
 		m_physxScene = const_cast<physx::PxPhysics*>(physxObject)->createScene(sceneDesc);
+		m_physxScene->setSimulationEventCallback(new CustomSimulationEventCallback());
 
 #ifdef REMOTE_VISUAL_DEBUG
 		// Transmits streams to visual debugger 
@@ -161,7 +164,7 @@ namespace PhysicsEngine
 			for (physx::PxU32 i = 0; i < numShapes; ++i)
 			{
 				filterData = shapes[i]->getSimulationFilterData();
-				filterData.word0 = (uint32_t)collisionLayer;
+				filterData.word0 = (uint32_t) collisionLayer;
 				filterData.word1 = m_configuration->m_collisionFilter->GetCollisionMask(collisionIndex);
 				shapes[i]->setSimulationFilterData(filterData);
 			}
@@ -320,7 +323,10 @@ namespace PhysicsEngine
 				m_clothActors[i] = sourceScene->m_clothActors[i]->CloneToPhysics();
 			}
 
-			AddActor((ClothActor*) m_clothActors[i]);
+			if (m_clothActors[i])
+			{
+				AddActor((ClothActor*) m_clothActors[i]);
+			}
 		}
 	}
 

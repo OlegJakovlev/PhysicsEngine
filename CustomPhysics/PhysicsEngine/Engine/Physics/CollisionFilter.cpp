@@ -24,7 +24,6 @@ namespace PhysicsEngine
 
 		// Generate contacts for all that were not filtered above
 		pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT;
-		//pairFlags |= physx::PxPairFlag::eNOTIFY_CONTACT_POINTS
 
 		// TODO: Dedicated CCD layer?
 		// TODO: Dedicated Particle layer?

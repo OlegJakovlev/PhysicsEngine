@@ -6,7 +6,7 @@ namespace PhysicsEngine
 	uint32_t SceneManager::s_lastSceneId = 0;
 
 	bool SceneManager::PostInit(const physx::PxPhysics* physxObject,
-								const physx::PxCpuDispatcher* dispatcherObject)
+								const Dispatcher* dispatcherObject)
 	{
 		bool result = true;
 
@@ -21,7 +21,7 @@ namespace PhysicsEngine
 		return result;
 	}
 
-	bool SceneManager::CreatePhysicsScene(Scene*& renderScene, const physx::PxPhysics* physxObject, const physx::PxCpuDispatcher* dispatcherObject)
+	bool SceneManager::CreatePhysicsScene(Scene*& renderScene, const physx::PxPhysics* physxObject, const Dispatcher* dispatcherObject)
 	{
 		const Scene::SceneConfiguration* realSceneConfiguration = renderScene->m_configuration;
 

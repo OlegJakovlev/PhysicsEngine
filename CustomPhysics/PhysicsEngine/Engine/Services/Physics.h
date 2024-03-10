@@ -4,7 +4,6 @@
 #define Physics_H
 
 #include "PxPhysicsAPI.h"
-#include <iostream>
 
 namespace PhysicsEngine
 {

@@ -29,16 +29,11 @@ namespace PhysicsEngine
 		// We want to do this only for render scenes
 		*m_gameEnginePointerToPhysicsActor = clone;
 
-		clone->m_gameEnginePointerToPhysicsActor = m_gameEnginePointerToPhysicsActor;
-		clone->m_collisionData = m_collisionData;
-
-		if (m_currentPhysxActor->is<physx::PxRigidActor>())
-		{
-			physx::PxRigidActor* rigidActor = (physx::PxRigidActor*)m_currentPhysxActor;
-			physx::PxRigidActor* cloneRigidActor = (physx::PxRigidActor*)clone->m_currentPhysxActor;
-
-			CloneShapes(rigidActor, clone);
-		}
+		clone->SetGameEnginePointerToPhysicsActor(m_gameEnginePointerToPhysicsActor);
+#ifdef PHYSICS_DEBUG_MODE
+		clone->SetGameEnginePointerToPhysicsActorDebug(m_gameEnginePointerToPhysicsActorDebug);
+#endif
+		clone->SetCollisionLayer((uint32_t) m_collisionData);
 
 		return clone;
 	}
@@ -55,18 +50,27 @@ namespace PhysicsEngine
 			return nullptr;
 		}
 
-		clone->m_gameEnginePointerToPhysicsActor = m_gameEnginePointerToPhysicsActor;
-		clone->m_collisionData = m_collisionData;
+		CloneCallbacks(clone);
 
-		if (m_currentPhysxActor->is<physx::PxRigidActor>())
-		{
-			physx::PxRigidActor* rigidActor = (physx::PxRigidActor*) m_currentPhysxActor;
-			physx::PxRigidActor* cloneRigidActor = (physx::PxRigidActor*)clone->m_currentPhysxActor;
-
-			CloneShapes(rigidActor, clone);
-		}
+		clone->SetGameEnginePointerToPhysicsActor(m_gameEnginePointerToPhysicsActor);
+#ifdef PHYSICS_DEBUG_MODE
+		clone->SetGameEnginePointerToPhysicsActorDebug(m_gameEnginePointerToPhysicsActorDebug);
+#endif
+		clone->SetCollisionLayer((uint32_t) m_collisionData);
 
 		return clone;
+	}
+
+	void Actor::CloneCallbacks(Actor* clone)
+	{
+		clone->m_wakeCallbacks = m_wakeCallbacks;
+		clone->m_sleepCallbacks = m_sleepCallbacks;
+		clone->m_collisionEnterGameCallbacks = m_collisionEnterGameCallbacks;
+		clone->m_collisionStayGameCallbacks = m_collisionStayGameCallbacks;
+		clone->m_collisionExitGameCallbacks = m_collisionExitGameCallbacks;
+		clone->m_triggerEnterGameCallbacks = m_triggerEnterGameCallbacks;
+		clone->m_triggerStayGameCallbacks = m_triggerStayGameCallbacks;
+		clone->m_triggerExitGameCallbacks = m_triggerExitGameCallbacks;
 	}
 
 	void Actor::CloneActor(Actor*& clone)
@@ -80,9 +84,10 @@ namespace PhysicsEngine
 			clone = actorFactory->CreateStaticActor(rigidStaticActor->getGlobalPose());
 			physx::PxRigidStatic* cloneStaticActor = (physx::PxRigidStatic*) clone->m_currentPhysxActor;
 
-			//cloneStaticActor->setActorFlags(rigidStaticActor->getActorFlags());
+			cloneStaticActor->setActorFlags(rigidStaticActor->getActorFlags());
 			//cloneStaticActor->setBaseFlags(rigidStaticActor->getBaseFlags());
-			return;
+
+			CloneShapes(rigidStaticActor, clone);
 		}
 
 		if (m_type == Type::Dynamic)
@@ -92,7 +97,7 @@ namespace PhysicsEngine
 			clone = actorFactory->CreateDynamicActor(rigidDynamicActor->getGlobalPose());
 			physx::PxRigidDynamic* cloneDynamicActor = (physx::PxRigidDynamic*) clone->m_currentPhysxActor;
 
-			//cloneDynamicActor->setActorFlags(rigidDynamicActor->getActorFlags());
+			cloneDynamicActor->setActorFlags(rigidDynamicActor->getActorFlags());
 			//cloneDynamicActor->setBaseFlags(rigidDynamicActor->getBaseFlags());
 			//cloneDynamicActor->setCMassLocalPose(rigidDynamicActor->getCMassLocalPose());
 			//cloneDynamicActor->setAngularDamping(rigidDynamicActor->getAngularDamping());
@@ -102,18 +107,21 @@ namespace PhysicsEngine
 			//cloneDynamicActor->setMassSpaceInertiaTensor(rigidDynamicActor->getMassSpaceInertiaTensor());
 			cloneDynamicActor->setRigidBodyFlags(rigidDynamicActor->getRigidBodyFlags());
 			//cloneDynamicActor->setRigidDynamicLockFlags(rigidDynamicActor->getRigidDynamicLockFlags());
-			return;
+
+			CloneShapes(rigidDynamicActor, clone);
 		}
 
 		if (m_type == Type::Cloth)
 		{
 			ClothActor* clothActor = (ClothActor*) this;
 			clone = actorFactory->CreateClothActor(clothActor);
-
-			return;
 		}
 
-		std::printf("Actor::CloneActor failed! Unknown m_type!");
+		if (!clone)
+		{
+			std::printf("Actor::CloneActor failed! Unknown m_type!");
+			return;
+		}
 	}
 
 	void Actor::CloneShapes(physx::PxRigidActor* rigidActor, Actor* clone)
@@ -175,6 +183,86 @@ namespace PhysicsEngine
 		m_gameEnginePointerToPhysicsActor = gameEnginePointerToPhysicsActor;
 	}
 
+	void Actor::SubscribeOnWake(const VoidCallbackEntry& callback)
+	{
+		m_wakeCallbacks.emplace(callback);
+	}
+
+	void Actor::SubscribeOnSleep(const VoidCallbackEntry& callback)
+	{
+		m_sleepCallbacks.emplace(callback);
+	}
+
+	void Actor::SubscribeOnTriggerEnter(const TriggerCallbackEntry& callback)
+	{
+		m_triggerEnterGameCallbacks.emplace(callback);
+	}
+
+	void Actor::SubscribeOnTriggerStay(const TriggerCallbackEntry& callback)
+	{
+		m_triggerStayGameCallbacks.emplace(callback);
+	}
+
+	void Actor::SubscribeOnTriggerExit(const TriggerCallbackEntry& callback)
+	{
+		m_triggerExitGameCallbacks.emplace(callback);
+	}
+
+	void Actor::SubscribeOnCollisionEnter(const CollisionCallbackEntry& callback)
+	{
+		m_collisionEnterGameCallbacks.emplace(callback);
+	}
+
+	void Actor::SubscribeOnCollisionStay(const CollisionCallbackEntry& callback)
+	{
+		m_collisionStayGameCallbacks.emplace(callback);
+	}
+
+	void Actor::SubscribeOnCollisionExit(const CollisionCallbackEntry& callback)
+	{
+		m_collisionExitGameCallbacks.emplace(callback);
+	}
+
+	void Actor::UnsubscribeOnWake(const VoidCallbackEntry& callback)
+	{
+		m_wakeCallbacks.erase(callback);
+	}
+
+	void Actor::UnsubscribeOnSleep(const VoidCallbackEntry& callback)
+	{
+		m_sleepCallbacks.erase(callback);
+	}
+
+	void Actor::UnsubscribeOnTriggerEnter(const TriggerCallbackEntry& callback)
+	{
+		m_triggerEnterGameCallbacks.erase(callback);
+	}
+
+	void Actor::UnsubscribeOnTriggerStay(const TriggerCallbackEntry& callback)
+	{
+		m_triggerStayGameCallbacks.erase(callback);
+	}
+
+	void Actor::UnsubscribeOnTriggerExit(const TriggerCallbackEntry& callback)
+	{
+		m_triggerExitGameCallbacks.erase(callback);
+	}
+
+	void Actor::UnsubscribeOnCollisionEnter(const CollisionCallbackEntry& callback)
+	{
+		m_collisionEnterGameCallbacks.erase(callback);
+	}
+
+	void Actor::UnsubscribeOnCollisionStay(const CollisionCallbackEntry& callback)
+	{
+		m_collisionStayGameCallbacks.erase(callback);
+	}
+
+	void Actor::UnsubscribeOnCollisionExit(const CollisionCallbackEntry& callback)
+	{
+		m_collisionExitGameCallbacks.erase(callback);
+	}
+
 #ifdef PHYSICS_DEBUG_MODE
 	void Actor::SetGameEnginePointerToPhysicsActorDebug(Actor** gameEnginePointerToPhysicsActorDebug)
 	{
@@ -185,5 +273,69 @@ namespace PhysicsEngine
 	CollisionFilter::FilterGroup Actor::GetCollisionLayer() const
 	{
 		return m_collisionData;
+	}
+
+	void Actor::OnWake()
+	{
+		for (auto& entry : m_wakeCallbacks)
+		{
+			entry.m_callback();
+		}
+	}
+
+	void Actor::OnSleep()
+	{
+		for (auto& entry : m_sleepCallbacks)
+		{
+			entry.m_callback();
+		}
+	}
+
+	void Actor::OnTriggerEnter(physx::PxShape* triggerShape, Actor* otherActor, physx::PxShape* otherShape)
+	{
+		for (auto& entry : m_triggerEnterGameCallbacks)
+		{
+			entry.m_callback(nullptr, nullptr, nullptr, nullptr);
+		}
+	}
+
+	void Actor::OnTriggerStay(physx::PxShape* triggerShape, Actor* otherActor, physx::PxShape* otherShape)
+	{
+		for (auto& entry : m_triggerStayGameCallbacks)
+		{
+			entry.m_callback(nullptr, nullptr, nullptr, nullptr);
+		}
+	}
+
+	void Actor::OnTriggerExit(physx::PxShape* triggerShape, Actor* otherActor, physx::PxShape* otherShape)
+	{
+		for (auto& entry : m_triggerExitGameCallbacks)
+		{
+			entry.m_callback(nullptr, nullptr, nullptr, nullptr);
+		}
+	}
+
+	void Actor::OnCollisionEnter(Actor* otherActor, std::vector<CustomSimulationEventCallback::ContactInfo*> contactsData)
+	{
+		for (auto& entry : m_collisionEnterGameCallbacks)
+		{
+			entry.m_callback(nullptr, nullptr, nullptr, nullptr);
+		}
+	}
+
+	void Actor::OnCollisionStay(Actor* otherActor, std::vector<CustomSimulationEventCallback::ContactInfo*> contactsData)
+	{
+		for (auto& entry : m_collisionStayGameCallbacks)
+		{
+			entry.m_callback(nullptr, nullptr, nullptr, nullptr);
+		}
+	}
+
+	void Actor::OnCollisionExit(Actor* otherActor, std::vector<CustomSimulationEventCallback::ContactInfo*> contactsData)
+	{
+		for (auto& entry : m_collisionExitGameCallbacks)
+		{
+			entry.m_callback(nullptr, nullptr, nullptr, nullptr);
+		}
 	}
 }

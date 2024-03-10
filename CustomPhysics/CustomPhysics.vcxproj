@@ -34,6 +34,9 @@
     <ClCompile Include="Application\GameObjects\GameObjectFactory.cpp" />
     <ClCompile Include="Application\Utility\Hashing.cpp" />
     <ClCompile Include="Application\GameObjects\ClothGameObject.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Components\CollisionCallbackEntry.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Physics\CustomSimulationEventCallback.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Components\BatchQueryWrapper.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Actors\ClothActor.cpp" />
     <ClCompile Include="PhysicsEngine\Demo\DemoReader.cpp" />
     <ClCompile Include="PhysicsEngine\Utility\EndianChecker.cpp" />
@@ -85,6 +88,9 @@
     <ClCompile Include="Application\Rendering\RenderData.cpp" />
     <ClCompile Include="PhysicsEngine\Utility\ShapeCreator.cpp" />
     <ClCompile Include="Application\GameObjects\StaticGameObject.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Services\VehicleSDKWrapper.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Components\TriggerCallbackEntry.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Components\VoidCallbackEntry.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Database\ColorDatabase.h" />
@@ -103,6 +109,9 @@
     <ClInclude Include="Application\GameObjects\GameObjectFactory.h" />
     <ClInclude Include="Application\Utility\Hashing.h" />
     <ClInclude Include="Application\GameObjects\ClothGameObject.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Components\CollisionCallbackEntry.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Physics\CustomSimulationEventCallback.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Components\BatchQueryWrapper.h" />
     <ClInclude Include="PhysicsEngine\Engine\Actors\ClothActor.h" />
     <ClInclude Include="PhysicsEngine\Demo\DemoReader.h" />
     <ClInclude Include="Dependencies\LZ4\include\lz4.h" />
@@ -262,6 +271,9 @@
     <ClInclude Include="Application\Rendering\RenderData.h" />
     <ClInclude Include="PhysicsEngine\Utility\ShapeCreator.h" />
     <ClInclude Include="Application\GameObjects\StaticGameObject.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Services\VehicleSDKWrapper.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Components\TriggerCallbackEntry.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Components\VoidCallbackEntry.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\Graphics\lib\win32\glut\glut32.lib" />
@@ -342,13 +354,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(PHYSX_SDK)\include;$(PHYSX_SDK)\..\PxShared\include;.\Dependencies\Graphics\include\win32;.\Dependencies\LZ4\include;.\Dependencies\spdlog\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PHYSX_SDK)\Include;$(PHYSX_SDK)\..\PxShared\include;.\Dependencies\Graphics\include\win32;.\Dependencies\LZ4\include;.\Dependencies\spdlog\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PreprocessorDefinitions>CustomPhysics;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(PHYSX_SDK)\Lib\vc15win64;$(PHYSX_SDK)\..\PxShared\Lib\vc15win64;.\Dependencies\Graphics\lib\win64\glut;.\Dependencies\LZ4\static</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PxFoundationDEBUG_$(PlatformTarget).lib;PhysX3DEBUG_$(PlatformTarget).lib;PhysX3ExtensionsDEBUG.lib;PxPvdSDKDEBUG_$(PlatformTarget).lib;PhysX3CommonDEBUG_$(PlatformTarget).lib;PhysX3CookingDEBUG_$(PlatformTarget).lib;glut32.lib;liblz4_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PxFoundationDEBUG_$(PlatformTarget).lib;PhysX3DEBUG_$(PlatformTarget).lib;PhysX3ExtensionsDEBUG.lib;PxPvdSDKDEBUG_$(PlatformTarget).lib;PhysX3CommonDEBUG_$(PlatformTarget).lib;PhysX3CookingDEBUG_$(PlatformTarget).lib;PhysX3VehicleDEBUG.lib;SceneQueryDEBUG.lib;SimulationControllerDEBUG.lib;PxTaskDEBUG_x64.lib;glut32.lib;liblz4_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>

@@ -21,14 +21,28 @@ namespace PhysicsEngine
 	Actor* ActorFactory::CreateStaticActor(const physx::PxTransform& transform)
 	{
 		StaticActor* actor = new StaticActor(GenerateId());
-		actor->m_currentPhysxActor = m_physics->createRigidStatic(transform);
+		auto staticPhysxActor = m_physics->createRigidStatic(transform);
+
+		staticPhysxActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
+
+		// Link actor to physx to have an access from collision calls 
+		staticPhysxActor->userData = actor;
+		actor->m_currentPhysxActor = staticPhysxActor;
+
 		return actor;
 	}
 
 	Actor* ActorFactory::CreateDynamicActor(const physx::PxTransform& transform)
 	{
 		DynamicActor* actor = new DynamicActor(GenerateId());
-		actor->m_currentPhysxActor = m_physics->createRigidDynamic(transform);
+		auto dynamicPhysxActor = m_physics->createRigidDynamic(transform);
+
+		dynamicPhysxActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
+
+		// Link actor to physx to have an access from collision calls 
+		dynamicPhysxActor->userData = actor;
+		actor->m_currentPhysxActor = dynamicPhysxActor;
+
 		return actor;
 	}
 
@@ -36,8 +50,14 @@ namespace PhysicsEngine
 	{
 		DynamicActor* actor = new DynamicActor(GenerateId());
 		auto dynamicPhysxActor = m_physics->createRigidDynamic(transform);
+
+		dynamicPhysxActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
 		dynamicPhysxActor->setRigidBodyFlags(physx::PxRigidBodyFlag::eKINEMATIC);
+
+		// Link actor to physx to have an access from collision calls 
+		dynamicPhysxActor->userData = actor;
 		actor->m_currentPhysxActor = dynamicPhysxActor;
+
 		return actor;
 	}
 
@@ -93,7 +113,9 @@ namespace PhysicsEngine
 
 		physx::PxClothFabric* fabric = physx::PxClothFabricCreate(*m_physics, meshDesc, physx::PxVec3(0, 0, 0));
 
-		auto physxActor = m_physics->createCloth(transform, *fabric, vertices, physx::PxClothFlag::eSCENE_COLLISION | physx::PxClothFlag::eSWEPT_CONTACT);
+		auto physxActor = m_physics->createCloth(transform, *fabric, vertices,
+												 physx::PxClothFlag::eSCENE_COLLISION |
+												 physx::PxClothFlag::eSWEPT_CONTACT);
 		
 		// https://docs.nvidia.com/gameworks/content/gameworkslibrary/physx/guide/Manual/Cloth.html#specifying-collision-shapes
 		// TODO: Think about custom stretch configs (each constraint type)
@@ -108,7 +130,10 @@ namespace PhysicsEngine
 
 		// TODO: Collision Shapes?
 
+		// Link actor to physx to have an access from collision calls 
+		physxActor->userData = actor;
 		actor->m_currentPhysxActor = physxActor;
+
 		return actor;
 	}
 
@@ -121,38 +146,22 @@ namespace PhysicsEngine
 
 		const physx::PxU32 width = originalActor->m_scale.x;
 		const physx::PxU32 height = originalActor->m_scale.y;
+		physx::PxClothParticle* vertices;
 
-		auto* vertices = new physx::PxClothParticle[(width + 1) * (height + 1) * 4];
-
-		// Copy particle data
-		{
-			physx::PxClothParticleData* particleData = originalClothPhysxActor->lockParticleData();
-			if (!particleData)
-			{
-				return nullptr;
-			}
-
-			int particleAmount = originalClothPhysxActor->getNbParticles();
-			for (physx::PxU32 j = 0; j < particleAmount; j++)
-			{
-				vertices[j].pos = particleData->particles[j].pos;
-				vertices[j].invWeight = particleData->particles[j].invWeight;
-			}
-
-			particleData->unlock();
-		}
-
-		physx::PxClothFabric* fabric = physx::PxClothFabricCreate(*m_physics, originalActor->m_meshDesc, physx::PxVec3(0, 0, 0));
+		// Make sure the particles share the same list
+		physx::PxClothParticleData* particleData = originalClothPhysxActor->lockParticleData();
+		vertices = particleData->particles;
+		particleData->unlock();
 
 		auto clothPhysxActor = m_physics->createCloth(originalClothPhysxActor->getGlobalPose(),
-													  *fabric, vertices,
-													  physx::PxClothFlag::eSCENE_COLLISION | physx::PxClothFlag::eSWEPT_CONTACT);
+													  *originalClothPhysxActor->getFabric(), vertices,
+													  physx::PxClothFlag::eSCENE_COLLISION |
+													  physx::PxClothFlag::eSWEPT_CONTACT);
 
-		// Cleanup
-		fabric->release();
-		delete[] vertices;
-
+		// Link actor to physx to have an access from collision calls 
+		clothPhysxActor->userData = clone;
 		clone->m_currentPhysxActor = clothPhysxActor;
+
 		return clone;
 	}
 }
