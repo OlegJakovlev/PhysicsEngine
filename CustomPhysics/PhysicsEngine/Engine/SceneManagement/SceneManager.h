@@ -22,11 +22,11 @@ namespace PhysicsEngine
 
 		bool CreatePhysicsScene(Scene*& renderScene,
 								const physx::PxPhysics* physxObject,
-								const physx::PxCpuDispatcher* dispatcherObject);
+								const Dispatcher* dispatcherObject);
 
 	public:
 		bool PostInit(const physx::PxPhysics* physxObject,
-					  const physx::PxCpuDispatcher* dispatcherObject);
+					  const Dispatcher* dispatcherObject);
 		void Update(float dt);
 		void Sync();
 		void Release();

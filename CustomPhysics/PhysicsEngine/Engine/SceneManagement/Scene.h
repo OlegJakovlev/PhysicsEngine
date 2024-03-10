@@ -84,7 +84,7 @@ namespace PhysicsEngine
 
 		bool Init(const SceneConfiguration* configuration);
 		bool PostInit(const physx::PxPhysics* physxObject,
-					  const physx::PxCpuDispatcher* dispatcherObject);
+					  const Dispatcher* dispatcherObject);
 		void SetupActorFilter(const Actor* actor);
 		void Update(float dt);
 		void Release();

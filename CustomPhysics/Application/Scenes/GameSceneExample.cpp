@@ -50,6 +50,43 @@ namespace CustomApplication
 
 		GameObject* clothGameObject = m_gameObjectFactory->CreateClothGameObject(physx::PxTransform(physx::PxVec3(-4.f, 9.f, 0.f)), physx::PxVec2(8.f, 8.f), physx::PxVec2(40, 40), GameObject::Layer::Layer_1);
 
+		// TODO: Split and refactor into components
+		
+		// Create collision / trigger events
+		auto OnWakeEnterLambda = []()
+		{
+			std::printf("Wakey wakey!\n");
+		};
+
+		auto OnSleepEnterLambda = []()
+		{
+			std::printf("Zzzz.....\n");
+		};
+		
+		auto OnTriggerEnterLambda = [](void* arg1, void* arg2, void* arg3, void* arg4)
+		{
+			std::printf("On trigger enter!\n");
+		};
+
+		auto OnTriggerExitLambda = [](void* arg1, void* arg2, void* arg3, void* arg4)
+		{
+			std::printf("On trigger exit!\n");
+		};
+		
+		auto* callbackWakeTest = new PhysicsEngine::VoidCallbackEntry(gameDynamic, OnWakeEnterLambda);
+		auto* callbackSleepTest = new PhysicsEngine::VoidCallbackEntry(gameDynamic, OnSleepEnterLambda);
+
+		auto* callbackTriggerEnterTest = new PhysicsEngine::TriggerCallbackEntry(gameTrigger, OnTriggerEnterLambda);
+		auto* callbackTriggerExitTest = new PhysicsEngine::TriggerCallbackEntry(gameTrigger, OnTriggerExitLambda);
+
+		auto triggerGameActorRef = (PhysicsEngine::Actor**) gameTrigger->GetPhysicsActorPointer();
+		auto gameDynamicActorRef = (PhysicsEngine::Actor**) gameDynamic->GetPhysicsActorPointer();
+
+		(*gameDynamicActorRef)->SubscribeOnWake(*callbackWakeTest);
+		(*gameDynamicActorRef)->SubscribeOnSleep(*callbackSleepTest);
+		(*triggerGameActorRef)->SubscribeOnTriggerEnter(*callbackTriggerEnterTest);
+		(*triggerGameActorRef)->SubscribeOnTriggerExit(*callbackTriggerExitTest);
+
 		// Create render data
 		RenderData& planeRenderData = gamePlane->GetRenderData();
 		planeRenderData.SetColour(asphaltColorEntry.data);

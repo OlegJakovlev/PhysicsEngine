@@ -21,14 +21,28 @@ namespace PhysicsEngine
 	Actor* ActorFactory::CreateStaticActor(const physx::PxTransform& transform)
 	{
 		StaticActor* actor = new StaticActor(GenerateId());
-		actor->m_currentPhysxActor = m_physics->createRigidStatic(transform);
+		auto staticPhysxActor = m_physics->createRigidStatic(transform);
+
+		staticPhysxActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
+
+		// Link actor to physx to have an access from collision calls 
+		staticPhysxActor->userData = actor;
+		actor->m_currentPhysxActor = staticPhysxActor;
+
 		return actor;
 	}
 
 	Actor* ActorFactory::CreateDynamicActor(const physx::PxTransform& transform)
 	{
 		DynamicActor* actor = new DynamicActor(GenerateId());
-		actor->m_currentPhysxActor = m_physics->createRigidDynamic(transform);
+		auto dynamicPhysxActor = m_physics->createRigidDynamic(transform);
+
+		dynamicPhysxActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
+
+		// Link actor to physx to have an access from collision calls 
+		dynamicPhysxActor->userData = actor;
+		actor->m_currentPhysxActor = dynamicPhysxActor;
+
 		return actor;
 	}
 
@@ -36,8 +50,14 @@ namespace PhysicsEngine
 	{
 		DynamicActor* actor = new DynamicActor(GenerateId());
 		auto dynamicPhysxActor = m_physics->createRigidDynamic(transform);
+
+		dynamicPhysxActor->setActorFlag(physx::PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
 		dynamicPhysxActor->setRigidBodyFlags(physx::PxRigidBodyFlag::eKINEMATIC);
+
+		// Link actor to physx to have an access from collision calls 
+		dynamicPhysxActor->userData = actor;
 		actor->m_currentPhysxActor = dynamicPhysxActor;
+
 		return actor;
 	}
 
@@ -110,7 +130,10 @@ namespace PhysicsEngine
 
 		// TODO: Collision Shapes?
 
+		// Link actor to physx to have an access from collision calls 
+		physxActor->userData = actor;
 		actor->m_currentPhysxActor = physxActor;
+
 		return actor;
 	}
 
@@ -135,7 +158,10 @@ namespace PhysicsEngine
 													  physx::PxClothFlag::eSCENE_COLLISION |
 													  physx::PxClothFlag::eSWEPT_CONTACT);
 
+		// Link actor to physx to have an access from collision calls 
+		clothPhysxActor->userData = clone;
 		clone->m_currentPhysxActor = clothPhysxActor;
+
 		return clone;
 	}
 }

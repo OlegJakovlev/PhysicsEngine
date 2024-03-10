@@ -129,7 +129,7 @@ namespace PhysicsEngine
 
 	bool PhysicsEngine::PostInit()
 	{
-		if (!m_sceneManager->PostInit(m_physics->GetPhysics(), m_dispatcher->GetCPU()))
+		if (!m_sceneManager->PostInit(m_physics->GetPhysics(), m_dispatcher))
 		{
 			printf("SceneManager creation failed!\n");
 			return false;

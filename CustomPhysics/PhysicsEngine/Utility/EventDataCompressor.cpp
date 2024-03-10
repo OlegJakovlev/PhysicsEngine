@@ -32,7 +32,7 @@ namespace PhysicsEngine
 
 		if (compressed_data_size > 0)
 		{
-			std::printf("Successfully compressed some data! Ratio: %.2f\n", (float)compressed_data_size / dataSize);
+			//std::printf("Successfully compressed some data! Ratio: %.2f\n", (float)compressed_data_size / dataSize);
 		}
 
 		// Not only does a positive return_value mean success, the value returned == the number of bytes required.
@@ -75,7 +75,7 @@ namespace PhysicsEngine
 
 		if (decompressed_size >= 0)
 		{
-			std::printf("We successfully decompressed some data!\n");
+			//std::printf("We successfully decompressed some data!\n");
 		}
 
 		return regen_buffer;

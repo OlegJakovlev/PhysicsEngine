@@ -34,6 +34,9 @@
     <ClCompile Include="Application\GameObjects\GameObjectFactory.cpp" />
     <ClCompile Include="Application\Utility\Hashing.cpp" />
     <ClCompile Include="Application\GameObjects\ClothGameObject.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Components\CollisionCallbackEntry.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Physics\CustomSimulationEventCallback.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Components\BatchQueryWrapper.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Actors\ClothActor.cpp" />
     <ClCompile Include="PhysicsEngine\Demo\DemoReader.cpp" />
     <ClCompile Include="PhysicsEngine\Utility\EndianChecker.cpp" />
@@ -86,6 +89,8 @@
     <ClCompile Include="PhysicsEngine\Utility\ShapeCreator.cpp" />
     <ClCompile Include="Application\GameObjects\StaticGameObject.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Services\VehicleSDKWrapper.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Components\TriggerCallbackEntry.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Components\VoidCallbackEntry.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\Database\ColorDatabase.h" />
@@ -104,6 +109,9 @@
     <ClInclude Include="Application\GameObjects\GameObjectFactory.h" />
     <ClInclude Include="Application\Utility\Hashing.h" />
     <ClInclude Include="Application\GameObjects\ClothGameObject.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Components\CollisionCallbackEntry.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Physics\CustomSimulationEventCallback.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Components\BatchQueryWrapper.h" />
     <ClInclude Include="PhysicsEngine\Engine\Actors\ClothActor.h" />
     <ClInclude Include="PhysicsEngine\Demo\DemoReader.h" />
     <ClInclude Include="Dependencies\LZ4\include\lz4.h" />
@@ -264,6 +272,8 @@
     <ClInclude Include="PhysicsEngine\Utility\ShapeCreator.h" />
     <ClInclude Include="Application\GameObjects\StaticGameObject.h" />
     <ClInclude Include="PhysicsEngine\Engine\Services\VehicleSDKWrapper.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Components\TriggerCallbackEntry.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Components\VoidCallbackEntry.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\Graphics\lib\win32\glut\glut32.lib" />
