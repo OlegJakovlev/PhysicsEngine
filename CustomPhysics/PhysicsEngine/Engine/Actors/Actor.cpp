@@ -8,7 +8,8 @@ namespace PhysicsEngine
 	{
 		m_type = type;
 		m_actorID = id;
-		m_collisionData = CollisionFilter::FilterGroup::Layer_Default;
+		m_collisionLayer = CollisionFilter::FilterGroup::Layer_Default;
+		m_collisionLayerIndex = CollisionFilter::FilterNumericGroup::Index_Default;
 		m_gameEnginePointerToPhysicsActor = nullptr;
 		m_currentPhysxActor = nullptr;
 	}
@@ -33,7 +34,7 @@ namespace PhysicsEngine
 #ifdef PHYSICS_DEBUG_MODE
 		clone->SetGameEnginePointerToPhysicsActorDebug(m_gameEnginePointerToPhysicsActorDebug);
 #endif
-		clone->SetCollisionLayer((uint32_t) m_collisionData);
+		clone->SetCollisionLayer((uint32_t) m_collisionLayer);
 
 		return clone;
 	}
@@ -56,7 +57,7 @@ namespace PhysicsEngine
 #ifdef PHYSICS_DEBUG_MODE
 		clone->SetGameEnginePointerToPhysicsActorDebug(m_gameEnginePointerToPhysicsActorDebug);
 #endif
-		clone->SetCollisionLayer((uint32_t) m_collisionData);
+		clone->SetCollisionLayer((uint32_t) m_collisionLayer);
 
 		return clone;
 	}
@@ -114,7 +115,7 @@ namespace PhysicsEngine
 		if (m_type == Type::Cloth)
 		{
 			ClothActor* clothActor = (ClothActor*) this;
-			clone = actorFactory->CreateClothActor(clothActor);
+			clone = actorFactory->CloneClothActor(clothActor);
 		}
 
 		if (!clone)
@@ -140,11 +141,11 @@ namespace PhysicsEngine
 			physx::PxShapeFlags activeShapeFlags = shapes[i]->getFlags();
 			if (activeShapeFlags.isSet(physx::PxShapeFlag::eTRIGGER_SHAPE) && !activeShapeFlags.isSet(physx::PxShapeFlag::eSIMULATION_SHAPE))
 			{
-				shapeCreator->CreateTrigger(clone, geometry, CRC32_STR("Default"));
+				shapeCreator->CreateTrigger(clone, geometry, CRC32_STR("Default"), shapes[i]);
 			}
 			else
 			{
-				shapeCreator->CreateShape(clone, geometry, CRC32_STR("Default"));
+				shapeCreator->CreateShape(clone, geometry, CRC32_STR("Default"), shapes[i]);
 			}
 
 			delete geometry;
@@ -175,7 +176,8 @@ namespace PhysicsEngine
 
 	void Actor::SetCollisionLayer(uint32_t collisionData)
 	{
-		m_collisionData = (CollisionFilter::FilterGroup) collisionData;
+		m_collisionLayer = (CollisionFilter::FilterGroup) collisionData;
+		m_collisionLayerIndex = CollisionFilter::GetCollisionIndex(m_collisionLayer);
 	}
 
 	void Actor::SetGameEnginePointerToPhysicsActor(void** gameEnginePointerToPhysicsActor)
@@ -272,7 +274,12 @@ namespace PhysicsEngine
 
 	CollisionFilter::FilterGroup Actor::GetCollisionLayer() const
 	{
-		return m_collisionData;
+		return m_collisionLayer;
+	}
+
+	CollisionFilter::FilterNumericGroup Actor::GetCollisionLayerIndex() const
+	{
+		return m_collisionLayerIndex;
 	}
 
 	void Actor::OnWake()

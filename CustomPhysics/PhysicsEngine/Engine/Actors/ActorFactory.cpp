@@ -128,8 +128,6 @@ namespace PhysicsEngine
 		// static PxVec3 weights[] = {}
 		// cloth.setVirtualParticles(numFaces*4, indices, 2, weights);
 
-		// TODO: Collision Shapes?
-
 		// Link actor to physx to have an access from collision calls 
 		physxActor->userData = actor;
 		actor->m_currentPhysxActor = physxActor;
@@ -137,7 +135,7 @@ namespace PhysicsEngine
 		return actor;
 	}
 
-	Actor* ActorFactory::CreateClothActor(const ClothActor* originalActor)
+	Actor* ActorFactory::CloneClothActor(const ClothActor* originalActor)
 	{
 		auto originalClothPhysxActor = ((physx::PxCloth*) originalActor->GetCurrentPhysxActor());
 
@@ -157,6 +155,8 @@ namespace PhysicsEngine
 													  *originalClothPhysxActor->getFabric(), vertices,
 													  physx::PxClothFlag::eSCENE_COLLISION |
 													  physx::PxClothFlag::eSWEPT_CONTACT);
+
+		clothPhysxActor->setSimulationFilterData(originalClothPhysxActor->getSimulationFilterData());
 
 		// Link actor to physx to have an access from collision calls 
 		clothPhysxActor->userData = clone;

@@ -72,7 +72,7 @@ namespace PhysicsEngine
 
 		sceneDesc.kineKineFilteringMode = physx::PxPairFilteringMode::eKEEP; // Kinematic-Kinematic contacts
 		sceneDesc.staticKineFilteringMode = physx::PxPairFilteringMode::eKEEP; // Static-Kinematic contacts
-		//sceneDesc.simulationEventCallback = 
+		sceneDesc.simulationEventCallback = new CustomSimulationEventCallback();
 
 		/*
 			There may be a performance penalty for enabling the Active Actor Notification, hence this flag should
@@ -93,7 +93,6 @@ namespace PhysicsEngine
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
 
 		m_physxScene = const_cast<physx::PxPhysics*>(physxObject)->createScene(sceneDesc);
-		m_physxScene->setSimulationEventCallback(new CustomSimulationEventCallback());
 
 #ifdef REMOTE_VISUAL_DEBUG
 		// Transmits streams to visual debugger 
@@ -135,6 +134,7 @@ namespace PhysicsEngine
 
 		for (size_t i = 0; i < m_clothActorCount; i++)
 		{
+			SetupActorFilter(m_clothActors[i]);
 			RegisterActor(m_clothActors[i]);
 		}
 
@@ -145,11 +145,6 @@ namespace PhysicsEngine
 
 	void Scene::SetupActorFilter(const Actor* actor)
 	{
-		CollisionFilter::FilterGroup collisionLayer = actor->GetCollisionLayer();
-
-		// Count leading zeros and invert so we get an layer id
-		uint32_t collisionIndex = CLZ::CLZ1(~(uint32_t) collisionLayer);
-
 		physx::PxActor* castedPhysxActor = const_cast<physx::PxActor*>(actor->GetCurrentPhysxActor());
 		
 		if (castedPhysxActor->is<physx::PxRigidActor>())
@@ -161,15 +156,27 @@ namespace PhysicsEngine
 			rigidPxActor->getShapes(shapes, numShapes, 0);
 
 			physx::PxFilterData filterData;
+
 			for (physx::PxU32 i = 0; i < numShapes; ++i)
 			{
-				filterData = shapes[i]->getSimulationFilterData();
-				filterData.word0 = (uint32_t) collisionLayer;
-				filterData.word1 = m_configuration->m_collisionFilter->GetCollisionMask(collisionIndex);
+				filterData.word0 = (uint32_t) actor->GetCollisionLayer();
+				filterData.word1 = (uint32_t) m_configuration->m_collisionFilter->GetCollisionMask(actor->GetCollisionLayerIndex());
 				shapes[i]->setSimulationFilterData(filterData);
 			}
 
 			delete[] shapes;
+			return;
+		}
+
+		if (castedPhysxActor->is<physx::PxCloth>())
+		{
+			physx::PxCloth* clothPxActor = (physx::PxCloth*) castedPhysxActor;
+
+			physx::PxFilterData filterData;
+			filterData.word0 = (uint32_t)actor->GetCollisionLayer();
+			filterData.word1 = (uint32_t) m_configuration->m_collisionFilter->GetCollisionMask(actor->GetCollisionLayerIndex());
+
+			clothPxActor->setSimulationFilterData(filterData);
 		}
 	}
 

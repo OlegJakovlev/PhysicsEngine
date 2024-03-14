@@ -41,7 +41,8 @@ namespace PhysicsEngine
 #endif
 
 		Type m_type;
-		CollisionFilter::FilterGroup m_collisionData;
+		CollisionFilter::FilterGroup m_collisionLayer;
+		CollisionFilter::FilterNumericGroup m_collisionLayerIndex;
 
 		std::unordered_set<VoidCallbackEntry> m_wakeCallbacks;
 		std::unordered_set<VoidCallbackEntry> m_sleepCallbacks;
@@ -66,6 +67,7 @@ namespace PhysicsEngine
 		const physx::PxActor* GetCurrentPhysxActor() const;
 		const Type GetType() const;
 		CollisionFilter::FilterGroup GetCollisionLayer() const;
+		CollisionFilter::FilterNumericGroup GetCollisionLayerIndex() const;
 
 		void OnWake();
 		void OnSleep();

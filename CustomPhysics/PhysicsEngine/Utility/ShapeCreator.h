@@ -14,8 +14,8 @@ namespace PhysicsEngine
 	private:
 		const MaterialDatabase* m_materialDatabase;
 
-		physx::PxShape* CreateShapeInternal(StaticActor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const;
-		physx::PxShape* CreateShapeInternal(DynamicActor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const;
+		physx::PxShape* CreateShapeInternal(StaticActor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey, const physx::PxShape* src = nullptr) const;
+		physx::PxShape* CreateShapeInternal(DynamicActor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey, const physx::PxShape* src = nullptr) const;
 
 		void QueryMaterial(const uint32_t materialKey, const physx::PxMaterial*& material) const;
 	public:
@@ -25,8 +25,8 @@ namespace PhysicsEngine
 #ifdef PHYSICS_DEBUG_MODE
 		void CreateShapeDebug(Actor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const;
 #endif
-		void CreateShape(void* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const;
-		void CreateTrigger(void* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const;
+		void CreateShape(void* actor, const physx::PxGeometry* geometry, const uint32_t materialKey, const physx::PxShape* src = nullptr) const;
+		void CreateTrigger(void* actor, const physx::PxGeometry* geometry, const uint32_t materialKey, const physx::PxShape* src = nullptr) const;
 	};
 }
 

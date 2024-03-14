@@ -4,6 +4,7 @@
 #define CollisionFilter_H
 
 #include "PxPhysicsAPI.h"
+#include <unordered_map>
 
 namespace PhysicsEngine
 {
@@ -46,21 +47,61 @@ namespace PhysicsEngine
 			Layer_31 = (1 << 31),
 		};
 
+		enum FilterNumericGroup : uint32_t
+		{
+			Index_Default = 0,
+			Index_1 = 1,
+			Index_2 = 2,
+			Index_3 = 3,
+			Index_4 = 4,
+			Index_5 = 5,
+			Index_6 = 6,
+			Index_7 = 7,
+			Index_8 = 8,
+			Index_9 = 9,
+			Index_10 = 10,
+			Index_11 = 11,
+			Index_12 = 12,
+			Index_13 = 13,
+			Index_14 = 14,
+			Index_15 = 15,
+			Index_16 = 16,
+			Index_17 = 17,
+			Index_18 = 18,
+			Index_19 = 19,
+			Index_20 = 20,
+			Index_21 = 21,
+			Index_22 = 22,
+			Index_23 = 23,
+			Index_24 = 24,
+			Index_25 = 25,
+			Index_26 = 26,
+			Index_27 = 27,
+			Index_28 = 28,
+			Index_29 = 29,
+			Index_30 = 30,
+			Index_31 = 31,
+		};
+
 	public:
 		static const uint8_t k_maxLayers = 32;
+		static const std::unordered_map<FilterGroup, FilterNumericGroup> k_groupToIndex;
 
 	private:
 		physx::PxSimulationFilterShader m_collisionFilter;
 		uint32_t m_collisionMatrix[k_maxLayers];
 
-		static physx::PxFilterFlags CollisionFilter::CustomFilterShader(physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
+		static physx::PxFilterFlags CustomFilterShader(physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
 																		physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
 																		physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize);
+
 	public:
+		static const FilterNumericGroup GetCollisionIndex(FilterGroup group);
+
 		void Init();
 		physx::PxSimulationFilterShader GetFilter() const;
-		uint32_t GetCollisionMask(int layer) const;
-		void SetCollisionMask(int layer, uint32_t newMask);
+		uint32_t GetCollisionMask(FilterNumericGroup layer) const;
+		void SetCollisionMask(FilterNumericGroup layer, uint32_t newMask);
 	};
 }
 
