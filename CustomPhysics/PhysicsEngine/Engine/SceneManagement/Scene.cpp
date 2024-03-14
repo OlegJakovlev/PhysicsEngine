@@ -74,6 +74,10 @@ namespace PhysicsEngine
 		sceneDesc.staticKineFilteringMode = physx::PxPairFilteringMode::eKEEP; // Static-Kinematic contacts
 		sceneDesc.simulationEventCallback = new CustomSimulationEventCallback();
 
+#ifdef ENABLE_CUDA
+		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
+#endif
+
 		/*
 			There may be a performance penalty for enabling the Active Actor Notification, hence this flag should
 			only be enabled if the application intends to use the feature.
@@ -91,6 +95,14 @@ namespace PhysicsEngine
 		// sceneDesc.flags |= physx::PxSceneFlag::eREQUIRE_RW_LOCK;
 
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
+
+		// Persistent Contact Manifold (PCM)
+		// GJK-based distance collision detection system
+		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
+
+#ifdef ENABLE_CUDA
+		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
+#endif
 
 		m_physxScene = const_cast<physx::PxPhysics*>(physxObject)->createScene(sceneDesc);
 

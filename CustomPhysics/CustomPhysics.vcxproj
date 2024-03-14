@@ -57,7 +57,6 @@
     <ClCompile Include="Application\Input\InputHandler.cpp" />
     <ClCompile Include="PhysicsEngine\Debug\Logger\Logger.cpp" />
     <ClCompile Include="PhysicsEngine\Debug\Logger\DemoLogger.cpp" />
-    <ClCompile Include="PhysicsEngine\Engine\Services\CudaContextManager.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Physics\CollisionFilter.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Services\Cooking.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Services\Dispatcher.cpp" />
@@ -239,7 +238,6 @@
     <ClInclude Include="Application\Input\InputHandler.h" />
     <ClInclude Include="PhysicsEngine\Debug\Logger\Logger.h" />
     <ClInclude Include="PhysicsEngine\Debug\Logger\DemoLogger.h" />
-    <ClInclude Include="PhysicsEngine\Engine\Services\CudaContextManager.h" />
     <ClInclude Include="PhysicsEngine\Engine\Physics\CollisionFilter.h" />
     <ClInclude Include="PhysicsEngine\Engine\Services\Cooking.h" />
     <ClInclude Include="PhysicsEngine\Engine\Services\Dispatcher.h" />
@@ -360,7 +358,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(PHYSX_SDK)\Lib\vc15win64;$(PHYSX_SDK)\..\PxShared\Lib\vc15win64;.\Dependencies\Graphics\lib\win64\glut;.\Dependencies\LZ4\static</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PxFoundationDEBUG_$(PlatformTarget).lib;PhysX3DEBUG_$(PlatformTarget).lib;PhysX3ExtensionsDEBUG.lib;PxPvdSDKDEBUG_$(PlatformTarget).lib;PhysX3CommonDEBUG_$(PlatformTarget).lib;PhysX3CookingDEBUG_$(PlatformTarget).lib;PhysX3VehicleDEBUG.lib;SceneQueryDEBUG.lib;SimulationControllerDEBUG.lib;PxTaskDEBUG_x64.lib;glut32.lib;liblz4_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PxFoundationDEBUG_$(PlatformTarget).lib;PhysX3DEBUG_$(PlatformTarget).lib;PhysX3ExtensionsDEBUG.lib;PxPvdSDKDEBUG_$(PlatformTarget).lib;PhysX3CommonDEBUG_$(PlatformTarget).lib;PhysX3CookingDEBUG_$(PlatformTarget).lib;PsFastXmlDEBUG_$(PlatformTarget).lib;PhysX3VehicleDEBUG.lib;SceneQueryDEBUG.lib;SimulationControllerDEBUG.lib;PxTaskDEBUG_x64.lib;glut32.lib;liblz4_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>

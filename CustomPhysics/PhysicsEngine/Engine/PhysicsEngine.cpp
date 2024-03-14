@@ -29,6 +29,10 @@ namespace PhysicsEngine
 		delete m_cooking;
 		m_cooking = nullptr;
 
+		m_dispatcher->Release();
+		delete m_dispatcher;
+		m_dispatcher = nullptr;
+
 		m_physics->Release();
 		delete m_physics;
 		m_physics = nullptr;
@@ -66,7 +70,7 @@ namespace PhysicsEngine
 		}
 
 		m_dispatcher = new Dispatcher();
-		if (!m_dispatcher->Init())
+		if (!m_dispatcher->Init(m_foundation->GetFoundationService()))
 		{
 			printf("Dispatcher creation failed!\n");
 			return false;

@@ -119,10 +119,14 @@ namespace CustomApplication
 		config->m_collisionFilter->Init();
 		for (int i = 0; i < 32; i++)
 		{
-			config->m_collisionFilter->SetCollisionMask((PhysicsEngine::CollisionFilter::FilterNumericGroup) i, 0b11111111111111111111111111111111);
+			config->m_collisionFilter->SetCollisionMask((PhysicsEngine::CollisionFilter::FilterNumericGroup) i, 0xFFFFFFFF);
 		}
 		
-		config->m_collisionFilter->SetCollisionMask(PhysicsEngine::CollisionFilter::FilterNumericGroup::Index_2, 0b00000000000000000000000000000001);
+		config->m_collisionFilter->SetCollisionMask(PhysicsEngine::CollisionFilter::FilterNumericGroup::Index_2,
+													 PhysicsEngine::CollisionFilter::FilterGroup::Layer_Default
+													| PhysicsEngine::CollisionFilter::FilterGroup::Layer_1
+													| PhysicsEngine::CollisionFilter::FilterGroup::Layer_2
+													| PhysicsEngine::CollisionFilter::FilterGroup::Layer_4);
 
 		// Scene
 		PhysicsEngine::SceneManager* sceneManager = const_cast<PhysicsEngine::SceneManager*>(physicsEngine->GetSceneManager());

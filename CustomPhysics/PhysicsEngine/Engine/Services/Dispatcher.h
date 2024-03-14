@@ -4,22 +4,20 @@
 #define Dispatcher_H
 
 #include "PxPhysicsAPI.h"
-#include "CudaContextManager.h"
+#include "cudamanager/PxCudaContextManager.h"
 
 namespace PhysicsEngine
 {
 	class Dispatcher
 	{
 	private:
-		physx::PxCpuDispatcher* g_cpuDispatcher;
-
-#if PX_WINDOWS
-		physx::PxGpuDispatcher* g_gpuDispatcher;
-#endif
+		physx::PxCpuDispatcher* m_cpuDispatcher;
+		physx::PxGpuDispatcher* m_gpuDispatcher;
+		physx::PxCudaContextManager* m_cudaContextManager;
 
 	public:
-		bool Init();
-		bool Init(const CudaContextManager* contextManager);
+		bool Init(const physx::PxFoundation* foundation);
+		void Release();
 
 		const physx::PxCpuDispatcher* GetCPU() const;
 		const physx::PxGpuDispatcher* GetGPU() const;

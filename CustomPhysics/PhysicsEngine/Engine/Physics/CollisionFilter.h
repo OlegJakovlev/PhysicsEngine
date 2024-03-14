@@ -11,7 +11,7 @@ namespace PhysicsEngine
 	class CollisionFilter
 	{
 	public:
-		enum class FilterGroup : uint32_t
+		enum FilterGroup : uint32_t
 		{
 			Layer_Default = (1 << 0),
 			Layer_1 = (1 << 1),
