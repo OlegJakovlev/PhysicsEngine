@@ -15,8 +15,8 @@ namespace PhysicsEngine
 		m_gpuDispatcher = m_cudaContextManager->getGpuDispatcher();
 		return m_cpuDispatcher != nullptr && m_gpuDispatcher != nullptr;
 #else
-		g_gpuDispatcher = nullptr;
-		return g_cpuDispatcher != nullptr;
+		m_gpuDispatcher = nullptr;
+		return m_cpuDispatcher != nullptr;
 #endif
 	}
 
