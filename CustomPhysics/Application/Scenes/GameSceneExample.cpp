@@ -50,6 +50,18 @@ namespace CustomApplication
 
 		GameObject* clothGameObject = m_gameObjectFactory->CreateClothGameObject(physx::PxTransform(physx::PxVec3(-4.f, 9.f, 0.f)), physx::PxVec2(8.f, 8.f), physx::PxVec2(40, 40), GameObject::Layer::Layer_1);
 
+		// Vehicle configuration
+		PhysicsEngine::VehicleData* vehicleData = new PhysicsEngine::VehicleData();
+		vehicleData->wheelSimData = new physx::PxVehicleWheelsSimData();
+		vehicleData->driveSimData = new physx::PxVehicleDriveSimData4W();
+		vehicleData->drivableWheels = 4;
+		vehicleData->undrivableWheels = 0;
+		vehicleData->type = PhysicsEngine::VehicleType::Default4W;
+
+		GameObject* vehicleGameObject = m_gameObjectFactory->CreateVehicleGameObject(physx::PxTransform(physx::PxVec3(0, 10, 0)),
+																					 vehicleData,
+																					 GameObject::Layer::Layer_1);
+
 		// TODO: Split and refactor into components
 		
 		// Create collision / trigger events
@@ -104,6 +116,7 @@ namespace CustomApplication
 		AddGameActor(gameKinematic);
 		AddGameActor(gameTrigger);
 		AddGameActor(clothGameObject);
+		AddGameActor(vehicleGameObject);
 
 		// Clean up
 		delete planeGeo;
@@ -119,14 +132,14 @@ namespace CustomApplication
 		config->m_collisionFilter->Init();
 		for (int i = 0; i < 32; i++)
 		{
-			config->m_collisionFilter->SetCollisionMask((PhysicsEngine::CollisionFilter::FilterNumericGroup) i, 0xFFFFFFFF);
+			config->m_collisionFilter->SetCollisionMask((PhysicsEngine::FilterNumericGroup) i, 0xFFFFFFFF);
 		}
 		
-		config->m_collisionFilter->SetCollisionMask(PhysicsEngine::CollisionFilter::FilterNumericGroup::Index_2,
-													 PhysicsEngine::CollisionFilter::FilterGroup::Layer_Default
-													| PhysicsEngine::CollisionFilter::FilterGroup::Layer_1
-													| PhysicsEngine::CollisionFilter::FilterGroup::Layer_2
-													| PhysicsEngine::CollisionFilter::FilterGroup::Layer_4);
+		config->m_collisionFilter->SetCollisionMask(PhysicsEngine::FilterNumericGroup::Index_2,
+													 PhysicsEngine::FilterGroup::Layer_Default
+													| PhysicsEngine::FilterGroup::Layer_1
+													| PhysicsEngine::FilterGroup::Layer_2
+													| PhysicsEngine::FilterGroup::Layer_4);
 
 		// Scene
 		PhysicsEngine::SceneManager* sceneManager = const_cast<PhysicsEngine::SceneManager*>(physicsEngine->GetSceneManager());
@@ -139,19 +152,25 @@ namespace CustomApplication
 		const GameObject** allStaticActors = GetStaticGameObjects();
 		for (uint32_t i = 0; i < GetStaticGameObjectsCount(); i++)
 		{
-			physicsSceneReplica->AddActor((PhysicsEngine::StaticActor*) *allStaticActors[i]->GetPhysicsActorPointer());
+			physicsSceneReplica->AddActor((PhysicsEngine::Actor*) *allStaticActors[i]->GetPhysicsActorPointer());
 		}
 
 		const GameObject** allDynamicActors = GetDynamicGameObjects();
 		for (uint32_t i = 0; i < GetDynamicGameObjectCount(); i++)
 		{
-			physicsSceneReplica->AddActor((PhysicsEngine::DynamicActor*) *allDynamicActors[i]->GetPhysicsActorPointer());
+			physicsSceneReplica->AddActor((PhysicsEngine::Actor*) *allDynamicActors[i]->GetPhysicsActorPointer());
 		}
 
 		const GameObject** allClothActors = GetClothGameObjects();
 		for (uint32_t i = 0; i < GetClothGameObjectCount(); i++)
 		{
-			physicsSceneReplica->AddActor((PhysicsEngine::ClothActor*) *allClothActors[i]->GetPhysicsActorPointer());
+			physicsSceneReplica->AddActor((PhysicsEngine::Actor*) *allClothActors[i]->GetPhysicsActorPointer());
+		}
+
+		const GameObject** allVehicleActors = GetVehicleGameObjects();
+		for (uint32_t i = 0; i < GetVehicleGameObjectsCount(); i++)
+		{
+			physicsSceneReplica->AddActor((PhysicsEngine::Actor*) *allVehicleActors[i]->GetPhysicsActorPointer());
 		}
 
 		// Activate the scene

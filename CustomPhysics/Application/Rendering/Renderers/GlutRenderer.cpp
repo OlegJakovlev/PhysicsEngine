@@ -321,13 +321,13 @@ namespace CustomApplication
 			PhysicsEngine::Actor* actor = (PhysicsEngine::Actor*) (*gameActors[i]->GetPhysicsActorPointer());
 			const RenderData& renderData = gameActors[i]->GetRenderData();
 
-			if (actor->GetType() == PhysicsEngine::Actor::Type::Cloth)
+			if (actor->GetType() == PhysicsEngine::ActorType::Cloth)
 			{
 				RenderCloth((PhysicsEngine::ClothActor*) actor, renderData);
 				continue;
 			}
 
-			if (actor->GetType() == PhysicsEngine::Actor::Type::Static || actor->GetType() == PhysicsEngine::Actor::Type::Dynamic)
+			if (actor->GetType() == PhysicsEngine::ActorType::Static || actor->GetType() == PhysicsEngine::ActorType::Dynamic)
 			{
 				RenderShapes(actor, renderData);
 				continue;

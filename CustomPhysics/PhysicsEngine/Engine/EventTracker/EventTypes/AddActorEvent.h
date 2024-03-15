@@ -17,7 +17,7 @@ namespace PhysicsEngine
 		{
 			Type eventType;
 			uint64_t actorId;
-			Actor::Type actorType;
+			ActorType actorType;
 		};
 
 		Data m_data;

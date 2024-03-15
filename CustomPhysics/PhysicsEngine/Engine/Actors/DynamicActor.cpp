@@ -2,7 +2,7 @@
 
 namespace PhysicsEngine
 {
-	DynamicActor::DynamicActor(uint64_t id) : Actor(id, Actor::Type::Dynamic)
+	DynamicActor::DynamicActor(uint64_t id) : Actor(id, ActorType::Dynamic)
 	{
 	}
 }

@@ -45,6 +45,13 @@ namespace PhysicsEngine
 		{
 			m_clothActors[i] = nullptr;
 		}
+
+		m_vehicleActorCount = 0;
+		m_vehicleActors = new Actor* [k_maxVehicleActors];
+		for (std::uint32_t i = 0; i < k_maxVehicleActors; i++)
+		{
+			m_vehicleActors[i] = nullptr;
+		}
 	}
 
 	bool Scene::Init(const SceneConfiguration* configuration)
@@ -148,6 +155,12 @@ namespace PhysicsEngine
 		{
 			SetupActorFilter(m_clothActors[i]);
 			RegisterActor(m_clothActors[i]);
+		}
+
+		for (size_t i = 0; i < m_vehicleActorCount; i++)
+		{
+			SetupActorFilter(m_vehicleActors[i]);
+			RegisterActor(m_vehicleActors[i]);
 		}
 
 		m_state = State::RUNNING;
@@ -254,6 +267,11 @@ namespace PhysicsEngine
 		{
 			ClothSync(sourceScene);
 		}
+
+		if (syncState & SyncState::VEHICLE)
+		{
+			VehicleSync(sourceScene);
+		}
 	}
 
 	void Scene::StaticSync(Scene* sourceScene)
@@ -282,7 +300,7 @@ namespace PhysicsEngine
 				m_staticActors[i] = sourceScene->m_staticActors[i]->CloneToPhysics();
 			}
 
-			AddActor((StaticActor*) m_staticActors[i]);
+			AddActorInternal((StaticActor*) m_staticActors[i]);
 		}
 	}
 
@@ -312,7 +330,7 @@ namespace PhysicsEngine
 				m_dynamicActors[i] = sourceScene->m_dynamicActors[i]->CloneToPhysics();
 			}
 
-			AddActor((DynamicActor*) m_dynamicActors[i]);
+			AddActorInternal((DynamicActor*) m_dynamicActors[i]);
 		}
 	}
 
@@ -344,7 +362,40 @@ namespace PhysicsEngine
 
 			if (m_clothActors[i])
 			{
-				AddActor((ClothActor*) m_clothActors[i]);
+				AddActorInternal((ClothActor*) m_clothActors[i]);
+			}
+		}
+	}
+
+	void Scene::VehicleSync(Scene* sourceScene)
+	{
+		std::unique_lock<std::mutex> lock(m_mutex);
+
+		for (uint32_t i = 0; i < m_vehicleActorCount; i++)
+		{
+			m_vehicleActors[i]->Release();
+			delete m_vehicleActors[i];
+		}
+
+		m_vehicleActorCount = 0;
+#ifdef PHYSICS_DEBUG_MODE
+		m_vehicleActorsDebug.clear();
+#endif
+
+		for (uint32_t i = 0; i < sourceScene->m_vehicleActorCount; i++)
+		{
+			if (sourceScene->m_engineScene == nullptr)
+			{
+				m_vehicleActors[i] = sourceScene->m_vehicleActors[i]->CloneToRender();
+			}
+			else
+			{
+				m_vehicleActors[i] = sourceScene->m_vehicleActors[i]->CloneToPhysics();
+			}
+
+			if (m_vehicleActors[i])
+			{
+				AddActorInternal((VehicleActor*) m_vehicleActors[i]);
 			}
 		}
 	}
@@ -364,7 +415,7 @@ namespace PhysicsEngine
 		m_engineScene = gameScenePointer;
 	}
 
-	void Scene::AddActor(StaticActor* actor)
+	void Scene::AddActorInternal(StaticActor* actor)
 	{
 #ifdef PHYSICS_DEBUG_MODE
 		m_staticActorsDebug.push_back(actor);
@@ -380,7 +431,7 @@ namespace PhysicsEngine
 		}
 	}
 
-	void Scene::AddActor(DynamicActor* actor)
+	void Scene::AddActorInternal(DynamicActor* actor)
 	{
 #ifdef PHYSICS_DEBUG_MODE
 		m_dynamicActorsDebug.push_back(actor);
@@ -395,7 +446,7 @@ namespace PhysicsEngine
 		}
 	}
 
-	void Scene::AddActor(ClothActor* actor)
+	void Scene::AddActorInternal(ClothActor* actor)
 	{
 #ifdef PHYSICS_DEBUG_MODE
 		m_clothActorsDebug.push_back(actor);
@@ -407,6 +458,47 @@ namespace PhysicsEngine
 		if (m_state == State::RUNNING)
 		{
 			RegisterActor(actor);
+		}
+	}
+
+	void Scene::AddActorInternal(VehicleActor* actor)
+	{
+#ifdef PHYSICS_DEBUG_MODE
+		m_vehicleActorsDebug.push_back(actor);
+#endif
+
+		m_vehicleActors[m_vehicleActorCount] = actor;
+		m_vehicleActorCount++;
+
+		if (m_state == State::RUNNING)
+		{
+			RegisterActor(actor);
+		}
+	}
+
+	void Scene::AddActor(Actor* actor)
+	{
+		switch (actor->GetType())
+		{
+			case ActorType::Static:
+				AddActorInternal((StaticActor*) actor);
+				break;
+
+			case ActorType::Dynamic:
+				AddActorInternal((DynamicActor*) actor);
+				break;
+
+			case ActorType::Cloth:
+				AddActorInternal((ClothActor*) actor);
+				break;
+
+			case ActorType::Vehicle:
+				AddActorInternal((VehicleActor*) actor);
+				break;
+
+			default:
+				std::printf("Unknown Actor Type. Add failed!");
+				break;
 		}
 	}
 
@@ -438,6 +530,16 @@ namespace PhysicsEngine
 	const uint32_t Scene::GetClothActorCount() const
 	{
 		return m_clothActorCount;
+	}
+
+	const Actor** Scene::GetVehicleActors() const
+	{
+		return const_cast<const Actor**>(m_vehicleActors);
+	}
+	
+	const uint32_t Scene::GetVehicleActorCount() const
+	{
+		return m_vehicleActorCount;
 	}
 
 	const physx::PxScene* Scene::GetPhysxScene() const

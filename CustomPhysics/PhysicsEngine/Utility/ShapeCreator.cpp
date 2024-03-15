@@ -103,16 +103,16 @@ namespace PhysicsEngine
 			return;
 		}
 
-		Actor::Type underlayingType = castedActor->GetType();
+		ActorType underlayingType = castedActor->GetType();
 
-		if (underlayingType == Actor::Type::Dynamic)
+		if (underlayingType == ActorType::Dynamic)
 		{
 			DynamicActor* dynamicActor = (DynamicActor*) castedActor;
 			CreateShapeInternal(dynamicActor, geometry, materialKey);
 			return;
 		}
 
-		if (underlayingType == Actor::Type::Static)
+		if (underlayingType == ActorType::Static)
 		{
 			StaticActor* staticActor = (StaticActor*) castedActor;
 			CreateShapeInternal(staticActor, geometry, materialKey);
@@ -133,16 +133,16 @@ namespace PhysicsEngine
 			return;
 		}
 
-		Actor::Type underlayingType = castedActor->GetType();
+		ActorType underlayingType = castedActor->GetType();
 
-		if (underlayingType == Actor::Type::Dynamic)
+		if (underlayingType == ActorType::Dynamic)
 		{
 			DynamicActor* dynamicActor = (DynamicActor*) castedActor;
 			CreateShapeInternal(dynamicActor, geometry, materialKey, src);
 			return;
 		}
 
-		if (underlayingType == Actor::Type::Static)
+		if (underlayingType == ActorType::Static)
 		{
 			StaticActor* staticActor = (StaticActor*) castedActor;
 			CreateShapeInternal(staticActor, geometry, materialKey, src);
@@ -162,15 +162,15 @@ namespace PhysicsEngine
 		}
 
 		physx::PxShape* shape = nullptr;
-		Actor::Type underlayingType = castedActor->GetType();
+		ActorType underlayingType = castedActor->GetType();
 
-		if (underlayingType == Actor::Type::Dynamic)
+		if (underlayingType == ActorType::Dynamic)
 		{
 			DynamicActor* dynamicActor = (DynamicActor*) castedActor;
 			shape = CreateShapeInternal(dynamicActor, geometry, materialKey, src);
 		}
 
-		if (underlayingType == Actor::Type::Static)
+		if (underlayingType == ActorType::Static)
 		{
 			StaticActor* staticActor = (StaticActor*) castedActor;
 			shape = CreateShapeInternal(staticActor, geometry, materialKey, src);

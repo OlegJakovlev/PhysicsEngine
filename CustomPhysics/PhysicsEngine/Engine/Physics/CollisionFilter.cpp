@@ -2,7 +2,7 @@
 
 namespace PhysicsEngine
 {
-	const std::unordered_map<CollisionFilter::FilterGroup, CollisionFilter::FilterNumericGroup> CollisionFilter::k_groupToIndex =
+	const std::unordered_map<FilterGroup, FilterNumericGroup> CollisionFilter::k_groupToIndex =
 	{
 			{FilterGroup::Layer_Default, FilterNumericGroup::Index_Default},
 			{FilterGroup::Layer_1, FilterNumericGroup::Index_1},
@@ -44,7 +44,7 @@ namespace PhysicsEngine
 		m_collisionFilter = CollisionFilter::CustomFilterShader;
 	}
 
-	const CollisionFilter::FilterNumericGroup CollisionFilter::GetCollisionIndex(FilterGroup group)
+	const FilterNumericGroup CollisionFilter::GetCollisionIndex(FilterGroup group)
 	{
 		auto it = k_groupToIndex.find(group);
 		if (it != k_groupToIndex.end())
@@ -99,12 +99,12 @@ namespace PhysicsEngine
 		return m_collisionFilter;
 	}
 
-	uint32_t CollisionFilter::GetCollisionMask(CollisionFilter::FilterNumericGroup layer) const
+	uint32_t CollisionFilter::GetCollisionMask(FilterNumericGroup layer) const
 	{
 		return m_collisionMatrix[layer];
 	}
 
-	void CollisionFilter::SetCollisionMask(CollisionFilter::FilterNumericGroup layer, uint32_t newMask)
+	void CollisionFilter::SetCollisionMask(FilterNumericGroup layer, uint32_t newMask)
 	{
 		m_collisionMatrix[layer] = newMask;
 	}

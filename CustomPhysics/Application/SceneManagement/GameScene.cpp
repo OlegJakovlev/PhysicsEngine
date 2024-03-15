@@ -21,6 +21,12 @@ namespace CustomApplication
 		m_clothGameObjectCount++;
 	}
 
+	void GameScene::AddGameActorInternal(VehicleGameObject* vehicleGameObject)
+	{
+		m_vehicleGameObjects[m_vehicleGameObjectCount] = vehicleGameObject;
+		m_vehicleGameObjectCount++;
+	}
+
 	void GameScene::AddGameActor(GameObject* gameObject)
 	{
 		GameObject::Type underlayingType = gameObject->GetType();
@@ -46,6 +52,13 @@ namespace CustomApplication
 			return;
 		}
 
+		if (underlayingType == GameObject::Type::Vehicle)
+		{
+			VehicleGameObject* vehicleGameObject = (VehicleGameObject*) gameObject;
+			AddGameActorInternal(vehicleGameObject);
+			return;
+		}
+
 		std::printf("Unknown underlaying GameObject type!\n");
 		return;
 	}
@@ -58,6 +71,7 @@ namespace CustomApplication
 		m_staticGameObjects = new GameObject* [k_maxStaticGameObjects];
 		m_dynamicGameObjects = new GameObject* [k_maxDynamicGameObjects];
 		m_clothGameObjects = new GameObject* [k_maxClothGameObjects];
+		m_vehicleGameObjects = new GameObject* [k_maxVehicleGameObjects];
 
 		m_gameObjectFactory = new GameObjectFactory();
 		m_gameObjectFactory->Init(const_cast<PhysicsEngine::ActorFactory*>(physicsEngine->GetActorFactory()));
@@ -113,6 +127,16 @@ namespace CustomApplication
 	const uint32_t GameScene::GetClothGameObjectCount() const
 	{
 		return m_clothGameObjectCount;
+	}
+
+	const GameObject** GameScene::GetVehicleGameObjects() const
+	{
+		return const_cast<const GameObject**>(m_vehicleGameObjects);
+	}
+
+	const uint32_t GameScene::GetVehicleGameObjectsCount() const
+	{
+		return m_vehicleGameObjectCount;
 	}
 
 }

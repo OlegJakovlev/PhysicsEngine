@@ -2,6 +2,8 @@
 #include "StaticActor.h"
 #include "DynamicActor.h"
 #include <vector>
+#include "VehicleActor.h"
+#include "../Types/VehicleData.h"
 
 namespace PhysicsEngine
 {
@@ -12,9 +14,11 @@ namespace PhysicsEngine
 		return ++s_lastId;
 	}
 
-	bool ActorFactory::Init(const physx::PxPhysics* physics)
+	bool ActorFactory::Init(const physx::PxPhysics* physics, const VehicleCreator* vehicleCreator)
 	{
 		m_physics = const_cast<physx::PxPhysics*>(physics);
+		m_vehicleCreator = const_cast<VehicleCreator*>(vehicleCreator);
+
 		return true;
 	}
 
@@ -163,6 +167,40 @@ namespace PhysicsEngine
 		clone->m_currentPhysxActor = clothPhysxActor;
 
 		return clone;
+	}
+
+	Actor* ActorFactory::CreateVehicleActor(const physx::PxTransform& transform, const VehicleData* configData)
+	{
+		VehicleActor* actor = new VehicleActor(GenerateId(), configData);
+
+		//SetupWheelsSimulationData(wheelSimData);
+		//SetupDriveSimData(driveSimData);
+		physx::PxRigidDynamic* vehActor = m_physics->createRigidDynamic(transform);
+		//setupVehicleActor(vehActor);
+
+
+		vehActor->userData = actor;
+		actor->m_currentPhysxActor = vehActor;
+
+		switch (configData->type)
+		{
+			case Default4W:
+				m_vehicleCreator->Create4W(vehActor, configData);
+				break;
+
+			case Tank:
+				m_vehicleCreator->CreateTank(vehActor, configData);
+				break;
+			
+			case Custom:
+				m_vehicleCreator->CreateNW(vehActor, configData);
+				break;
+			
+			default:
+				break;
+		}
+
+		return actor;
 	}
 }
 

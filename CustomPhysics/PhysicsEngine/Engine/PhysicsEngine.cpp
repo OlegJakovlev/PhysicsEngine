@@ -100,8 +100,15 @@ namespace PhysicsEngine
 
 		m_sceneManager = new SceneManager();
 
+		m_vehicleCreator = new VehicleCreator();
+		if (!m_vehicleCreator->Init(m_physics->GetPhysics()))
+		{
+			printf("VehicleCreator creation failed!\n");
+			return false;
+		}
+
 		m_actorFactory = new ActorFactory();
-		if (!m_actorFactory->Init(m_physics->GetPhysics()))
+		if (!m_actorFactory->Init(m_physics->GetPhysics(), m_vehicleCreator))
 		{
 			printf("ActorFactory creation failed!\n");
 			return false;

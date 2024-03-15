@@ -54,6 +54,7 @@ namespace CustomApplication
 			Static,
 			Dynamic,
 			Cloth,
+			Vehicle,
 		};
 
 	protected:

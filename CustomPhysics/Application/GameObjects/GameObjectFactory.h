@@ -7,6 +7,7 @@
 #include <atomic>
 #include <cstdint>
 #include "../../PhysicsEngine/Engine/Actors/ActorFactory.h"
+#include "../../PhysicsEngine/Engine/Types/VehicleData.h"
 
 namespace CustomApplication
 {
@@ -24,6 +25,9 @@ namespace CustomApplication
 		GameObject* CreateDynamicGameObject(const physx::PxTransform& transform, const GameObject::Layer layer);
 		GameObject* CreateKinematicGameObject(const physx::PxTransform& transform, const GameObject::Layer layer);
 		GameObject* CreateClothGameObject(const physx::PxTransform& transform, const physx::PxVec2& size, const physx::PxVec2& scale, const GameObject::Layer layer);
+		GameObject* CreateVehicleGameObject(const physx::PxTransform& transform,
+											const PhysicsEngine::VehicleData* configData,
+											const GameObject::Layer layer);
 	};
 }
 
