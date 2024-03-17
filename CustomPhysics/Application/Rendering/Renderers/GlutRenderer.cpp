@@ -36,6 +36,9 @@ namespace CustomApplication
 
 	void GlutRenderer::SetupLighting()
 	{
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+
 		glEnable(GL_LIGHTING);
 		physx::PxReal ambientColor[] = { 0.2f, 0.2f, 0.2f, 1.f };
 		physx::PxReal diffuseColor[] = { 0.7f, 0.7f, 0.7f, 1.f };
@@ -236,7 +239,8 @@ namespace CustomApplication
 		// copy vertex positions
 		for (physx::PxU32 j = 0; j < verts.size(); j++)
 		{
-			verts[j] = particle_data->particles[j].pos;
+			physx::PxVec3 pos = particle_data->particles[j].pos;
+			verts[j] = pos;
 		}
 
 		particle_data->unlock();
@@ -279,6 +283,48 @@ namespace CustomApplication
 		glDisableClientState(GL_VERTEX_ARRAY);
 
 		glPopMatrix();
+
+		if (m_showShadows)
+		{	
+			glPushMatrix();
+			glMultMatrixf(k_shadowMat);
+			glMultMatrixf((float*) &shapePose);
+			glDisable(GL_LIGHTING);
+
+			// Shadow render
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glEnableClientState(GL_NORMAL_ARRAY);
+
+			glVertexPointer(3, GL_FLOAT, sizeof(physx::PxVec3), &verts.front());
+			glNormalPointer(GL_FLOAT, sizeof(physx::PxVec3), &norms.front());
+
+			float originYPos = pose.p.y;
+
+			for (int i = 0; i < quad_count; i++)
+			{
+				float quadCenterY = 0;
+
+				for (int j = 0; j < 4; j++)
+				{
+					int vertexIndex = quads[i * 4 + j];
+					quadCenterY += abs((abs(verts[vertexIndex].y) - originYPos));
+				}
+				quadCenterY /= 4;
+
+				if (quadCenterY > k_specialMinRenderDistance)
+				{
+					float shadowHardness = (m_maxShadowDistance - quadCenterY) / m_maxShadowDistance;
+					glColor4f(k_shadowColor.x, k_shadowColor.y, k_shadowColor.z, shadowHardness);
+					glDrawElements(GL_QUADS, 4, GL_UNSIGNED_INT, &quads[i]);
+				}
+			}
+
+			glDisableClientState(GL_NORMAL_ARRAY);
+			glDisableClientState(GL_VERTEX_ARRAY);
+
+			glEnable(GL_LIGHTING);
+			glPopMatrix();
+		}
 	}
 
 	void GlutRenderer::RenderBuffer(float* pVertList, float* pColorList, int type, int num) const
@@ -363,38 +409,34 @@ namespace CustomApplication
 			}
 
 			physx::PxMat44 shapePose(pose);
-
-			// Render object
 			glPushMatrix();
 			glMultMatrixf((float*) &shapePose);
 
-			if (h.getType() == physx::PxGeometryType::ePLANE)
-			{
-				glDisable(GL_LIGHTING);
-			}
-
+			// Render object
 			physx::PxVec3 shapeColor = *renderData.GetColor();
-			physx::PxVec3 shadowColor = shapeColor * 0.9;
-
 			glColor4f(shapeColor.x, shapeColor.y, shapeColor.z, 1.f);
-
 			RenderGeometry(h);
-
-			if (h.getType() == physx::PxGeometryType::ePLANE)
-			{
-				glEnable(GL_LIGHTING);
-			}
-
 			glPopMatrix();
 
-			if (m_showShadows && (h.getType() != physx::PxGeometryType::ePLANE))
+			// Draw shadows
+			float absVerticalPos = abs(pose.p.y);
+			if (m_showShadows && absVerticalPos < m_maxShadowDistance)
 			{
+				if (h.getType() == physx::PxGeometryType::ePLANE && absVerticalPos < k_specialMinRenderDistance)
+				{
+					return;
+				}
+
+				float shadowHardness = (m_maxShadowDistance-absVerticalPos) / m_maxShadowDistance;
+
 				glPushMatrix();
 				glMultMatrixf(k_shadowMat);
 				glMultMatrixf((float*) &shapePose);
 				glDisable(GL_LIGHTING);
-				glColor4f(shadowColor.x, shadowColor.y, shadowColor.z, 1.f);
+
+				glColor4f(k_shadowColor.x, k_shadowColor.y, k_shadowColor.z, shadowHardness);
 				RenderGeometry(h);
+
 				glEnable(GL_LIGHTING);
 				glPopMatrix();
 			}
@@ -533,6 +575,10 @@ namespace CustomApplication
 
 	bool GlutRenderer::Init(const char* name, int width, int height)
 	{
+		m_renderDetail = 10;
+		m_maxShadowDistance = 20.f;
+		m_showShadows = true;
+
 		SetupWindow(name, width, height);
 
 		SetupRenderStates();

@@ -28,10 +28,17 @@ namespace CustomApplication
 			1.f,  0.f, 1.f,  0.f, 1.f, 0.f, 1.f,  0.f, -1.f, 0.f, 1.f, 0.f,
 		};
 
+		const physx::PxVec3 k_shadowColor = physx::PxVec3(0.3f, 0.3f, 0.3f);
+
+		// Is being used for cloth and plane rendering
+		// Based on assumption that world plane y = 0;
+		float k_specialMinRenderDistance = 0.1f;
+
 		const Camera* m_camera;
 		const physx::PxVec3* m_backgroundColour;
 
 		int m_renderDetail;
+		float m_maxShadowDistance;
 		bool m_showShadows;
 
 		void SetupWindow(const char* window_name, int width, int height);
