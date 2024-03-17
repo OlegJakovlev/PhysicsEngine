@@ -61,6 +61,7 @@ namespace PhysicsEngine
 
 		bool Init() override;
 		bool PostInit() override;
+		void Prepare() override;
 		void Update(float dt) override;
 		void Sync() override;
 
@@ -70,6 +71,5 @@ namespace PhysicsEngine
 		const GeometryFactory* GetGeometryFactory() const;
 		const MaterialDatabase* GetMaterialDatabase() const;
 		const ShapeCreator* GetShapeCreator() const;
-		const VehicleCreator* GetVehicleCreator() const;
 	};
 }

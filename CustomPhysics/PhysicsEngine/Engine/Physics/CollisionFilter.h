@@ -17,17 +17,20 @@ namespace PhysicsEngine
 
 	private:
 		physx::PxSimulationFilterShader m_collisionFilter;
+
 		uint32_t m_collisionMatrix[k_maxLayers];
 
 		static physx::PxFilterFlags CustomFilterShader(physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
-																		physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
-																		physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize);
+													   physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
+													   physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize);
 
 	public:
 		static const FilterNumericGroup GetCollisionIndex(FilterGroup group);
 
 		void Init();
-		physx::PxSimulationFilterShader GetFilter() const;
+		
+		physx::PxSimulationFilterShader GetSimFilter() const;
+
 		uint32_t GetCollisionMask(FilterNumericGroup layer) const;
 		void SetCollisionMask(FilterNumericGroup layer, uint32_t newMask);
 	};

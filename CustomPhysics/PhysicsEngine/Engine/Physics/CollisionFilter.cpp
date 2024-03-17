@@ -40,7 +40,6 @@ namespace PhysicsEngine
 
 	void CollisionFilter::Init()
 	{
-		//m_collisionFilter = physx::PxDefaultSimulationFilterShader;
 		m_collisionFilter = CollisionFilter::CustomFilterShader;
 	}
 
@@ -94,7 +93,7 @@ namespace PhysicsEngine
 		return physx::PxFilterFlag::eSUPPRESS;
 	}
 
-	physx::PxSimulationFilterShader CollisionFilter::GetFilter() const
+	physx::PxSimulationFilterShader CollisionFilter::GetSimFilter() const
 	{
 		return m_collisionFilter;
 	}

@@ -9,7 +9,7 @@ namespace PhysicsEngine
 		uint8_t availableThreads = std::thread::hardware_concurrency();
 		m_cpuDispatcher = physx::PxDefaultCpuDispatcherCreate(availableThreads);
 		
-#ifdef ENABLE_CUDA
+#if ENABLE_CUDA
 		physx::PxCudaContextManagerDesc cudaContextManagerDesc;
 		m_cudaContextManager = PxCreateCudaContextManager(*const_cast<physx::PxFoundation*>(foundation), cudaContextManagerDesc);
 		m_gpuDispatcher = m_cudaContextManager->getGpuDispatcher();
@@ -22,7 +22,7 @@ namespace PhysicsEngine
 
 	void Dispatcher::Release()
 	{
-#ifdef ENABLE_CUDA
+#if ENABLE_CUDA
 		m_gpuDispatcher->getCudaContextManager()->release();
 		m_gpuDispatcher = nullptr;
 #endif

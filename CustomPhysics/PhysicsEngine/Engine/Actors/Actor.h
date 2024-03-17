@@ -54,7 +54,7 @@ namespace PhysicsEngine
 		Actor* CloneToRender();
 		Actor* CloneToPhysics();
 
-		void Release();
+		virtual void Release();
 
 		const uint64_t GetActorID() const;
 		const physx::PxActor* GetCurrentPhysxActor() const;

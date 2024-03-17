@@ -8,17 +8,24 @@
 
 namespace PhysicsEngine
 {
+	// TODO: Replace with builder pattern
+	// https://refactoring.guru/design-patterns/builder
 	class VehicleCreator
 	{
 	private:
 		physx::PxPhysics* m_physics;
+		const VehicleData* m_currentConfigData;
 
 	public:
 		bool Init(const physx::PxPhysics* physics);
 
-		void Create4W(physx::PxRigidDynamic* rigidBodyActor, const VehicleData* configData);
-		void CreateNW(physx::PxRigidDynamic* rigidBodyActor, const VehicleData* configData);
-		void CreateTank(physx::PxRigidDynamic* rigidBodyActor, const VehicleData* configData);
+		void SetupWheelsSimulationData(const VehicleData* configData);
+		void SetupDriveSimulationData(const VehicleData* configData);
+		void SetupVehicleActor(physx::PxRigidDynamic* rigidBodyActor, const VehicleData* configData);
+
+		physx::PxVehicleDrive* Create4W(physx::PxRigidDynamic* rigidBodyActor, const VehicleData* configData);
+		physx::PxVehicleDrive* CreateNW(physx::PxRigidDynamic* rigidBodyActor, const VehicleData* configData);
+		physx::PxVehicleDrive* CreateTank(physx::PxRigidDynamic* rigidBodyActor, const VehicleData* configData);
 	};
 }
 

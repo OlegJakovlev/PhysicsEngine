@@ -11,14 +11,22 @@ namespace CustomApplication
 	{
 	private:
 		const physx::PxVec3* m_color;
+		float m_lineWidth;
+		bool m_disableLighting;
 
 	public:
 		RenderData();
 		RenderData(const RenderData&) = delete;
 		RenderData& operator=(const RenderData&) = delete;
+
 		void SetColour(const physx::PxVec3* newColor);
-		
 		const physx::PxVec3 const* GetColor() const;
+
+		bool GetIsLightingDisabled() const;
+		void SetLightingDisabled(bool isDisabled);
+
+		float GetLineWidth() const;
+		void SetLineWidth(float width);
 	};
 }
 

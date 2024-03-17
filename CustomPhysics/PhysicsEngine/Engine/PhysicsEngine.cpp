@@ -149,6 +149,14 @@ namespace PhysicsEngine
 		return true;
 	}
 
+	void PhysicsEngine::Prepare()
+	{
+		for (int i = 0; i < k_substeps; i++)
+		{
+			m_sceneManager->Prepare();
+		}
+	}
+
 	void PhysicsEngine::Update(float dt)
 	{
 		// TODO: Think about if we actually need these frame allocators

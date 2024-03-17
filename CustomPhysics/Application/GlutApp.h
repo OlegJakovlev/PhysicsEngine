@@ -20,7 +20,10 @@ namespace CustomApplication
 	private:
 		static GlutApp* s_instance;
 
-		const double k_timeStep = 1.0 / 60.0;
+		const float k_inputStep = 1.0 / 60.0;
+		const float k_physicsStep = 1.0 / 60.0;
+		const float k_renderStep = 1.0 / 240.0;
+
 		const float k_maxAllowedDeltaTime = 1.0f;
 		bool m_running;
 
@@ -31,9 +34,10 @@ namespace CustomApplication
 		ColorDatabase* m_colorDatabase;
 		GameSceneManager* m_sceneManager;
 
-		// Glut is running on main thread, so input and renderer would not be separated :(
 		std::thread m_physicsThread;
 		std::chrono::steady_clock::time_point m_previousTime;
+		double m_inputLag;
+		double m_renderLag;
 
 		static void ReshapeCallback(int width, int height);
 		static void IdleCallback();
@@ -57,6 +61,11 @@ namespace CustomApplication
 		void Start();
 
 		const ColorDatabase const* GetColorDatabase() const;
+		const InputHandler const* GetInputHandler() const;
+		const Renderer const* GetRenderer() const;
+
+		const float GetInputStep() const;
+		const float GetRenderStep() const;
 	};
 }
 

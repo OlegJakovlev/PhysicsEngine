@@ -18,4 +18,4 @@
 // Do we want to have remote visual debug (PhysX Visual Debugger)
 #define REMOTE_VISUAL_DEBUG
 
-//#define ENABLE_CUDA
+#define ENABLE_CUDA false

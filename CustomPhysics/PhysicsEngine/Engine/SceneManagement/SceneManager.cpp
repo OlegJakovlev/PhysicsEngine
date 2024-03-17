@@ -52,6 +52,14 @@ namespace PhysicsEngine
 		return true;
 	}
 
+	void SceneManager::Prepare()
+	{
+		for (Scene* scene : m_currentScenes)
+		{
+			scene->Prepare();
+		}
+	}
+
 	void SceneManager::Update(float dt)
 	{
 		for (Scene* scene : m_currentScenes)

@@ -8,6 +8,7 @@
 #include <cstdint>
 #include "../../PhysicsEngine/Engine/Actors/ActorFactory.h"
 #include "../../PhysicsEngine/Engine/Types/VehicleData.h"
+#include "../DataTypes/AppVoidCallbackEntry.h"
 
 namespace CustomApplication
 {
@@ -28,6 +29,8 @@ namespace CustomApplication
 		GameObject* CreateVehicleGameObject(const physx::PxTransform& transform,
 											const PhysicsEngine::VehicleData* configData,
 											const GameObject::Layer layer);
+
+		GameObject* CreateCustomRenderGameObject();
 	};
 }
 

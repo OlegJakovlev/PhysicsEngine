@@ -5,6 +5,7 @@
 #include "../../../PhysicsEngine/Engine/Actors/Actor.h"
 #include <string>
 #include "../../GameObjects/ClothGameObject.h"
+#include "../../GameObjects/CustomRenderGameObject.h"
 
 namespace CustomApplication
 {
@@ -284,7 +285,7 @@ namespace CustomApplication
 
 		glPopMatrix();
 
-		if (m_showShadows)
+		if (m_showShadows && !renderData.GetIsLightingDisabled())
 		{	
 			glPushMatrix();
 			glMultMatrixf(k_shadowMat);
@@ -338,15 +339,11 @@ namespace CustomApplication
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 
-	void GlutRenderer::UpdateCameraRender(const physx::PxVec3& cameraEye, const physx::PxVec3& cameraDir) const
+	void GlutRenderer::UpdateCameraRender(const float fov, const physx::PxVec3& cameraEye, const physx::PxVec3& cameraDir) const
 	{
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		gluPerspective(60.f,
-					   (float) glutGet(GLUT_WINDOW_WIDTH) /
-					   (float) glutGet(GLUT_WINDOW_HEIGHT),
-					   1.f, 10000.f);
-
+		gluPerspective(fov, (float) glutGet(GLUT_WINDOW_WIDTH) / (float) glutGet(GLUT_WINDOW_HEIGHT), 1.f, 10000.f);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		gluLookAt(cameraEye.x, cameraEye.y, cameraEye.z,
@@ -357,13 +354,24 @@ namespace CustomApplication
 	void GlutRenderer::Clear()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		UpdateCameraRender(m_camera->GetPos(), m_camera->GetDir());
+	}
+
+	void GlutRenderer::Prepare(const float fov, physx::PxVec3& pos, physx::PxVec3& dir)
+	{
+		UpdateCameraRender(fov, pos, dir);
 	}
 
 	void GlutRenderer::Render(const GameObject** gameActors, const physx::PxU32 numActors)
 	{
 		for (physx::PxU32 i = 0; i < numActors; i++)
 		{
+			auto gameActorType = gameActors[i]->GetType();
+			if (gameActorType == GameObject::Custom)
+			{
+				((CustomRenderGameObject*) gameActors[i])->CustomRender();
+				continue;
+			}
+
 			PhysicsEngine::Actor* actor = (PhysicsEngine::Actor*) (*gameActors[i]->GetPhysicsActorPointer());
 			const RenderData& renderData = gameActors[i]->GetRenderData();
 
@@ -400,6 +408,7 @@ namespace CustomApplication
 			const physx::PxShape* shape = shapes[j];
 			physx::PxTransform pose = physx::PxShapeExt::getGlobalPose(*shape, *shape->getActor());
 			physx::PxGeometryHolder h = shape->getGeometry();
+			bool isLightingDisabled = renderData.GetIsLightingDisabled();
 
 			// Move the plane slightly down to avoid visual artefacts
 			if (h.getType() == physx::PxGeometryType::ePLANE)
@@ -414,13 +423,25 @@ namespace CustomApplication
 
 			// Render object
 			physx::PxVec3 shapeColor = *renderData.GetColor();
+			
+			if (isLightingDisabled)
+			{
+				glDisable(GL_LIGHTING);
+			}
+				
 			glColor4f(shapeColor.x, shapeColor.y, shapeColor.z, 1.f);
 			RenderGeometry(h);
+
+			if (isLightingDisabled)
+			{
+				glEnable(GL_LIGHTING);
+			}
+
 			glPopMatrix();
 
 			// Draw shadows
 			float absVerticalPos = abs(pose.p.y);
-			if (m_showShadows && absVerticalPos < m_maxShadowDistance)
+			if (m_showShadows && !isLightingDisabled && absVerticalPos < m_maxShadowDistance)
 			{
 				if (h.getType() == physx::PxGeometryType::ePLANE && absVerticalPos < k_specialMinRenderDistance)
 				{
@@ -440,6 +461,35 @@ namespace CustomApplication
 				glEnable(GL_LIGHTING);
 				glPopMatrix();
 			}
+		}
+	}
+
+	void GlutRenderer::DrawCircle(const physx::PxVec3& centerOffset, const float radius, const int segments, const float startAngle, const float endAngle, const RenderData& renderData) const
+	{
+		const physx::PxVec3* color = renderData.GetColor();
+		bool isLightingDisabled = renderData.GetIsLightingDisabled();
+
+		if (isLightingDisabled)
+		{
+			glDisable(GL_LIGHTING);
+		}
+
+		glColor4f(color->x, color->y, color->z, 1);
+		glLineWidth(renderData.GetLineWidth());
+
+		glBegin(GL_LINE_STRIP);
+		for (int i = 0; i < segments; i++)
+		{
+			float theta = startAngle + (endAngle - startAngle) * float(i) / float(segments);
+			float x = radius * cosf(theta);
+			float z = radius * sinf(theta);
+			glVertex3f(x + centerOffset.x, centerOffset.y, z + centerOffset.z);
+		}
+		glEnd();
+
+		if (isLightingDisabled)
+		{
+			glEnable(GL_LIGHTING);
 		}
 	}
 
@@ -575,7 +625,7 @@ namespace CustomApplication
 
 	bool GlutRenderer::Init(const char* name, int width, int height)
 	{
-		m_renderDetail = 10;
+		m_renderDetail = 100;
 		m_maxShadowDistance = 20.f;
 		m_showShadows = true;
 
@@ -587,10 +637,8 @@ namespace CustomApplication
 		return true;
 	}
 
-	void GlutRenderer::PostInit(const Camera* camera,
-								const physx::PxVec3* backgroundColor)
+	void GlutRenderer::PostInit(const physx::PxVec3* backgroundColor)
 	{
-		m_camera = camera;
 		m_backgroundColour = backgroundColor;
 	}
 

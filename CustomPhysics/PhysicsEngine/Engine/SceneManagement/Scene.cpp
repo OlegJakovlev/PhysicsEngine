@@ -1,6 +1,9 @@
 #include "Scene.h"
 #include "../../Utility/CLZ.h"
 #include "../Physics/CustomSimulationEventCallback.h"
+#include "../Physics/VehicleSceneQueryData.h"
+#include "../Physics/VehicleSceneQueryResults.h"
+#include "../Types/SurfaceType.h"
 
 namespace PhysicsEngine
 {
@@ -73,7 +76,7 @@ namespace PhysicsEngine
 	{
 		physx::PxSceneDesc sceneDesc(physxObject->getTolerancesScale());
 		sceneDesc.gravity = m_configuration->m_gravity;
-		sceneDesc.filterShader = m_configuration->m_collisionFilter->GetFilter();
+		sceneDesc.filterShader = m_configuration->m_collisionFilter->GetSimFilter();
 		sceneDesc.cpuDispatcher = const_cast<physx::PxCpuDispatcher*>(dispatcherObject->GetCPU());
 		sceneDesc.gpuDispatcher = const_cast<physx::PxGpuDispatcher*>(dispatcherObject->GetGPU());
 
@@ -81,7 +84,7 @@ namespace PhysicsEngine
 		sceneDesc.staticKineFilteringMode = physx::PxPairFilteringMode::eKEEP; // Static-Kinematic contacts
 		sceneDesc.simulationEventCallback = new CustomSimulationEventCallback();
 
-#ifdef ENABLE_CUDA
+#if ENABLE_CUDA
 		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
 #endif
 
@@ -107,7 +110,7 @@ namespace PhysicsEngine
 		// GJK-based distance collision detection system
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
 
-#ifdef ENABLE_CUDA
+#if ENABLE_CUDA
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
 #endif
 
@@ -176,6 +179,8 @@ namespace PhysicsEngine
 		{
 			physx::PxRigidActor* rigidPxActor = (physx::PxRigidActor*) castedPhysxActor;
 
+			bool isVehicle = actor->GetType() == ActorType::Vehicle;
+
 			physx::PxU32 numShapes = rigidPxActor->getNbShapes();
 			physx::PxShape** shapes = new physx::PxShape * [numShapes];
 			rigidPxActor->getShapes(shapes, numShapes, 0);
@@ -186,6 +191,12 @@ namespace PhysicsEngine
 			{
 				filterData.word0 = (uint32_t) actor->GetCollisionLayer();
 				filterData.word1 = (uint32_t) m_configuration->m_collisionFilter->GetCollisionMask(actor->GetCollisionLayerIndex());
+
+				if (isVehicle)
+				{
+					filterData.word3 = SurfaceType::UNDRIVABLE_SURFACE;
+				}
+
 				shapes[i]->setSimulationFilterData(filterData);
 			}
 
@@ -205,9 +216,31 @@ namespace PhysicsEngine
 		}
 	}
 
+	void Scene::Prepare()
+	{
+		if (m_state != State::RUNNING) return;
+
+		VehicleSceneQueryData* a = VehicleSceneQueryData::Create(2);
+		VehicleSceneQueryResults* b = VehicleSceneQueryResults::Create(2);
+
+		/*
+		physx::PxVehicleDrivableSurfaceToTireFrictionPairs* m_surfaceTirePairs;
+		m_surfaceTirePairs->setup(MAX_NUM_TIRE_TYPES, MAX_NUM_SURFACE_TYPES, drivableSurfaceMaterials, drivableSurfaceTypes);
+		for (PxU32 i = 0; i < MAX_NUM_SURFACE_TYPES; i++)
+		{
+			for (PxU32 j = 0; j < MAX_NUM_TIRE_TYPES; j++)
+			{
+				mSurfaceTirePairs->setTypePairFriction(i, j, TireFrictionMultipliers::getValue(i, j));
+			}
+		}
+		*/
+	}
+
 	void Scene::Update(float dt)
 	{
 		if (m_state != State::RUNNING) return;
+
+		//physx::PxVehicleUpdates(dt, m_physxScene->getGravity(), m_frictionPairs, 1, m_vehicles, NULL);
 
 		// When this call returns, the simulation step has begun in a separate thread
 		m_physxScene->simulate(dt);

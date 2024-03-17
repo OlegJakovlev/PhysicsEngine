@@ -81,6 +81,9 @@ namespace PhysicsEngine
 		uint32_t m_clothActorCount;
 		uint32_t m_vehicleActorCount;
 
+		physx::PxVehicleWheels** m_vehicles;
+		physx::PxRaycastQueryResult* m_sqResults;
+
 #ifdef PHYSICS_DEBUG_MODE
 		std::vector<Actor*> m_staticActorsDebug;
 		std::vector<Actor*> m_dynamicActorsDebug;
@@ -92,6 +95,7 @@ namespace PhysicsEngine
 		bool PostInit(const physx::PxPhysics* physxObject,
 					  const Dispatcher* dispatcherObject);
 		void SetupActorFilter(const Actor* actor);
+		void Prepare();
 		void Update(float dt);
 		void Release();
 

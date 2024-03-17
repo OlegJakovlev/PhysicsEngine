@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Application\GameObjects\CustomRenderGameObject.cpp" />
+    <ClCompile Include="Application\Input\KeyCallbackEntry.cpp" />
+    <ClCompile Include="Application\Input\MouseCallbackEntry.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Types\ActorType.cpp" />
     <ClCompile Include="Application\Database\ColorDatabase.cpp" />
     <ClCompile Include="Application\Logger\ApplicationLogger.cpp" />
@@ -98,8 +101,17 @@
     <ClCompile Include="PhysicsEngine\Utility\VehicleCreator.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Types\VehicleType.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Types\VehicleData.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Types\SurfaceType.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Physics\VehicleSceneQueryData.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Physics\VehicleSceneQueryResults.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Physics\VehicleQueryFilter.cpp" />
+    <ClCompile Include="Application\Scenes\PlayGameScene.cpp" />
+    <ClCompile Include="Application\DataTypes\AppVoidCallbackEntry.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\GameObjects\CustomRenderGameObject.h" />
+    <ClInclude Include="Application\Input\KeyCallbackEntry.h" />
+    <ClInclude Include="Application\Input\MouseCallbackEntry.h" />
     <ClInclude Include="PhysicsEngine\Engine\Types\ActorType.h" />
     <ClInclude Include="Application\Database\ColorDatabase.h" />
     <ClInclude Include="Application\GlobalDefine.h" />
@@ -288,6 +300,12 @@
     <ClInclude Include="PhysicsEngine\Utility\VehicleCreator.h" />
     <ClInclude Include="PhysicsEngine\Engine\Types\VehicleType.h" />
     <ClInclude Include="PhysicsEngine\Engine\Types\VehicleData.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Types\SurfaceType.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Physics\VehicleSceneQueryData.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Physics\VehicleSceneQueryResults.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Physics\VehicleQueryFilter.h" />
+    <ClInclude Include="Application\Scenes\PlayGameScene.h" />
+    <ClInclude Include="Application\DataTypes\AppVoidCallbackEntry.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\Graphics\lib\win32\glut\glut32.lib" />

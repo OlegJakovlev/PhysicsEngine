@@ -26,6 +26,7 @@ namespace CustomApplication
 
 		physx::PxVec3* m_defaultColor;
 		physx::PxVec3* m_backgroundColor;
+		float m_fov;
 
 	public:
 		bool Init(const char* window_name, int width, int height);
@@ -37,9 +38,13 @@ namespace CustomApplication
 		void Reshape(int width, int height) const;
 		void Idle() const;
 		void Clear() const;
+		void Prepare() const;
 		void Render(GameScene* gameScene, double dt) const;
 		void RenderHUD() const;
 		void FinishRender() const;
+
+		Camera* GetCamera() const;
+		const IRender* GetRenderingImpl() const;
 	};
 }
 

@@ -7,6 +7,7 @@
 #include "../../PhysicsEngine/Engine/Actors/DynamicActor.h"
 #include "../../PhysicsEngine/Engine/Actors/ClothActor.h"
 #include "../../PhysicsEngine/Engine/Actors/VehicleActor.h"
+#include "CustomRenderGameObject.h"
 
 namespace CustomApplication
 {
@@ -123,5 +124,11 @@ namespace CustomApplication
 #endif
 
         return vehicleObject;
+    }
+
+    GameObject* GameObjectFactory::CreateCustomRenderGameObject()
+    {
+        CustomRenderGameObject* customRenderObject = new CustomRenderGameObject(GenerateId());
+        return customRenderObject;
     }
 }

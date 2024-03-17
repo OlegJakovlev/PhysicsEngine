@@ -4,6 +4,7 @@
 #include <vector>
 #include "VehicleActor.h"
 #include "../Types/VehicleData.h"
+#include "../../GlobalDefine.h"
 
 namespace PhysicsEngine
 {
@@ -120,7 +121,24 @@ namespace PhysicsEngine
 		auto physxActor = m_physics->createCloth(transform, *fabric, vertices,
 												 physx::PxClothFlag::eSCENE_COLLISION |
 												 physx::PxClothFlag::eSWEPT_CONTACT);
-		
+
+#if ENABLE_CUDA
+		physxActor.setClothFlag(PxClothFlag::eCUDA, true);
+#endif
+
+		// TODO: Move to the ClothConfigData class
+		//physxActor->setInertiaScale(0.5f);
+		//physxActor->setDragCoefficient(0.2);
+		physxActor->setFrictionCoefficient(0.6);
+		//physxActor->setCollisionMassScale(20.0f);
+
+		// CCD
+		//physxActor->setClothFlag(physx::PxClothFlag::eSWEPT_CONTACT, true);
+
+		// Self-collision
+		//physxActor->setSelfCollisionDistance(0.1f);
+		//physxActor->setSelfCollisionStiffness(1.0f);
+
 		// https://docs.nvidia.com/gameworks/content/gameworkslibrary/physx/guide/Manual/Cloth.html#specifying-collision-shapes
 		// TODO: Think about custom stretch configs (each constraint type)
 		// physxActor.setStretchConfig(PxClothFabricPhaseType::eVERTICAL, PxClothStretchConfig(1.0f));
@@ -162,6 +180,18 @@ namespace PhysicsEngine
 
 		clothPhysxActor->setSimulationFilterData(originalClothPhysxActor->getSimulationFilterData());
 
+		clothPhysxActor->setInertiaScale(originalClothPhysxActor->getAngularInertiaScale().x);
+		clothPhysxActor->setDragCoefficient(originalClothPhysxActor->getLinearDragCoefficient().x);
+		clothPhysxActor->setFrictionCoefficient(originalClothPhysxActor->getFrictionCoefficient());
+		clothPhysxActor->setCollisionMassScale(originalClothPhysxActor->getCollisionMassScale());
+
+		// CCD
+		clothPhysxActor->setClothFlags(originalClothPhysxActor->getClothFlags());
+
+		// Self-collision
+		clothPhysxActor->setSelfCollisionDistance(originalClothPhysxActor->getSelfCollisionDistance());
+		clothPhysxActor->setSelfCollisionStiffness(originalClothPhysxActor->getSelfCollisionStiffness());
+
 		// Link actor to physx to have an access from collision calls 
 		clothPhysxActor->userData = clone;
 		clone->m_currentPhysxActor = clothPhysxActor;
@@ -173,11 +203,7 @@ namespace PhysicsEngine
 	{
 		VehicleActor* actor = new VehicleActor(GenerateId(), configData);
 
-		//SetupWheelsSimulationData(wheelSimData);
-		//SetupDriveSimData(driveSimData);
 		physx::PxRigidDynamic* vehActor = m_physics->createRigidDynamic(transform);
-		//setupVehicleActor(vehActor);
-
 
 		vehActor->userData = actor;
 		actor->m_currentPhysxActor = vehActor;
@@ -185,15 +211,15 @@ namespace PhysicsEngine
 		switch (configData->type)
 		{
 			case Default4W:
-				m_vehicleCreator->Create4W(vehActor, configData);
+				actor->SetVehicleDrive(m_vehicleCreator->Create4W(vehActor, configData));
 				break;
 
 			case Tank:
-				m_vehicleCreator->CreateTank(vehActor, configData);
+				actor->SetVehicleDrive(m_vehicleCreator->CreateTank(vehActor, configData));
 				break;
 			
 			case Custom:
-				m_vehicleCreator->CreateNW(vehActor, configData);
+				actor->SetVehicleDrive(m_vehicleCreator->CreateNW(vehActor, configData));
 				break;
 			
 			default:
