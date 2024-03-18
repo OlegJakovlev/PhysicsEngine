@@ -9,7 +9,18 @@ namespace CustomApplication
         auto defaultColorEntry = GlutApp::Get()->GetColorDatabase()->GetEntry(CRC32_STR("Default"));
         m_color = defaultColorEntry.data;
         m_disableLighting = false;
+        m_ignoreRender = false;
         m_lineWidth = 1;
+    }
+
+    void RenderData::SetIgnoreRender(bool ignoreRender)
+    {
+        m_ignoreRender = ignoreRender;
+    }
+
+    bool RenderData::GetIgnoreRender() const
+    {
+        return m_ignoreRender;
     }
 
     void RenderData::SetColour(const physx::PxVec3* newColor)

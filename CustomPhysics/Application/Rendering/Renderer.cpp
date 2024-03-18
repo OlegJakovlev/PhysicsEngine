@@ -18,11 +18,11 @@ namespace CustomApplication
 							  500.f);
 							  */
 		
-		m_camera = new Camera(physx::PxVec3(0, 1.2f, 0.f),
-							  physx::PxVec3(0.f, 0.f, 1.f),
+		m_camera = new Camera(physx::PxVec3(0, 10.f, 0.f),
+							  physx::PxVec3(0, -0.2f, 1.f),
 							  12.f);
 
-		m_fov = 60.0f;
+		m_fov = 80.0f;
 		m_backgroundColor = new physx::PxVec3(42 / 255.f, 112 / 255.f, 197 / 255.f);
 
 		m_renderMode = RenderMode::BOTH;

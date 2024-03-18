@@ -48,6 +48,8 @@ namespace CustomApplication
 
 	public:
 		void DrawCircle(const physx::PxVec3& centerOffset, const float radius, const int segments, const float startAngle, const float endAngle, const RenderData& renderData) const override;
+		void DrawCircleLine(const physx::PxVec3& centerOffset, const float radius, const int segments, const float startAngle, const float endAngle, const RenderData& renderData) const override;
+		void DrawBox(const physx::PxTransform& pose, const physx::PxVec3& halfExtents, const RenderData& renderData) const override;
 
 	protected:
 		void DrawPlane() const override;

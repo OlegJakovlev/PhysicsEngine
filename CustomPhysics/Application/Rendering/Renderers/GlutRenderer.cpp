@@ -7,6 +7,8 @@
 #include "../../GameObjects/ClothGameObject.h"
 #include "../../GameObjects/CustomRenderGameObject.h"
 
+#define M_PI 3.14159265358979323846264338327950288
+
 namespace CustomApplication
 {
 	void GlutRenderer::SetupWindow(const char* name, int width, int height)
@@ -65,6 +67,33 @@ namespace CustomApplication
 	void GlutRenderer::DrawSphere(const physx::PxGeometryHolder& geometry) const
 	{
 		glutSolidSphere(geometry.sphere().radius, m_renderDetail, m_renderDetail);
+	}
+
+	void GlutRenderer::DrawBox(const physx::PxTransform& pose, const physx::PxVec3& halfExtents, const RenderData& renderData) const
+	{
+		physx::PxMat44 shapePose(pose);
+		glPushMatrix();
+		glMultMatrixf((float*)&shapePose);
+
+		bool isLightingDisabled = renderData.GetIsLightingDisabled();
+		physx::PxVec3 shapeColor = *renderData.GetColor();
+
+		if (isLightingDisabled)
+		{
+			glDisable(GL_LIGHTING);
+		}
+
+		glColor4f(shapeColor.x, shapeColor.y, shapeColor.z, 1.f);
+
+		glScalef(halfExtents.x, halfExtents.y, halfExtents.z);
+		glutSolidCube(2.f);
+
+		if (isLightingDisabled)
+		{
+			glEnable(GL_LIGHTING);
+		}
+
+		glPopMatrix();
 	}
 
 	void GlutRenderer::DrawBox(const physx::PxGeometryHolder& geometry) const
@@ -343,7 +372,7 @@ namespace CustomApplication
 	{
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		gluPerspective(fov, (float) glutGet(GLUT_WINDOW_WIDTH) / (float) glutGet(GLUT_WINDOW_HEIGHT), 1.f, 10000.f);
+		gluPerspective(fov, (float) glutGet(GLUT_WINDOW_WIDTH) / (float) glutGet(GLUT_WINDOW_HEIGHT), 0.1f, 10000.f);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		gluLookAt(cameraEye.x, cameraEye.y, cameraEye.z,
@@ -365,6 +394,12 @@ namespace CustomApplication
 	{
 		for (physx::PxU32 i = 0; i < numActors; i++)
 		{
+			const RenderData& data = gameActors[i]->GetRenderData();
+			if (data.GetIgnoreRender())
+			{
+				continue;
+			}
+
 			auto gameActorType = gameActors[i]->GetType();
 			if (gameActorType == GameObject::Custom)
 			{
@@ -466,6 +501,20 @@ namespace CustomApplication
 
 	void GlutRenderer::DrawCircle(const physx::PxVec3& centerOffset, const float radius, const int segments, const float startAngle, const float endAngle, const RenderData& renderData) const
 	{
+		glBegin(GL_TRIANGLE_FAN);
+		glVertex3f(centerOffset.x, centerOffset.y, centerOffset.z);
+
+		for (int i = 0; i <= segments; i++) {
+			float theta = startAngle + (endAngle - startAngle) * float(i) / float(segments);
+			float x = radius * cosf(theta);
+			float z = radius * sinf(theta);
+			glVertex3f(x + centerOffset.x, centerOffset.y, z + centerOffset.z);
+		}
+		glEnd();
+	}
+
+	void GlutRenderer::DrawCircleLine(const physx::PxVec3& centerOffset, const float radius, const int segments, const float startAngle, const float endAngle, const RenderData& renderData) const
+	{
 		const physx::PxVec3* color = renderData.GetColor();
 		bool isLightingDisabled = renderData.GetIsLightingDisabled();
 
@@ -475,17 +524,25 @@ namespace CustomApplication
 		}
 
 		glColor4f(color->x, color->y, color->z, 1);
-		glLineWidth(renderData.GetLineWidth());
 
-		glBegin(GL_LINE_STRIP);
-		for (int i = 0; i < segments; i++)
+		float lineWidth = renderData.GetLineWidth();
+
+		// Magic constant that makes the circle perfect
+		// Need to use that, because glLineWidth sets the height of the line in x-z perspective
+		float invisibleDiff = 0.0075f;
+
+		for (float t = 0; t < lineWidth; t += invisibleDiff)
 		{
-			float theta = startAngle + (endAngle - startAngle) * float(i) / float(segments);
-			float x = radius * cosf(theta);
-			float z = radius * sinf(theta);
-			glVertex3f(x + centerOffset.x, centerOffset.y, z + centerOffset.z);
+			glBegin(GL_LINE_STRIP);
+			for (int i = 0; i <= segments; i++)
+			{
+				float theta = startAngle + (endAngle - startAngle) * float(i) / float(segments);
+				float x = (t + radius) * cosf(theta);
+				float z = (t + radius) * sinf(theta);
+				glVertex3f(x + centerOffset.x, centerOffset.y, z + centerOffset.z);
+			}
+			glEnd();
 		}
-		glEnd();
 
 		if (isLightingDisabled)
 		{

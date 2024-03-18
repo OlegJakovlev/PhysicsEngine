@@ -123,7 +123,7 @@ namespace PhysicsEngine
 												 physx::PxClothFlag::eSWEPT_CONTACT);
 
 #if ENABLE_CUDA
-		physxActor.setClothFlag(PxClothFlag::eCUDA, true);
+		physxActor->setClothFlag(physx::PxClothFlag::eCUDA, true);
 #endif
 
 		// TODO: Move to the ClothConfigData class

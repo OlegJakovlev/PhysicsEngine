@@ -13,6 +13,7 @@ namespace CustomApplication
 		const physx::PxVec3* m_color;
 		float m_lineWidth;
 		bool m_disableLighting;
+		bool m_ignoreRender;
 
 	public:
 		RenderData();
@@ -27,6 +28,9 @@ namespace CustomApplication
 
 		float GetLineWidth() const;
 		void SetLineWidth(float width);
+
+		bool GetIgnoreRender() const;
+		void SetIgnoreRender(bool ignoreRender);
 	};
 }
 

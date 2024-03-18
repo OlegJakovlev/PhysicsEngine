@@ -9,6 +9,10 @@ namespace CustomApplication
 {
 	class PlayGameScene : public GameScene
 	{
+	private:
+		void GameFieldMarking(const PhysicsEngine::ShapeCreator* shapeCreator, const PhysicsEngine::GeometryFactory* geoFactory, float minHeightOffset);
+		void GameFieldOuterWalls(const PhysicsEngine::ShapeCreator* shapeCreator, const PhysicsEngine::GeometryFactory* geoFactory, float minHeightOffset);
+
 	public:
 		void Init(const PhysicsEngine::PhysicsEngine* physicsEngine) override;
 		void Update(float dt) override;

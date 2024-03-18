@@ -16,6 +16,8 @@ namespace CustomApplication
 	// I don't like exposing these, but custom rendering components callbacks need to have an access
 	public:
 		virtual void DrawCircle(const physx::PxVec3& centerOffset, const float radius, const int segments, const float startAngle, const float endAngle, const RenderData& renderData) const = 0;
+		virtual void DrawCircleLine(const physx::PxVec3& centerOffset, const float radius, const int segments, const float startAngle, const float endAngle, const RenderData& renderData) const = 0;
+		virtual void DrawBox(const physx::PxTransform& pose, const physx::PxVec3& halfExtents, const RenderData& renderData) const = 0;
 
 	protected:
 		virtual void DrawPlane() const = 0;
