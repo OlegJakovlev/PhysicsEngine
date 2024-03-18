@@ -52,7 +52,7 @@ namespace CustomApplication
 		shapeCreator->CreateShape(*gameKinematic->GetPhysicsActorPointer(), box, CRC32_STR("Test"));
 
 		GameObject* gameTrigger = m_gameObjectFactory->CreateStaticGameObject(physx::PxTransform(physx::PxVec3(0, 10, 0)), GameObject::Layer::Layer_4);
-		shapeCreator->CreateTrigger(*gameTrigger->GetPhysicsActorPointer(), box, CRC32_STR("Default"));
+		shapeCreator->CreateTrigger(*gameTrigger->GetPhysicsActorPointer(), box);
 
 		GameObject* clothGameObject = m_gameObjectFactory->CreateClothGameObject(physx::PxTransform(physx::PxVec3(-2.f, 5, 0.f)), physx::PxVec2(4.f, 4.f), physx::PxVec2(40, 40), GameObject::Layer::Layer_1);
 

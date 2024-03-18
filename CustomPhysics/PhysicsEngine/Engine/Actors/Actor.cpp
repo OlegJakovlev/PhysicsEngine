@@ -148,7 +148,7 @@ namespace PhysicsEngine
 			physx::PxShapeFlags activeShapeFlags = shapes[i]->getFlags();
 			if (activeShapeFlags.isSet(physx::PxShapeFlag::eTRIGGER_SHAPE) && !activeShapeFlags.isSet(physx::PxShapeFlag::eSIMULATION_SHAPE))
 			{
-				shapeCreator->CreateTrigger(clone, geometry, CRC32_STR("Default"), shapes[i]);
+				shapeCreator->CreateTrigger(clone, geometry, shapes[i]);
 			}
 			else
 			{

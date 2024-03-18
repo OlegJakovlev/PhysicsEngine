@@ -152,7 +152,7 @@ namespace PhysicsEngine
 		std::printf("ShapeCreator::CreateShape Unknown underlaying type!");
 	}
 
-	void ShapeCreator::CreateTrigger(void* actor, const physx::PxGeometry* geometry, const uint32_t materialKey, const physx::PxShape* src) const
+	void ShapeCreator::CreateTrigger(void* actor, const physx::PxGeometry* geometry, const physx::PxShape* src) const
 	{
 		Actor* castedActor = static_cast<Actor*>(actor);
 		if (!castedActor)
@@ -167,13 +167,13 @@ namespace PhysicsEngine
 		if (underlayingType == ActorType::Dynamic)
 		{
 			DynamicActor* dynamicActor = (DynamicActor*) castedActor;
-			shape = CreateShapeInternal(dynamicActor, geometry, materialKey, src);
+			shape = CreateShapeInternal(dynamicActor, geometry, CRC32_STR("Default"), src);
 		}
 
 		if (underlayingType == ActorType::Static)
 		{
 			StaticActor* staticActor = (StaticActor*) castedActor;
-			shape = CreateShapeInternal(staticActor, geometry, materialKey, src);
+			shape = CreateShapeInternal(staticActor, geometry, CRC32_STR("Default"), src);
 		}
 
 		if (!shape)

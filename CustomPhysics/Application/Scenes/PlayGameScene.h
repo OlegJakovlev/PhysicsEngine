@@ -10,8 +10,10 @@ namespace CustomApplication
 	class PlayGameScene : public GameScene
 	{
 	private:
-		void GameFieldMarking(const PhysicsEngine::ShapeCreator* shapeCreator, const PhysicsEngine::GeometryFactory* geoFactory, float minHeightOffset);
-		void GameFieldOuterWalls(const PhysicsEngine::ShapeCreator* shapeCreator, const PhysicsEngine::GeometryFactory* geoFactory, float minHeightOffset);
+		void GameFieldMarking(const PhysicsEngine::ShapeCreator* shapeCreator, const PhysicsEngine::GeometryFactory* geoFactory, float minHeightOffset, float innerFieldWidth, float innerFieldDepth);
+		void GameFieldOuterWalls(const PhysicsEngine::ShapeCreator* shapeCreator, const PhysicsEngine::GeometryFactory* geoFactory, float minHeightOffset, float innerFieldWidth, float innerFieldDepth);
+		void GoalObjects(const PhysicsEngine::GeometryFactory* geoFactory, const PhysicsEngine::ShapeCreator* shapeCreator, float innerFieldWidth, float innerFieldDepth);
+		void CornerPolesAndFlags(const PhysicsEngine::GeometryFactory* geoFactory, const PhysicsEngine::ShapeCreator* shapeCreator, float innerFieldWidth, float innerFieldDepth);
 
 	public:
 		void Init(const PhysicsEngine::PhysicsEngine* physicsEngine) override;

@@ -26,7 +26,7 @@ namespace PhysicsEngine
 		void CreateShapeDebug(Actor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const;
 #endif
 		void CreateShape(void* actor, const physx::PxGeometry* geometry, const uint32_t materialKey, const physx::PxShape* src = nullptr) const;
-		void CreateTrigger(void* actor, const physx::PxGeometry* geometry, const uint32_t materialKey, const physx::PxShape* src = nullptr) const;
+		void CreateTrigger(void* actor, const physx::PxGeometry* geometry, const physx::PxShape* src = nullptr) const;
 	};
 }
 
