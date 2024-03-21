@@ -12,6 +12,7 @@ namespace PhysicsEngine
 		Dynamic,
 		Cloth,
 		Vehicle,
+		Joint,
 	};
 }
 

@@ -10,13 +10,12 @@
 #include "../Databases/MaterialDatabase.h"
 #include "../Allocators/SingleFrameAllocator.h"
 #include "../Allocators/DoubleBufferAllocator.h"
-#include "Actors/ActorFactory.h"
-#include "Actors/GeometryFactory.h"
-#include "../Utility/ShapeCreator.h"
+#include "Actors/Factories/ActorFactory.h"
+#include "Actors/Factories/GeometryFactory.h"
+#include "Actors/Factories/ShapeFactory.h"
 #include "../Debug/VisualDebugger.h"
 #include "Services/Cooking.h"
 #include "Services/VehicleSDKWrapper.h"
-#include "../Utility/VehicleCreator.h"
 
 namespace PhysicsEngine
 {
@@ -43,9 +42,8 @@ namespace PhysicsEngine
 		// Factories and databases
 		ActorFactory* m_actorFactory;
 		GeometryFactory* m_geoFactory;
+		ShapeFactory* m_shapeCreator;
 		MaterialDatabase* m_materialDatabase;
-		ShapeCreator* m_shapeCreator;
-		VehicleCreator* m_vehicleCreator;
 
 		// Local variables
 		SingleFrameAllocator g_singleFrameAllocator;
@@ -69,7 +67,7 @@ namespace PhysicsEngine
 		const SceneManager* GetSceneManager() const;
 		const ActorFactory* GetActorFactory() const;
 		const GeometryFactory* GetGeometryFactory() const;
+		const ShapeFactory* GetShapeFactory() const;
 		const MaterialDatabase* GetMaterialDatabase() const;
-		const ShapeCreator* GetShapeCreator() const;
 	};
 }

@@ -305,6 +305,11 @@ namespace PhysicsEngine
 		{
 			VehicleSync(sourceScene);
 		}
+
+		if (syncState & SyncState::JOINT)
+		{
+			JointSync(sourceScene);
+		}
 	}
 
 	void Scene::StaticSync(Scene* sourceScene)
@@ -433,6 +438,39 @@ namespace PhysicsEngine
 		}
 	}
 
+	void Scene::JointSync(Scene* sourceScene)
+	{
+		std::unique_lock<std::mutex> lock(m_mutex);
+
+		for (uint32_t i = 0; i < m_jointActorCount; i++)
+		{
+			m_jointActors[i]->Release();
+			delete m_jointActors[i];
+		}
+
+		m_jointActorCount = 0;
+#ifdef PHYSICS_DEBUG_MODE
+		m_jointActorsDebug.clear();
+#endif
+
+		for (uint32_t i = 0; i < sourceScene->m_jointActorCount; i++)
+		{
+			if (sourceScene->m_engineScene == nullptr)
+			{
+				m_jointActors[i] = sourceScene->m_jointActors[i]->CloneToRender();
+			}
+			else
+			{
+				m_jointActors[i] = sourceScene->m_jointActors[i]->CloneToPhysics();
+			}
+
+			if (m_jointActors[i])
+			{
+				AddActorInternal((JointActor*)m_jointActors[i]);
+			}
+		}
+	}
+
 	void Scene::Lock()
 	{
 		m_mutex.lock();
@@ -509,6 +547,21 @@ namespace PhysicsEngine
 		}
 	}
 
+	void Scene::AddActorInternal(JointActor* actor)
+	{
+#ifdef PHYSICS_DEBUG_MODE
+		m_jointActorsDebug.push_back(actor);
+#endif
+
+		m_jointActors[m_jointActorCount] = actor;
+		m_jointActorCount++;
+
+		if (m_state == State::RUNNING)
+		{
+			RegisterActor(actor);
+		}
+	}
+
 	void Scene::AddActor(Actor* actor)
 	{
 		switch (actor->GetType())
@@ -527,6 +580,10 @@ namespace PhysicsEngine
 
 			case ActorType::Vehicle:
 				AddActorInternal((VehicleActor*) actor);
+				break;
+
+			case ActorType::Joint:
+				AddActorInternal((JointActor*) actor);
 				break;
 
 			default:
@@ -573,6 +630,16 @@ namespace PhysicsEngine
 	const uint32_t Scene::GetVehicleActorCount() const
 	{
 		return m_vehicleActorCount;
+	}
+
+	const Actor** Scene::GetJointActors() const
+	{
+		return const_cast<const Actor**>(m_jointActors);
+	}
+
+	const uint32_t Scene::GetJointActorCount() const
+	{
+		return m_jointActorCount;
 	}
 
 	const physx::PxScene* Scene::GetPhysxScene() const

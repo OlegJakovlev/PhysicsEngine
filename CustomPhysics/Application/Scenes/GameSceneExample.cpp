@@ -22,7 +22,7 @@ namespace CustomApplication
 		materialDatabase->AddEntry(CRC32_STR("Rubber"), physx::PxVec3(1.5, 2.2, 0));
 
 		const PhysicsEngine::GeometryFactory* geoFactory = physicsEngine->GetGeometryFactory();
-		const PhysicsEngine::ShapeCreator* shapeCreator = physicsEngine->GetShapeCreator();
+		const PhysicsEngine::ShapeFactory* shapeCreator = physicsEngine->GetShapeFactory();
 
 		// Colors
 		ColorDatabase* colorDatabase = const_cast<ColorDatabase*>(GlutApp::Get()->GetColorDatabase());

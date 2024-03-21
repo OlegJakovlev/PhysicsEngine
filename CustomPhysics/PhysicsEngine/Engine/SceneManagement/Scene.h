@@ -17,6 +17,7 @@
 #include <mutex>
 #include "../Actors/ClothActor.h"
 #include "../Actors/VehicleActor.h"
+#include "../Actors/JointActor.h"
 
 namespace PhysicsEngine
 {
@@ -38,14 +39,16 @@ namespace PhysicsEngine
 			DYNAMIC = 1 << 1,
 			CLOTH = 1 << 2,
 			VEHICLE = 1 << 3,
-			RUNTIME_UPDATE = DYNAMIC | CLOTH | VEHICLE,
-			ALL = STATIC | DYNAMIC | CLOTH | VEHICLE,
+			JOINT = 1 << 4,
+			RUNTIME_UPDATE = DYNAMIC | CLOTH | VEHICLE | JOINT,
+			ALL = STATIC | DYNAMIC | CLOTH | VEHICLE | JOINT,
 		};
 
-		static const uint32_t k_maxStaticActors = 128;
-		static const uint32_t k_maxDynamicActors = 255;
-		static const uint32_t k_maxClothActors = 64;
+		static const uint32_t k_maxStaticActors = 32;
+		static const uint32_t k_maxDynamicActors = 32;
+		static const uint32_t k_maxClothActors = 32;
 		static const uint32_t k_maxVehicleActors = 8;
+		static const uint32_t k_maxJointActors = 64;
 
 	public:
 		struct alignas(8) SceneConfiguration
@@ -75,11 +78,13 @@ namespace PhysicsEngine
 		Actor** m_dynamicActors;
 		Actor** m_clothActors;
 		Actor** m_vehicleActors;
+		Actor** m_jointActors;
 
 		uint32_t m_staticActorCount;
 		uint32_t m_dynamicActorCount;
 		uint32_t m_clothActorCount;
 		uint32_t m_vehicleActorCount;
+		uint32_t m_jointActorCount;
 
 		physx::PxVehicleWheels** m_vehicles;
 		physx::PxRaycastQueryResult* m_sqResults;
@@ -89,6 +94,7 @@ namespace PhysicsEngine
 		std::vector<Actor*> m_dynamicActorsDebug;
 		std::vector<Actor*> m_clothActorsDebug;
 		std::vector<Actor*> m_vehicleActorsDebug;
+		std::vector<Actor*> m_jointActorsDebug;
 #endif
 
 		bool Init(const SceneConfiguration* configuration);
@@ -106,6 +112,7 @@ namespace PhysicsEngine
 		void DynamicSync(Scene* sourceScene);
 		void ClothSync(Scene* sourceScene);
 		void VehicleSync(Scene* sourceScene);
+		void JointSync(Scene* sourceScene);
 
 		Scene() = delete;
 		Scene(uint32_t id);
@@ -114,6 +121,7 @@ namespace PhysicsEngine
 		void AddActorInternal(DynamicActor* actor);
 		void AddActorInternal(ClothActor* actor);
 		void AddActorInternal(VehicleActor* actor);
+		void AddActorInternal(JointActor* actor);
 
 	public:
 		// TODO: API Expose
@@ -134,6 +142,9 @@ namespace PhysicsEngine
 
 		const Actor** GetVehicleActors() const;
 		const uint32_t GetVehicleActorCount() const;
+
+		const Actor** GetJointActors() const;
+		const uint32_t GetJointActorCount() const;
 
 		const physx::PxScene* GetPhysxScene() const;
 		const physx::PxRenderBuffer& GetRenderBuffer() const;

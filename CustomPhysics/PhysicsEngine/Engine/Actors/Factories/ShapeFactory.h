@@ -3,13 +3,13 @@
 #ifndef ShapeCreator_H
 #define ShapeCreator_H
 
-#include "../Engine/Actors/StaticActor.h"
-#include "../Engine/Actors/DynamicActor.h"
-#include "../Databases/MaterialDatabase.h"
+#include "../StaticActor.h"
+#include "../DynamicActor.h"
+#include "../../../Databases/MaterialDatabase.h"
 
 namespace PhysicsEngine
 {
-	class ShapeCreator
+	class ShapeFactory
 	{
 	private:
 		const MaterialDatabase* m_materialDatabase;

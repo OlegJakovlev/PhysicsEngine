@@ -1,11 +1,11 @@
-#include "ShapeCreator.h"
-#include "../GlobalDefine.h"
-#include "Hashing.h"
-#include "../Engine/PhysicsEngine.h"
+#include "ShapeFactory.h"
+#include "../../../GlobalDefine.h"
+#include "../../../Utility/Hashing.h"
+#include "../../PhysicsEngine.h"
 
 namespace PhysicsEngine
 {
-	physx::PxShape* ShapeCreator::CreateShapeInternal(StaticActor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey, const physx::PxShape* src) const
+	physx::PxShape* ShapeFactory::CreateShapeInternal(StaticActor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey, const physx::PxShape* src) const
 	{
 		physx::PxActor* physxActor = const_cast<physx::PxActor*>(actor->GetCurrentPhysxActor());
 		physx::PxRigidStatic* rigidActor = physxActor->is<physx::PxRigidStatic>();
@@ -37,7 +37,7 @@ namespace PhysicsEngine
 		return result;
 	}
 
-	physx::PxShape* ShapeCreator::CreateShapeInternal(DynamicActor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey, const physx::PxShape* src) const
+	physx::PxShape* ShapeFactory::CreateShapeInternal(DynamicActor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey, const physx::PxShape* src) const
 	{
 		physx::PxActor* physxActor = const_cast<physx::PxActor*>(actor->GetCurrentPhysxActor());
 		physx::PxRigidDynamic* rigidActor = physxActor->is<physx::PxRigidDynamic>();
@@ -87,14 +87,14 @@ namespace PhysicsEngine
 		return result;
 	}
 
-	bool ShapeCreator::Init(const MaterialDatabase* database)
+	bool ShapeFactory::Init(const MaterialDatabase* database)
 	{
 		m_materialDatabase = database;
 		return true;
 	}
 
 #ifdef PHYSICS_DEBUG_MODE
-	void ShapeCreator::CreateShapeDebug(Actor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const
+	void ShapeFactory::CreateShapeDebug(Actor* actor, const physx::PxGeometry* geometry, const uint32_t materialKey) const
 	{
 		Actor* castedActor = static_cast<Actor*>(actor);
 		if (!castedActor)
@@ -123,7 +123,7 @@ namespace PhysicsEngine
 	}
 #endif
 
-	void ShapeCreator::CreateShape(void* actor, const physx::PxGeometry* geometry, const uint32_t materialKey, const physx::PxShape* src) const
+	void ShapeFactory::CreateShape(void* actor, const physx::PxGeometry* geometry, const uint32_t materialKey, const physx::PxShape* src) const
 	{
 		Actor* castedActor = static_cast<Actor*>(actor);
 
@@ -152,7 +152,7 @@ namespace PhysicsEngine
 		std::printf("ShapeCreator::CreateShape Unknown underlaying type!");
 	}
 
-	void ShapeCreator::CreateTrigger(void* actor, const physx::PxGeometry* geometry, const physx::PxShape* src) const
+	void ShapeFactory::CreateTrigger(void* actor, const physx::PxGeometry* geometry, const physx::PxShape* src) const
 	{
 		Actor* castedActor = static_cast<Actor*>(actor);
 		if (!castedActor)
@@ -186,7 +186,7 @@ namespace PhysicsEngine
 		shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 	}
 
-	void ShapeCreator::QueryMaterial(const uint32_t materialKey, const physx::PxMaterial*& material) const
+	void ShapeFactory::QueryMaterial(const uint32_t materialKey, const physx::PxMaterial*& material) const
 	{
 		MaterialDatabase::QueryResult result = m_materialDatabase->GetEntry(materialKey);
 

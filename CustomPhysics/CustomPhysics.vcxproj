@@ -22,6 +22,10 @@
     <ClCompile Include="Application\GameObjects\CustomRenderGameObject.cpp" />
     <ClCompile Include="Application\Input\KeyCallbackEntry.cpp" />
     <ClCompile Include="Application\Input\MouseCallbackEntry.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Types\JointActorConfig.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Types\JointType.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Actors\Factories\JointFactory.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Actors\JointActor.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Types\ActorType.cpp" />
     <ClCompile Include="Application\Database\ColorDatabase.cpp" />
     <ClCompile Include="Application\Logger\ApplicationLogger.cpp" />
@@ -47,9 +51,9 @@
     <ClCompile Include="PhysicsEngine\Demo\DemoReader.cpp" />
     <ClCompile Include="PhysicsEngine\Utility\EndianChecker.cpp" />
     <ClCompile Include="PhysicsEngine\Utility\EventDataCompressor.cpp" />
-    <ClCompile Include="PhysicsEngine\Engine\Actors\GeometryFactory.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Actors\Factories\GeometryFactory.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\EventTracker\EventTypes\AddActorEvent.cpp" />
-    <ClCompile Include="PhysicsEngine\Engine\Actors\ActorFactory.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Actors\Factories\ActorFactory.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\EventTracker\EventFactory.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\EventTracker\EventTracker.cpp" />
     <ClCompile Include="Application\AppLoop.cpp" />
@@ -91,7 +95,7 @@
     <ClCompile Include="PhysicsEngine\Utility\Timer.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\EventTracker\EventTypes\PhysxEvent.cpp" />
     <ClCompile Include="Application\Rendering\RenderData.cpp" />
-    <ClCompile Include="PhysicsEngine\Utility\ShapeCreator.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Actors\Factories\ShapeFactory.cpp" />
     <ClCompile Include="Application\GameObjects\StaticGameObject.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Services\VehicleSDKWrapper.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Components\TriggerCallbackEntry.cpp" />
@@ -112,6 +116,10 @@
     <ClInclude Include="Application\GameObjects\CustomRenderGameObject.h" />
     <ClInclude Include="Application\Input\KeyCallbackEntry.h" />
     <ClInclude Include="Application\Input\MouseCallbackEntry.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Types\JointActorConfig.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Types\JointType.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Actors\Factories\JointFactory.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Actors\JointActor.h" />
     <ClInclude Include="PhysicsEngine\Engine\Types\ActorType.h" />
     <ClInclude Include="Application\Database\ColorDatabase.h" />
     <ClInclude Include="Application\GlobalDefine.h" />
@@ -245,9 +253,9 @@
     <ClInclude Include="Dependencies\spdlog\include\spdlog\version.h" />
     <ClInclude Include="PhysicsEngine\Utility\EndianChecker.h" />
     <ClInclude Include="PhysicsEngine\Utility\EventDataCompressor.h" />
-    <ClInclude Include="PhysicsEngine\Engine\Actors\GeometryFactory.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Actors\Factories\GeometryFactory.h" />
     <ClInclude Include="PhysicsEngine\Engine\EventTracker\EventTypes\AddActorEvent.h" />
-    <ClInclude Include="PhysicsEngine\Engine\Actors\ActorFactory.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Actors\Factories\ActorFactory.h" />
     <ClInclude Include="PhysicsEngine\Engine\EventTracker\EventFactory.h" />
     <ClInclude Include="PhysicsEngine\Engine\EventTracker\EventTracker.h" />
     <ClInclude Include="Application\AppLoop.h" />
@@ -290,7 +298,7 @@
     <ClInclude Include="PhysicsEngine\Utility\Timer.h" />
     <ClInclude Include="PhysicsEngine\Engine\EventTracker\EventTypes\PhysxEvent.h" />
     <ClInclude Include="Application\Rendering\RenderData.h" />
-    <ClInclude Include="PhysicsEngine\Utility\ShapeCreator.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Actors\Factories\ShapeFactory.h" />
     <ClInclude Include="Application\GameObjects\StaticGameObject.h" />
     <ClInclude Include="PhysicsEngine\Engine\Services\VehicleSDKWrapper.h" />
     <ClInclude Include="PhysicsEngine\Engine\Components\TriggerCallbackEntry.h" />

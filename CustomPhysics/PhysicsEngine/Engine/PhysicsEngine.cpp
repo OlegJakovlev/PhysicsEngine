@@ -83,13 +83,18 @@ namespace PhysicsEngine
 			return false;
 		}
 
-		/* Is not supported because of linker and physx :(
 		m_taskManager = new TaskManager();
 		if (!m_taskManager->Init(m_foundation->GetFoundationService(), m_dispatcher))
 		{
 			return false;
 		}
-		*/
+
+		m_vehicleSDK = new VehicleSDKWrapper();
+		if (!m_vehicleSDK->Init(m_physics->GetPhysics()))
+		{
+			printf("VehicleSDKWrapper creation failed!\n");
+			return false;
+		}
 
 		m_materialDatabase = new MaterialDatabase();
 		if (!m_materialDatabase->Init(m_physics->GetPhysics()))
@@ -100,15 +105,8 @@ namespace PhysicsEngine
 
 		m_sceneManager = new SceneManager();
 
-		m_vehicleCreator = new VehicleCreator();
-		if (!m_vehicleCreator->Init(m_physics->GetPhysics()))
-		{
-			printf("VehicleCreator creation failed!\n");
-			return false;
-		}
-
 		m_actorFactory = new ActorFactory();
-		if (!m_actorFactory->Init(m_physics->GetPhysics(), m_vehicleCreator))
+		if (!m_actorFactory->Init(m_physics->GetPhysics()))
 		{
 			printf("ActorFactory creation failed!\n");
 			return false;
@@ -121,17 +119,10 @@ namespace PhysicsEngine
 			return false;
 		}
 
-		m_shapeCreator = new ShapeCreator();
+		m_shapeCreator = new ShapeFactory();
 		if (!m_shapeCreator->Init(m_materialDatabase))
 		{
 			printf("ShapeCreator creation failed!\n");
-			return false;
-		}
-
-		m_vehicleSDK = new VehicleSDKWrapper();
-		if (!m_vehicleSDK->Init(m_physics->GetPhysics()))
-		{
-			printf("VehicleSDKWrapper creation failed!\n");
 			return false;
 		}
 
@@ -197,7 +188,7 @@ namespace PhysicsEngine
 		return m_materialDatabase;
 	}
 
-	const ShapeCreator* PhysicsEngine::GetShapeCreator() const
+	const ShapeFactory* PhysicsEngine::GetShapeFactory() const
 	{
 		return m_shapeCreator;
 	}

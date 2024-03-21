@@ -2,9 +2,9 @@
 
 namespace PhysicsEngine
 {
-	bool VehicleCreator::Init(const physx::PxPhysics* physics)
+	bool VehicleCreator::Init(physx::PxPhysics* physics)
 	{
-		m_physics = const_cast<physx::PxPhysics*>(physics);
+        m_physicsRef = physics;
 		return true;
 	}
 
@@ -265,7 +265,7 @@ namespace PhysicsEngine
 		auto* vehicleDriveSimData4W = (physx::PxVehicleDriveSimData4W*) nonCastVehicleSimData;
 
 		physx::PxVehicleDrive4W* vehicleDrive4W = physx::PxVehicleDrive4W::allocate(configData->drivableWheels + undrivableWheels);
-		vehicleDrive4W->setup(m_physics, rigidBodyActor, *configData->wheelSimData, *vehicleDriveSimData4W, undrivableWheels);
+		vehicleDrive4W->setup(m_physicsRef, rigidBodyActor, *configData->wheelSimData, *vehicleDriveSimData4W, undrivableWheels);
 
 		return vehicleDrive4W;
 	}
@@ -278,7 +278,7 @@ namespace PhysicsEngine
 		auto* vehicleDriveSimDataNW = (physx::PxVehicleDriveSimDataNW*) nonConstVehicleSimData;
 
 		physx::PxVehicleDriveNW* vehDriveNW = physx::PxVehicleDriveNW::allocate(configData->drivableWheels + undrivableWheels);
-		vehDriveNW->setup(m_physics, rigidBodyActor, *configData->wheelSimData, *vehicleDriveSimDataNW, undrivableWheels);
+		vehDriveNW->setup(m_physicsRef, rigidBodyActor, *configData->wheelSimData, *vehicleDriveSimDataNW, undrivableWheels);
 
 		return vehDriveNW;
 	}
@@ -291,7 +291,7 @@ namespace PhysicsEngine
 		auto* vehicleDriveSimDataNW = (physx::PxVehicleDriveSimDataNW*) nonConstVehicleSimData;
 
 		physx::PxVehicleDriveTank* vehDriveTank = physx::PxVehicleDriveTank::allocate(configData->drivableWheels + undrivableWheels);
-		vehDriveTank->setup(m_physics, rigidBodyActor, *configData->wheelSimData, *vehicleDriveSimDataNW, undrivableWheels);
+		vehDriveTank->setup(m_physicsRef, rigidBodyActor, *configData->wheelSimData, *vehicleDriveSimDataNW, undrivableWheels);
 
 		return vehDriveTank;
 	}

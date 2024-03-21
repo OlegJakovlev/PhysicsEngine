@@ -14,8 +14,10 @@ namespace CustomApplication
 		GameScene::Init(physicsEngine);
 
 		PhysicsEngine::MaterialDatabase* materialDatabase = const_cast<PhysicsEngine::MaterialDatabase*>(physicsEngine->GetMaterialDatabase());
+
+		PhysicsEngine::ActorFactory* actorFactory = const_cast<PhysicsEngine::ActorFactory*>(physicsEngine->GetActorFactory());
 		const PhysicsEngine::GeometryFactory* geoFactory = physicsEngine->GetGeometryFactory();
-		const PhysicsEngine::ShapeCreator* shapeCreator = physicsEngine->GetShapeCreator();
+		const PhysicsEngine::ShapeFactory* shapeCreator = physicsEngine->GetShapeFactory();
 
 		InputHandler* handler = const_cast<InputHandler*>(GlutApp::Get()->GetInputHandler());
 		const Renderer* renderer = GlutApp::Get()->GetRenderer();
@@ -102,7 +104,7 @@ namespace CustomApplication
 		}));
 	}
 
-	void PlayGameScene::CornerPolesAndFlags(const PhysicsEngine::GeometryFactory* geoFactory, const PhysicsEngine::ShapeCreator* shapeCreator, float innerFieldWidth, float innerFieldDepth)
+	void PlayGameScene::CornerPolesAndFlags(const PhysicsEngine::GeometryFactory* geoFactory, const PhysicsEngine::ShapeFactory* shapeCreator, float innerFieldWidth, float innerFieldDepth)
 	{
 		float cornerPoleHeight = 1.5f;
 		float cornerPoleDiameter = 0.25f;
@@ -153,7 +155,7 @@ namespace CustomApplication
 		AddGameActor(bottomRightPoleFlag);
 	}
 
-	void PlayGameScene::GoalObjects(const PhysicsEngine::GeometryFactory* geoFactory, const PhysicsEngine::ShapeCreator* shapeCreator, float innerFieldWidth, float innerFieldDepth)
+	void PlayGameScene::GoalObjects(const PhysicsEngine::GeometryFactory* geoFactory, const PhysicsEngine::ShapeFactory* shapeCreator, float innerFieldWidth, float innerFieldDepth)
 	{
 		float goalRadius = 0.06;
 		float goalWidth = 7.32;
@@ -192,6 +194,8 @@ namespace CustomApplication
 		topGoalTriggerRenderData.SetIgnoreRender(true);
 		AddGameActor(topGoalTrigger);
 
+
+
 		// Bottom Goal
 		GameObject* bottomTopGoalPart = m_gameObjectFactory->CreateDynamicGameObject(physx::PxTransform(physx::PxVec3(0, goalHeight + goalRadius, -innerFieldDepth / 2)), GameObject::Layer::Layer_Default);
 		shapeCreator->CreateShape(*bottomTopGoalPart->GetPhysicsActorPointer(), goalXWall, CRC32_STR("Aluminum"));
@@ -220,7 +224,7 @@ namespace CustomApplication
 		AddGameActor(bottomGoalTrigger);
 	}
 
-	void PlayGameScene::GameFieldOuterWalls(const PhysicsEngine::ShapeCreator* shapeCreator, const PhysicsEngine::GeometryFactory* geoFactory, float minHeightOffset, float innerFieldWidth, float innerFieldDepth)
+	void PlayGameScene::GameFieldOuterWalls(const PhysicsEngine::ShapeFactory* shapeCreator, const PhysicsEngine::GeometryFactory* geoFactory, float minHeightOffset, float innerFieldWidth, float innerFieldDepth)
 	{
 		float wallHeight = 1;
 		float outerFieldWidth = 80;
@@ -261,7 +265,7 @@ namespace CustomApplication
 		AddGameActor(rightOuterWall);
 	}
 
-	void PlayGameScene::GameFieldMarking(const PhysicsEngine::ShapeCreator* shapeCreator, const PhysicsEngine::GeometryFactory* geoFactory, float minHeightOffset, float innerFieldWidth, float innerFieldDepth)
+	void PlayGameScene::GameFieldMarking(const PhysicsEngine::ShapeFactory* shapeCreator, const PhysicsEngine::GeometryFactory* geoFactory, float minHeightOffset, float innerFieldWidth, float innerFieldDepth)
 	{
 		float goalZoneRadius = 16.45f;
 

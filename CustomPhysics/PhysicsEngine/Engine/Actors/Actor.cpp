@@ -125,6 +125,12 @@ namespace PhysicsEngine
 			clone = actorFactory->CreateVehicleActor(rigidDynamicActor->getGlobalPose(), vehicleActor->GetVehicleData());
 		}
 
+		if (m_type == ActorType::Joint)
+		{
+			JointActor* jointActor = (JointActor*) this;
+			clone = actorFactory->CreateJointActor(*const_cast<JointActorConfig*>(jointActor->GetJointActorConfig()));
+		}
+
 		if (!clone)
 		{
 			std::printf("Actor::CloneActor failed! Unknown m_type!\n");
@@ -134,7 +140,7 @@ namespace PhysicsEngine
 
 	void Actor::CloneShapes(physx::PxRigidActor* rigidActor, Actor* clone)
 	{
-		const ShapeCreator* shapeCreator = PhysicsEngine::Instance()->GetShapeCreator();
+		const ShapeFactory* shapeCreator = PhysicsEngine::Instance()->GetShapeFactory();
 		const GeometryFactory* geoFactory = PhysicsEngine::Instance()->GetGeometryFactory();
 
 		std::vector<physx::PxShape*> shapes(rigidActor->getNbShapes());

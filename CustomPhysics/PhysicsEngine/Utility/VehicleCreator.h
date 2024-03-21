@@ -13,11 +13,11 @@ namespace PhysicsEngine
 	class VehicleCreator
 	{
 	private:
-		physx::PxPhysics* m_physics;
+		physx::PxPhysics* m_physicsRef;
 		const VehicleData* m_currentConfigData;
 
 	public:
-		bool Init(const physx::PxPhysics* physics);
+		bool Init(physx::PxPhysics* physics);
 
 		void SetupWheelsSimulationData(const VehicleData* configData);
 		void SetupDriveSimulationData(const VehicleData* configData);

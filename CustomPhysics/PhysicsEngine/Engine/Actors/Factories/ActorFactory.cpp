@@ -1,10 +1,9 @@
 #include "ActorFactory.h"
-#include "StaticActor.h"
-#include "DynamicActor.h"
-#include <vector>
-#include "VehicleActor.h"
-#include "../Types/VehicleData.h"
-#include "../../GlobalDefine.h"
+#include "../StaticActor.h"
+#include "../DynamicActor.h"
+#include "../VehicleActor.h"
+#include "../../Types/VehicleData.h"
+#include "../../../GlobalDefine.h"
 
 namespace PhysicsEngine
 {
@@ -15,10 +14,23 @@ namespace PhysicsEngine
 		return ++s_lastId;
 	}
 
-	bool ActorFactory::Init(const physx::PxPhysics* physics, const VehicleCreator* vehicleCreator)
+	bool ActorFactory::Init(const physx::PxPhysics* physics)
 	{
 		m_physics = const_cast<physx::PxPhysics*>(physics);
-		m_vehicleCreator = const_cast<VehicleCreator*>(vehicleCreator);
+
+		m_vehicleCreator = new VehicleCreator();
+		if (!m_vehicleCreator->Init(m_physics))
+		{
+			printf("VehicleCreator creation failed!\n");
+			return false;
+		}
+
+		m_jointFactory = new JointFactory();
+		if (!m_jointFactory->Init(m_physics))
+		{
+			printf("JointFactory creation failed!\n");
+			return false;
+		}
 
 		return true;
 	}
@@ -197,6 +209,59 @@ namespace PhysicsEngine
 		clone->m_currentPhysxActor = clothPhysxActor;
 
 		return clone;
+	}
+
+	Actor* ActorFactory::CreateJointActor(const JointActorConfig& jointConfig)
+	{
+		JointActor* joint;
+		
+		switch (jointConfig.type)
+		{
+		case JointType::Fixed:
+			joint = m_jointFactory->CreateFixedJoint(GenerateId(), jointConfig.actor0, jointConfig.localFrame0, jointConfig.actor1, jointConfig.localFrame1);
+			break;
+
+		case JointType::Distance:
+			joint = m_jointFactory->CreateDistanceJoint(GenerateId(), jointConfig.actor0, jointConfig.localFrame0, jointConfig.actor1, jointConfig.localFrame1, jointConfig.limits);
+			break;
+
+		case JointType::Spherical:
+			joint = m_jointFactory->CreateSphericalJoint(GenerateId(), jointConfig.actor0, jointConfig.localFrame0, jointConfig.actor1, jointConfig.localFrame1, jointConfig.limitCone);
+			break;
+
+		case JointType::Revolute:
+			joint = m_jointFactory->CreateRevoluteJoint(GenerateId(), jointConfig.actor0, jointConfig.localFrame0, jointConfig.actor1, jointConfig.localFrame1, jointConfig.angularLimitPair);
+			break;
+
+		case JointType::Prismatic:
+			joint = m_jointFactory->CreatePrismaticJoint(GenerateId(), jointConfig.actor0, jointConfig.localFrame0, jointConfig.actor1, jointConfig.localFrame1, jointConfig.linearLimitPair);
+			break;
+
+		case JointType::Gear:
+			joint = m_jointFactory->CreateGearJoint(GenerateId(), jointConfig.actor0, jointConfig.localFrame0, jointConfig.actor1, jointConfig.localFrame1);
+			break;
+
+		case JointType::RackAndPinion:
+			joint = m_jointFactory->CreateRackAndPinionJoint(GenerateId(), jointConfig.actor0, jointConfig.localFrame0, jointConfig.actor1, jointConfig.localFrame1);
+			break;
+
+		case JointType::D6:
+			joint = m_jointFactory->CreateD6Joint(GenerateId(), jointConfig.actor0, jointConfig.localFrame0, jointConfig.actor1, jointConfig.localFrame1, jointConfig.linearLimit, jointConfig.angularLimitPair, jointConfig.limitCone);
+			break;
+
+		default:
+			std::printf("Unknown JointType!");
+			return nullptr;
+		}
+
+		physx::PxJoint* physxJoint = const_cast<physx::PxJoint*>(joint->GetPhysxJoint());
+
+#ifdef REMOTE_VISUAL_DEBUG
+		physxJoint->setConstraintFlag(physx::PxConstraintFlag::eVISUALIZATION, true);
+#endif
+
+		physxJoint->setBreakForce(jointConfig.forceThreshold, jointConfig.torqueThreshold);
+		return joint;
 	}
 
 	Actor* ActorFactory::CreateVehicleActor(const physx::PxTransform& transform, const VehicleData* configData)
