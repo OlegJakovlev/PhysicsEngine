@@ -2,6 +2,9 @@
 #include "StaticActor.h"
 #include "DynamicActor.h"
 #include <vector>
+#include "VehicleActor.h"
+#include "../Types/VehicleData.h"
+#include "../../GlobalDefine.h"
 
 namespace PhysicsEngine
 {
@@ -12,9 +15,11 @@ namespace PhysicsEngine
 		return ++s_lastId;
 	}
 
-	bool ActorFactory::Init(const physx::PxPhysics* physics)
+	bool ActorFactory::Init(const physx::PxPhysics* physics, const VehicleCreator* vehicleCreator)
 	{
 		m_physics = const_cast<physx::PxPhysics*>(physics);
+		m_vehicleCreator = const_cast<VehicleCreator*>(vehicleCreator);
+
 		return true;
 	}
 
@@ -116,7 +121,24 @@ namespace PhysicsEngine
 		auto physxActor = m_physics->createCloth(transform, *fabric, vertices,
 												 physx::PxClothFlag::eSCENE_COLLISION |
 												 physx::PxClothFlag::eSWEPT_CONTACT);
-		
+
+#if ENABLE_CUDA
+		physxActor->setClothFlag(physx::PxClothFlag::eCUDA, true);
+#endif
+
+		// TODO: Move to the ClothConfigData class
+		//physxActor->setInertiaScale(0.5f);
+		//physxActor->setDragCoefficient(0.2);
+		physxActor->setFrictionCoefficient(0.6);
+		//physxActor->setCollisionMassScale(20.0f);
+
+		// CCD
+		//physxActor->setClothFlag(physx::PxClothFlag::eSWEPT_CONTACT, true);
+
+		// Self-collision
+		//physxActor->setSelfCollisionDistance(0.1f);
+		//physxActor->setSelfCollisionStiffness(1.0f);
+
 		// https://docs.nvidia.com/gameworks/content/gameworkslibrary/physx/guide/Manual/Cloth.html#specifying-collision-shapes
 		// TODO: Think about custom stretch configs (each constraint type)
 		// physxActor.setStretchConfig(PxClothFabricPhaseType::eVERTICAL, PxClothStretchConfig(1.0f));
@@ -128,8 +150,6 @@ namespace PhysicsEngine
 		// static PxVec3 weights[] = {}
 		// cloth.setVirtualParticles(numFaces*4, indices, 2, weights);
 
-		// TODO: Collision Shapes?
-
 		// Link actor to physx to have an access from collision calls 
 		physxActor->userData = actor;
 		actor->m_currentPhysxActor = physxActor;
@@ -137,7 +157,7 @@ namespace PhysicsEngine
 		return actor;
 	}
 
-	Actor* ActorFactory::CreateClothActor(const ClothActor* originalActor)
+	Actor* ActorFactory::CloneClothActor(const ClothActor* originalActor)
 	{
 		auto originalClothPhysxActor = ((physx::PxCloth*) originalActor->GetCurrentPhysxActor());
 
@@ -158,11 +178,55 @@ namespace PhysicsEngine
 													  physx::PxClothFlag::eSCENE_COLLISION |
 													  physx::PxClothFlag::eSWEPT_CONTACT);
 
+		clothPhysxActor->setSimulationFilterData(originalClothPhysxActor->getSimulationFilterData());
+
+		clothPhysxActor->setInertiaScale(originalClothPhysxActor->getAngularInertiaScale().x);
+		clothPhysxActor->setDragCoefficient(originalClothPhysxActor->getLinearDragCoefficient().x);
+		clothPhysxActor->setFrictionCoefficient(originalClothPhysxActor->getFrictionCoefficient());
+		clothPhysxActor->setCollisionMassScale(originalClothPhysxActor->getCollisionMassScale());
+
+		// CCD
+		clothPhysxActor->setClothFlags(originalClothPhysxActor->getClothFlags());
+
+		// Self-collision
+		clothPhysxActor->setSelfCollisionDistance(originalClothPhysxActor->getSelfCollisionDistance());
+		clothPhysxActor->setSelfCollisionStiffness(originalClothPhysxActor->getSelfCollisionStiffness());
+
 		// Link actor to physx to have an access from collision calls 
 		clothPhysxActor->userData = clone;
 		clone->m_currentPhysxActor = clothPhysxActor;
 
 		return clone;
+	}
+
+	Actor* ActorFactory::CreateVehicleActor(const physx::PxTransform& transform, const VehicleData* configData)
+	{
+		VehicleActor* actor = new VehicleActor(GenerateId(), configData);
+
+		physx::PxRigidDynamic* vehActor = m_physics->createRigidDynamic(transform);
+
+		vehActor->userData = actor;
+		actor->m_currentPhysxActor = vehActor;
+
+		switch (configData->type)
+		{
+			case Default4W:
+				actor->SetVehicleDrive(m_vehicleCreator->Create4W(vehActor, configData));
+				break;
+
+			case Tank:
+				actor->SetVehicleDrive(m_vehicleCreator->CreateTank(vehActor, configData));
+				break;
+			
+			case Custom:
+				actor->SetVehicleDrive(m_vehicleCreator->CreateNW(vehActor, configData));
+				break;
+			
+			default:
+				break;
+		}
+
+		return actor;
 	}
 }
 

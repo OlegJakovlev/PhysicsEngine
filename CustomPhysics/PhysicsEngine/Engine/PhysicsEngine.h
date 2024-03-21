@@ -16,6 +16,7 @@
 #include "../Debug/VisualDebugger.h"
 #include "Services/Cooking.h"
 #include "Services/VehicleSDKWrapper.h"
+#include "../Utility/VehicleCreator.h"
 
 namespace PhysicsEngine
 {
@@ -42,8 +43,9 @@ namespace PhysicsEngine
 		// Factories and databases
 		ActorFactory* m_actorFactory;
 		GeometryFactory* m_geoFactory;
-		ShapeCreator* m_shapeCreator;
 		MaterialDatabase* m_materialDatabase;
+		ShapeCreator* m_shapeCreator;
+		VehicleCreator* m_vehicleCreator;
 
 		// Local variables
 		SingleFrameAllocator g_singleFrameAllocator;
@@ -59,6 +61,7 @@ namespace PhysicsEngine
 
 		bool Init() override;
 		bool PostInit() override;
+		void Prepare() override;
 		void Update(float dt) override;
 		void Sync() override;
 
@@ -66,7 +69,7 @@ namespace PhysicsEngine
 		const SceneManager* GetSceneManager() const;
 		const ActorFactory* GetActorFactory() const;
 		const GeometryFactory* GetGeometryFactory() const;
-		const ShapeCreator* GetShapeCreator() const;
 		const MaterialDatabase* GetMaterialDatabase() const;
+		const ShapeCreator* GetShapeCreator() const;
 	};
 }

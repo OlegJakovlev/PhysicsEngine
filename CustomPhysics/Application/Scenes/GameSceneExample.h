@@ -8,6 +8,7 @@ namespace CustomApplication
 	{
 	public:
 		void Init(const PhysicsEngine::PhysicsEngine* physicsEngine) override;
+		void ConfigureCollisionLayers(PhysicsEngine::CollisionFilter* m_collisionFilter) override;
 	};
 }
 

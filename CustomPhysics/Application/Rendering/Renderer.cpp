@@ -11,12 +11,19 @@ namespace CustomApplication
 		{
 			return false;
 		}
+		
+		/*
+		m_camera = new Camera(physx::PxVec3(0.0f, 5.f, 15.f),
+							  physx::PxVec3(0.f, 0.f, -1.f),
+							  500.f);
+							  */
+		
+		m_camera = new Camera(physx::PxVec3(0, 10.f, 0.f),
+							  physx::PxVec3(0, -0.2f, 1.f),
+							  12.f);
 
-		m_camera = new Camera(physx::PxVec3(0.0f, 5.0f, 25.0f),
-							  physx::PxVec3(0.f, -.1f, -1.f),
-							  5.f);
-
-		m_backgroundColor = new physx::PxVec3(150.f / 255.f, 150.f / 255.f, 150.f / 255.f);
+		m_fov = 80.0f;
+		m_backgroundColor = new physx::PxVec3(42 / 255.f, 112 / 255.f, 197 / 255.f);
 
 		m_renderMode = RenderMode::BOTH;
 
@@ -25,11 +32,16 @@ namespace CustomApplication
 
 	void Renderer::PostInit()
 	{
-		m_impl->PostInit(m_camera, m_backgroundColor);
+		m_impl->PostInit(m_backgroundColor);
 	}
 
 	void Renderer::Release()
 	{
+	}
+
+	void Renderer::Prepare() const
+	{
+		m_impl->Prepare(m_fov, m_camera->GetPos(), m_camera->GetDir());
 	}
 
 	void Renderer::Render(GameScene* gameScene, double dt) const
@@ -47,6 +59,8 @@ namespace CustomApplication
 			m_impl->Render(gameScene->GetStaticGameObjects(), gameScene->GetStaticGameObjectsCount());
 			m_impl->Render(gameScene->GetDynamicGameObjects(), gameScene->GetDynamicGameObjectCount());
 			m_impl->Render(gameScene->GetClothGameObjects(), gameScene->GetClothGameObjectCount());
+			m_impl->Render(gameScene->GetVehicleGameObjects(), gameScene->GetVehicleGameObjectsCount());
+			m_impl->Render(gameScene->GetCustomRenderObjects(), gameScene->GetCustomRenderObjectCount());
 		}
 	}
 
@@ -58,6 +72,16 @@ namespace CustomApplication
 	void Renderer::FinishRender() const
 	{
 		m_impl->FinishRender();
+	}
+
+	Camera* Renderer::GetCamera() const
+	{
+		return m_camera;
+	}
+
+	const IRender* Renderer::GetRenderingImpl() const
+	{
+		return m_impl;
 	}
 
 	void Renderer::SetImpl(IRender* impl)

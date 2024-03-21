@@ -19,6 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Application\GameObjects\CustomRenderGameObject.cpp" />
+    <ClCompile Include="Application\Input\KeyCallbackEntry.cpp" />
+    <ClCompile Include="Application\Input\MouseCallbackEntry.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Types\ActorType.cpp" />
     <ClCompile Include="Application\Database\ColorDatabase.cpp" />
     <ClCompile Include="Application\Logger\ApplicationLogger.cpp" />
     <ClCompile Include="Application\Logger\EventLogger.cpp" />
@@ -34,6 +38,8 @@
     <ClCompile Include="Application\GameObjects\GameObjectFactory.cpp" />
     <ClCompile Include="Application\Utility\Hashing.cpp" />
     <ClCompile Include="Application\GameObjects\ClothGameObject.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Types\ContactInfo.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Types\FilterGroup.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Components\CollisionCallbackEntry.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Physics\CustomSimulationEventCallback.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Components\BatchQueryWrapper.cpp" />
@@ -57,7 +63,6 @@
     <ClCompile Include="Application\Input\InputHandler.cpp" />
     <ClCompile Include="PhysicsEngine\Debug\Logger\Logger.cpp" />
     <ClCompile Include="PhysicsEngine\Debug\Logger\DemoLogger.cpp" />
-    <ClCompile Include="PhysicsEngine\Engine\Services\CudaContextManager.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Physics\CollisionFilter.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Services\Cooking.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Services\Dispatcher.cpp" />
@@ -91,8 +96,23 @@
     <ClCompile Include="PhysicsEngine\Engine\Services\VehicleSDKWrapper.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Components\TriggerCallbackEntry.cpp" />
     <ClCompile Include="PhysicsEngine\Engine\Components\VoidCallbackEntry.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Actors\VehicleActor.cpp" />
+    <ClCompile Include="Application\GameObjects\VehicleGameObject.cpp" />
+    <ClCompile Include="PhysicsEngine\Utility\VehicleCreator.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Types\VehicleType.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Types\VehicleData.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Types\SurfaceType.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Physics\VehicleSceneQueryData.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Physics\VehicleSceneQueryResults.cpp" />
+    <ClCompile Include="PhysicsEngine\Engine\Physics\VehicleQueryFilter.cpp" />
+    <ClCompile Include="Application\Scenes\PlayGameScene.cpp" />
+    <ClCompile Include="Application\DataTypes\AppVoidCallbackEntry.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\GameObjects\CustomRenderGameObject.h" />
+    <ClInclude Include="Application\Input\KeyCallbackEntry.h" />
+    <ClInclude Include="Application\Input\MouseCallbackEntry.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Types\ActorType.h" />
     <ClInclude Include="Application\Database\ColorDatabase.h" />
     <ClInclude Include="Application\GlobalDefine.h" />
     <ClInclude Include="Application\Logger\ApplicationLogger.h" />
@@ -109,6 +129,8 @@
     <ClInclude Include="Application\GameObjects\GameObjectFactory.h" />
     <ClInclude Include="Application\Utility\Hashing.h" />
     <ClInclude Include="Application\GameObjects\ClothGameObject.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Types\ContactInfo.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Types\FilterGroup.h" />
     <ClInclude Include="PhysicsEngine\Engine\Components\CollisionCallbackEntry.h" />
     <ClInclude Include="PhysicsEngine\Engine\Physics\CustomSimulationEventCallback.h" />
     <ClInclude Include="PhysicsEngine\Engine\Components\BatchQueryWrapper.h" />
@@ -239,7 +261,6 @@
     <ClInclude Include="Application\Input\InputHandler.h" />
     <ClInclude Include="PhysicsEngine\Debug\Logger\Logger.h" />
     <ClInclude Include="PhysicsEngine\Debug\Logger\DemoLogger.h" />
-    <ClInclude Include="PhysicsEngine\Engine\Services\CudaContextManager.h" />
     <ClInclude Include="PhysicsEngine\Engine\Physics\CollisionFilter.h" />
     <ClInclude Include="PhysicsEngine\Engine\Services\Cooking.h" />
     <ClInclude Include="PhysicsEngine\Engine\Services\Dispatcher.h" />
@@ -274,6 +295,17 @@
     <ClInclude Include="PhysicsEngine\Engine\Services\VehicleSDKWrapper.h" />
     <ClInclude Include="PhysicsEngine\Engine\Components\TriggerCallbackEntry.h" />
     <ClInclude Include="PhysicsEngine\Engine\Components\VoidCallbackEntry.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Actors\VehicleActor.h" />
+    <ClInclude Include="Application\GameObjects\VehicleGameObject.h" />
+    <ClInclude Include="PhysicsEngine\Utility\VehicleCreator.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Types\VehicleType.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Types\VehicleData.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Types\SurfaceType.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Physics\VehicleSceneQueryData.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Physics\VehicleSceneQueryResults.h" />
+    <ClInclude Include="PhysicsEngine\Engine\Physics\VehicleQueryFilter.h" />
+    <ClInclude Include="Application\Scenes\PlayGameScene.h" />
+    <ClInclude Include="Application\DataTypes\AppVoidCallbackEntry.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Dependencies\Graphics\lib\win32\glut\glut32.lib" />
@@ -360,7 +392,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(PHYSX_SDK)\Lib\vc15win64;$(PHYSX_SDK)\..\PxShared\Lib\vc15win64;.\Dependencies\Graphics\lib\win64\glut;.\Dependencies\LZ4\static</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PxFoundationDEBUG_$(PlatformTarget).lib;PhysX3DEBUG_$(PlatformTarget).lib;PhysX3ExtensionsDEBUG.lib;PxPvdSDKDEBUG_$(PlatformTarget).lib;PhysX3CommonDEBUG_$(PlatformTarget).lib;PhysX3CookingDEBUG_$(PlatformTarget).lib;PhysX3VehicleDEBUG.lib;SceneQueryDEBUG.lib;SimulationControllerDEBUG.lib;PxTaskDEBUG_x64.lib;glut32.lib;liblz4_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PxFoundationDEBUG_$(PlatformTarget).lib;PhysX3DEBUG_$(PlatformTarget).lib;PhysX3ExtensionsDEBUG.lib;PxPvdSDKDEBUG_$(PlatformTarget).lib;PhysX3CommonDEBUG_$(PlatformTarget).lib;PhysX3CookingDEBUG_$(PlatformTarget).lib;PsFastXmlDEBUG_$(PlatformTarget).lib;PhysX3VehicleDEBUG.lib;SceneQueryDEBUG.lib;SimulationControllerDEBUG.lib;PxTaskDEBUG_x64.lib;glut32.lib;liblz4_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>

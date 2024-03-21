@@ -12,20 +12,13 @@
 #include "../Components/CollisionCallbackEntry.h"
 #include "../Components/VoidCallbackEntry.h"
 #include "../Physics/CustomSimulationEventCallback.h"
+#include "../Types/ContactInfo.h"
+#include "../Types/ActorType.h"
 
 namespace PhysicsEngine
 {
 	class Actor
 	{
-	public:
-		enum Type
-		{
-			Default,
-			Static,
-			Dynamic,
-			Cloth,
-		};
-
 	private:
 		void CloneActor(Actor*& clone);
 		void CloneShapes(physx::PxRigidActor* rigidActor, Actor* clone);
@@ -40,8 +33,9 @@ namespace PhysicsEngine
 		Actor** m_gameEnginePointerToPhysicsActorDebug;
 #endif
 
-		Type m_type;
-		CollisionFilter::FilterGroup m_collisionData;
+		ActorType m_type;
+		FilterGroup m_collisionLayer;
+		FilterNumericGroup m_collisionLayerIndex;
 
 		std::unordered_set<VoidCallbackEntry> m_wakeCallbacks;
 		std::unordered_set<VoidCallbackEntry> m_sleepCallbacks;
@@ -54,18 +48,19 @@ namespace PhysicsEngine
 		std::unordered_set<CollisionCallbackEntry> m_collisionStayGameCallbacks;
 		std::unordered_set<CollisionCallbackEntry> m_collisionExitGameCallbacks;
 
-		Actor(const uint64_t id, const Type type);
+		Actor(const uint64_t id, const ActorType type);
 
 	public:
 		Actor* CloneToRender();
 		Actor* CloneToPhysics();
 
-		void Release();
+		virtual void Release();
 
 		const uint64_t GetActorID() const;
 		const physx::PxActor* GetCurrentPhysxActor() const;
-		const Type GetType() const;
-		CollisionFilter::FilterGroup GetCollisionLayer() const;
+		const ActorType GetType() const;
+		FilterGroup GetCollisionLayer() const;
+		FilterNumericGroup GetCollisionLayerIndex() const;
 
 		void OnWake();
 		void OnSleep();
@@ -74,9 +69,9 @@ namespace PhysicsEngine
 		void OnTriggerStay(physx::PxShape* triggerShape, Actor* otherActor, physx::PxShape* otherShape);
 		void OnTriggerExit(physx::PxShape* triggerShape, Actor* otherActor, physx::PxShape* otherShape);
 
-		void OnCollisionEnter(Actor* otherActor, std::vector<CustomSimulationEventCallback::ContactInfo*> contactsData);
-		void OnCollisionStay(Actor* otherActor, std::vector<CustomSimulationEventCallback::ContactInfo*> contactsData);
-		void OnCollisionExit(Actor* otherActor, std::vector<CustomSimulationEventCallback::ContactInfo*> contactsData);
+		void OnCollisionEnter(Actor* otherActor, std::vector<ContactInfo*> contactsData);
+		void OnCollisionStay(Actor* otherActor, std::vector<ContactInfo*> contactsData);
+		void OnCollisionExit(Actor* otherActor, std::vector<ContactInfo*> contactsData);
 
 		// TODO: API Expose
 		void SetCollisionLayer(uint32_t collisionData);

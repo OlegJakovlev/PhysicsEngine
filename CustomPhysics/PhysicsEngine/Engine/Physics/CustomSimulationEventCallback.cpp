@@ -79,7 +79,7 @@ namespace PhysicsEngine
             }
 
             // Cleanup
-            for (size_t j = 0; i < contactCount; j++)
+            for (size_t j = 0; j < contactCount; j++)
             {
                 delete contactsData[j];
             }

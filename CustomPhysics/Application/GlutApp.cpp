@@ -46,11 +46,19 @@ namespace CustomApplication
 			std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
 			std::chrono::duration<double> elapsedTime = currentTime - prevTime;
 
-			if (elapsedTime.count() >= k_timeStep)
+			if (elapsedTime.count() >= k_physicsStep)
 			{
 				prevTime = currentTime;
-				m_physicsEngine->Update(k_timeStep);
+				m_physicsEngine->Prepare();
+				m_physicsEngine->Update(k_physicsStep);
 				m_physicsEngine->Sync();
+
+				// Fixed framerate physics update
+				const std::unordered_set<GameScene*> activeScenesMap = *s_instance->m_sceneManager->GetActiveGameScenes();
+				for (auto it = activeScenesMap.cbegin(); it != activeScenesMap.cend(); it++)
+				{
+					(*it)->FixedPhysicsUpdate(k_physicsStep);
+				}
 			}
 		}
 	}
@@ -79,27 +87,47 @@ namespace CustomApplication
 
 		s_instance->m_previousTime = currentTime;
 
+		// Accumulate time difference
+		s_instance->m_inputLag += dt;
+		s_instance->m_renderLag += dt;
+
 		// Input
-		s_instance->m_input->HandleInput(dt);
+		if (s_instance->m_inputLag >= s_instance->k_inputStep)
+		{
+			s_instance->m_input->HandleInput(s_instance->k_inputStep);
+			s_instance->m_inputLag -= s_instance->k_inputStep;
+		}
 
 		const std::unordered_set<GameScene*> activeScenesMap = *s_instance->m_sceneManager->GetActiveGameScenes();
-		
-		// Game update
+
+		// Variable framerate update
 		for (auto it = activeScenesMap.cbegin(); it != activeScenesMap.cend(); it++)
 		{
 			(*it)->Update(dt);
 		}
 
-		// Render
-		s_instance->m_renderer->Clear();
-
-		for (auto it = activeScenesMap.cbegin(); it != activeScenesMap.cend(); it++)
+		if (s_instance->m_renderLag >= s_instance->k_renderStep)
 		{
-			s_instance->m_renderer->Render(*it, dt);
-		}
+			// Fixed framerate update
+			for (auto it = activeScenesMap.cbegin(); it != activeScenesMap.cend(); it++)
+			{
+				(*it)->FixedUpdate(dt);
+			}
 
-		s_instance->m_renderer->RenderHUD();
-		s_instance->m_renderer->FinishRender();
+			// Render
+			s_instance->m_renderer->Clear();
+			s_instance->m_renderer->Prepare();
+
+			for (auto it = activeScenesMap.cbegin(); it != activeScenesMap.cend(); it++)
+			{
+				s_instance->m_renderer->Render(*it, s_instance->k_renderStep);
+			}
+
+			s_instance->m_renderer->RenderHUD();
+			s_instance->m_renderer->FinishRender();
+
+			s_instance->m_renderLag -= s_instance->k_renderStep;
+		}
 	}
 
 	void GlutApp::KeyPressCallback(unsigned char key, int x, int y)
@@ -199,9 +227,6 @@ namespace CustomApplication
 
 		// Exit
 		atexit(GlutApp::ExitCallback);
-
-		// Init motion callback
-		GlutApp::MotionCallback(0, 0);
 	}
 
 	void GlutApp::Start()
@@ -214,5 +239,25 @@ namespace CustomApplication
 	ColorDatabase const* GlutApp::GetColorDatabase() const
 	{
 		return m_colorDatabase;
+	}
+
+	InputHandler const* GlutApp::GetInputHandler() const
+	{
+		return m_input;
+	}
+
+	Renderer const* GlutApp::GetRenderer() const
+	{
+		return m_renderer;
+	}
+
+	const float GlutApp::GetInputStep() const
+	{
+		return k_inputStep;
+	}
+
+	const float GlutApp::GetRenderStep() const
+	{
+		return k_renderStep;
 	}
 }

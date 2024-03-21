@@ -2,7 +2,7 @@
 
 namespace PhysicsEngine
 {
-	ClothActor::ClothActor(uint64_t id, const physx::PxVec2& size, const physx::PxVec2& scale) : Actor(id, Actor::Type::Cloth)
+	ClothActor::ClothActor(uint64_t id, const physx::PxVec2& size, const physx::PxVec2& scale) : Actor(id, ActorType::Cloth)
 	{
 		m_size = size;
 		m_scale = scale;

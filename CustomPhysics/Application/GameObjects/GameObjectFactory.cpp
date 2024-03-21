@@ -2,9 +2,12 @@
 #include "StaticGameObject.h"
 #include "DynamicGameObject.h"
 #include "ClothGameObject.h"
+#include "VehicleGameObject.h"
 #include "../../PhysicsEngine/Engine/Actors/StaticActor.h"
 #include "../../PhysicsEngine/Engine/Actors/DynamicActor.h"
 #include "../../PhysicsEngine/Engine/Actors/ClothActor.h"
+#include "../../PhysicsEngine/Engine/Actors/VehicleActor.h"
+#include "CustomRenderGameObject.h"
 
 namespace CustomApplication
 {
@@ -98,5 +101,34 @@ namespace CustomApplication
 #endif
 
         return clothObject;
+    }
+
+    GameObject* GameObjectFactory::CreateVehicleGameObject(const physx::PxTransform& transform,
+                                                           const PhysicsEngine::VehicleData* configData,
+                                                           const GameObject::Layer layer)
+    {
+        VehicleGameObject* vehicleObject = new VehicleGameObject(GenerateId());
+
+        PhysicsEngine::Actor* physicsActor = m_actorFactory->CreateVehicleActor(transform, configData);
+
+        vehicleObject->SetPhysicsActor(physicsActor);
+        physicsActor->SetCollisionLayer((uint32_t) layer);
+        physicsActor->SetGameEnginePointerToPhysicsActor(vehicleObject->m_physicsActorPointer);
+
+#ifdef APPLICATION_DEBUG_MODE
+        vehicleObject->SetPhysicsActorDebug(physicsActor);
+
+#ifdef PHYSICS_DEBUG_MODE
+        physicsActor->SetGameEnginePointerToPhysicsActorDebug(vehicleObject->m_physicsActorPointerDebug);
+#endif
+#endif
+
+        return vehicleObject;
+    }
+
+    GameObject* GameObjectFactory::CreateCustomRenderGameObject()
+    {
+        CustomRenderGameObject* customRenderObject = new CustomRenderGameObject(GenerateId());
+        return customRenderObject;
     }
 }

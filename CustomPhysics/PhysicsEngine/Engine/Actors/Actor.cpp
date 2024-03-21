@@ -4,11 +4,12 @@
 
 namespace PhysicsEngine
 {
-	Actor::Actor(const uint64_t id, const Type type)
+	Actor::Actor(const uint64_t id, const ActorType type)
 	{
 		m_type = type;
 		m_actorID = id;
-		m_collisionData = CollisionFilter::FilterGroup::Layer_Default;
+		m_collisionLayer = FilterGroup::Layer_Default;
+		m_collisionLayerIndex = FilterNumericGroup::Index_Default;
 		m_gameEnginePointerToPhysicsActor = nullptr;
 		m_currentPhysxActor = nullptr;
 	}
@@ -33,7 +34,7 @@ namespace PhysicsEngine
 #ifdef PHYSICS_DEBUG_MODE
 		clone->SetGameEnginePointerToPhysicsActorDebug(m_gameEnginePointerToPhysicsActorDebug);
 #endif
-		clone->SetCollisionLayer((uint32_t) m_collisionData);
+		clone->SetCollisionLayer((uint32_t) m_collisionLayer);
 
 		return clone;
 	}
@@ -56,7 +57,7 @@ namespace PhysicsEngine
 #ifdef PHYSICS_DEBUG_MODE
 		clone->SetGameEnginePointerToPhysicsActorDebug(m_gameEnginePointerToPhysicsActorDebug);
 #endif
-		clone->SetCollisionLayer((uint32_t) m_collisionData);
+		clone->SetCollisionLayer((uint32_t) m_collisionLayer);
 
 		return clone;
 	}
@@ -77,7 +78,7 @@ namespace PhysicsEngine
 	{
 		ActorFactory* actorFactory = const_cast<ActorFactory*>(PhysicsEngine::Instance()->GetActorFactory());
 
-		if (m_type == Type::Static)
+		if (m_type == ActorType::Static)
 		{
 			physx::PxRigidStatic* rigidStaticActor = (physx::PxRigidStatic*) m_currentPhysxActor;
 
@@ -90,7 +91,7 @@ namespace PhysicsEngine
 			CloneShapes(rigidStaticActor, clone);
 		}
 
-		if (m_type == Type::Dynamic)
+		if (m_type == ActorType::Dynamic)
 		{
 			physx::PxRigidDynamic* rigidDynamicActor = (physx::PxRigidDynamic*) m_currentPhysxActor;
 
@@ -111,15 +112,22 @@ namespace PhysicsEngine
 			CloneShapes(rigidDynamicActor, clone);
 		}
 
-		if (m_type == Type::Cloth)
+		if (m_type == ActorType::Cloth)
 		{
 			ClothActor* clothActor = (ClothActor*) this;
-			clone = actorFactory->CreateClothActor(clothActor);
+			clone = actorFactory->CloneClothActor(clothActor);
+		}
+
+		if (m_type == ActorType::Vehicle)
+		{
+			VehicleActor* vehicleActor = (VehicleActor*) this;
+			physx::PxRigidDynamic* rigidDynamicActor = (physx::PxRigidDynamic*) m_currentPhysxActor;
+			clone = actorFactory->CreateVehicleActor(rigidDynamicActor->getGlobalPose(), vehicleActor->GetVehicleData());
 		}
 
 		if (!clone)
 		{
-			std::printf("Actor::CloneActor failed! Unknown m_type!");
+			std::printf("Actor::CloneActor failed! Unknown m_type!\n");
 			return;
 		}
 	}
@@ -140,11 +148,11 @@ namespace PhysicsEngine
 			physx::PxShapeFlags activeShapeFlags = shapes[i]->getFlags();
 			if (activeShapeFlags.isSet(physx::PxShapeFlag::eTRIGGER_SHAPE) && !activeShapeFlags.isSet(physx::PxShapeFlag::eSIMULATION_SHAPE))
 			{
-				shapeCreator->CreateTrigger(clone, geometry, CRC32_STR("Default"));
+				shapeCreator->CreateTrigger(clone, geometry, shapes[i]);
 			}
 			else
 			{
-				shapeCreator->CreateShape(clone, geometry, CRC32_STR("Default"));
+				shapeCreator->CreateShape(clone, geometry, CRC32_STR("Default"), shapes[i]);
 			}
 
 			delete geometry;
@@ -168,14 +176,15 @@ namespace PhysicsEngine
 		return m_currentPhysxActor;
 	}
 
-	const Actor::Type Actor::GetType() const
+	const ActorType Actor::GetType() const
 	{
 		return m_type;
 	}
 
 	void Actor::SetCollisionLayer(uint32_t collisionData)
 	{
-		m_collisionData = (CollisionFilter::FilterGroup) collisionData;
+		m_collisionLayer = (FilterGroup) collisionData;
+		m_collisionLayerIndex = CollisionFilter::GetCollisionIndex(m_collisionLayer);
 	}
 
 	void Actor::SetGameEnginePointerToPhysicsActor(void** gameEnginePointerToPhysicsActor)
@@ -270,9 +279,14 @@ namespace PhysicsEngine
 	}
 #endif
 
-	CollisionFilter::FilterGroup Actor::GetCollisionLayer() const
+	FilterGroup Actor::GetCollisionLayer() const
 	{
-		return m_collisionData;
+		return m_collisionLayer;
+	}
+
+	FilterNumericGroup Actor::GetCollisionLayerIndex() const
+	{
+		return m_collisionLayerIndex;
 	}
 
 	void Actor::OnWake()
@@ -315,7 +329,7 @@ namespace PhysicsEngine
 		}
 	}
 
-	void Actor::OnCollisionEnter(Actor* otherActor, std::vector<CustomSimulationEventCallback::ContactInfo*> contactsData)
+	void Actor::OnCollisionEnter(Actor* otherActor, std::vector<ContactInfo*> contactsData)
 	{
 		for (auto& entry : m_collisionEnterGameCallbacks)
 		{
@@ -323,7 +337,7 @@ namespace PhysicsEngine
 		}
 	}
 
-	void Actor::OnCollisionStay(Actor* otherActor, std::vector<CustomSimulationEventCallback::ContactInfo*> contactsData)
+	void Actor::OnCollisionStay(Actor* otherActor, std::vector<ContactInfo*> contactsData)
 	{
 		for (auto& entry : m_collisionStayGameCallbacks)
 		{
@@ -331,7 +345,7 @@ namespace PhysicsEngine
 		}
 	}
 
-	void Actor::OnCollisionExit(Actor* otherActor, std::vector<CustomSimulationEventCallback::ContactInfo*> contactsData)
+	void Actor::OnCollisionExit(Actor* otherActor, std::vector<ContactInfo*> contactsData)
 	{
 		for (auto& entry : m_collisionExitGameCallbacks)
 		{

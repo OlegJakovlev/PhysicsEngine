@@ -29,6 +29,10 @@ namespace PhysicsEngine
 		delete m_cooking;
 		m_cooking = nullptr;
 
+		m_dispatcher->Release();
+		delete m_dispatcher;
+		m_dispatcher = nullptr;
+
 		m_physics->Release();
 		delete m_physics;
 		m_physics = nullptr;
@@ -66,7 +70,7 @@ namespace PhysicsEngine
 		}
 
 		m_dispatcher = new Dispatcher();
-		if (!m_dispatcher->Init())
+		if (!m_dispatcher->Init(m_foundation->GetFoundationService()))
 		{
 			printf("Dispatcher creation failed!\n");
 			return false;
@@ -96,8 +100,15 @@ namespace PhysicsEngine
 
 		m_sceneManager = new SceneManager();
 
+		m_vehicleCreator = new VehicleCreator();
+		if (!m_vehicleCreator->Init(m_physics->GetPhysics()))
+		{
+			printf("VehicleCreator creation failed!\n");
+			return false;
+		}
+
 		m_actorFactory = new ActorFactory();
-		if (!m_actorFactory->Init(m_physics->GetPhysics()))
+		if (!m_actorFactory->Init(m_physics->GetPhysics(), m_vehicleCreator))
 		{
 			printf("ActorFactory creation failed!\n");
 			return false;
@@ -136,6 +147,14 @@ namespace PhysicsEngine
 		}
 
 		return true;
+	}
+
+	void PhysicsEngine::Prepare()
+	{
+		for (int i = 0; i < k_substeps; i++)
+		{
+			m_sceneManager->Prepare();
+		}
 	}
 
 	void PhysicsEngine::Update(float dt)

@@ -16,6 +16,7 @@
 #include <vector>
 #include <mutex>
 #include "../Actors/ClothActor.h"
+#include "../Actors/VehicleActor.h"
 
 namespace PhysicsEngine
 {
@@ -36,13 +37,15 @@ namespace PhysicsEngine
 			STATIC = 1 << 0,
 			DYNAMIC = 1 << 1,
 			CLOTH = 1 << 2,
-			RUNTIME_UPDATE = DYNAMIC | CLOTH,
-			ALL = STATIC | DYNAMIC | CLOTH,
+			VEHICLE = 1 << 3,
+			RUNTIME_UPDATE = DYNAMIC | CLOTH | VEHICLE,
+			ALL = STATIC | DYNAMIC | CLOTH | VEHICLE,
 		};
 
 		static const uint32_t k_maxStaticActors = 128;
 		static const uint32_t k_maxDynamicActors = 255;
 		static const uint32_t k_maxClothActors = 64;
+		static const uint32_t k_maxVehicleActors = 8;
 
 	public:
 		struct alignas(8) SceneConfiguration
@@ -71,21 +74,28 @@ namespace PhysicsEngine
 		Actor** m_staticActors;
 		Actor** m_dynamicActors;
 		Actor** m_clothActors;
+		Actor** m_vehicleActors;
 
 		uint32_t m_staticActorCount;
 		uint32_t m_dynamicActorCount;
 		uint32_t m_clothActorCount;
+		uint32_t m_vehicleActorCount;
+
+		physx::PxVehicleWheels** m_vehicles;
+		physx::PxRaycastQueryResult* m_sqResults;
 
 #ifdef PHYSICS_DEBUG_MODE
 		std::vector<Actor*> m_staticActorsDebug;
 		std::vector<Actor*> m_dynamicActorsDebug;
 		std::vector<Actor*> m_clothActorsDebug;
+		std::vector<Actor*> m_vehicleActorsDebug;
 #endif
 
 		bool Init(const SceneConfiguration* configuration);
 		bool PostInit(const physx::PxPhysics* physxObject,
 					  const Dispatcher* dispatcherObject);
 		void SetupActorFilter(const Actor* actor);
+		void Prepare();
 		void Update(float dt);
 		void Release();
 
@@ -95,9 +105,15 @@ namespace PhysicsEngine
 		void StaticSync(Scene* sourceScene);
 		void DynamicSync(Scene* sourceScene);
 		void ClothSync(Scene* sourceScene);
+		void VehicleSync(Scene* sourceScene);
 
 		Scene() = delete;
 		Scene(uint32_t id);
+
+		void AddActorInternal(StaticActor* actor);
+		void AddActorInternal(DynamicActor* actor);
+		void AddActorInternal(ClothActor* actor);
+		void AddActorInternal(VehicleActor* actor);
 
 	public:
 		// TODO: API Expose
@@ -105,17 +121,19 @@ namespace PhysicsEngine
 		void Unlock();
 		void LinkEngineScene(void* gameScenePointer);
 
-		// TODO: Replace with void* with casting and type checking inside
-		void AddActor(StaticActor* actor);
-		void AddActor(DynamicActor* actor);
-		void AddActor(ClothActor* actor);
+		void AddActor(Actor* actor);
 
 		const Actor** GetStaticActors() const;
 		const uint32_t GetStaticActorCount() const;
+
 		const Actor** GetDynamicActors() const;
 		const uint32_t GetDynamicActorCount() const;
+
 		const Actor** GetClothActors() const;
 		const uint32_t GetClothActorCount() const;
+
+		const Actor** GetVehicleActors() const;
+		const uint32_t GetVehicleActorCount() const;
 
 		const physx::PxScene* GetPhysxScene() const;
 		const physx::PxRenderBuffer& GetRenderBuffer() const;

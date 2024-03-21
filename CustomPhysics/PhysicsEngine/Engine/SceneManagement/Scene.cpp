@@ -1,6 +1,9 @@
 #include "Scene.h"
 #include "../../Utility/CLZ.h"
 #include "../Physics/CustomSimulationEventCallback.h"
+#include "../Physics/VehicleSceneQueryData.h"
+#include "../Physics/VehicleSceneQueryResults.h"
+#include "../Types/SurfaceType.h"
 
 namespace PhysicsEngine
 {
@@ -45,6 +48,13 @@ namespace PhysicsEngine
 		{
 			m_clothActors[i] = nullptr;
 		}
+
+		m_vehicleActorCount = 0;
+		m_vehicleActors = new Actor* [k_maxVehicleActors];
+		for (std::uint32_t i = 0; i < k_maxVehicleActors; i++)
+		{
+			m_vehicleActors[i] = nullptr;
+		}
 	}
 
 	bool Scene::Init(const SceneConfiguration* configuration)
@@ -66,13 +76,17 @@ namespace PhysicsEngine
 	{
 		physx::PxSceneDesc sceneDesc(physxObject->getTolerancesScale());
 		sceneDesc.gravity = m_configuration->m_gravity;
-		sceneDesc.filterShader = m_configuration->m_collisionFilter->GetFilter();
+		sceneDesc.filterShader = m_configuration->m_collisionFilter->GetSimFilter();
 		sceneDesc.cpuDispatcher = const_cast<physx::PxCpuDispatcher*>(dispatcherObject->GetCPU());
 		sceneDesc.gpuDispatcher = const_cast<physx::PxGpuDispatcher*>(dispatcherObject->GetGPU());
 
 		sceneDesc.kineKineFilteringMode = physx::PxPairFilteringMode::eKEEP; // Kinematic-Kinematic contacts
 		sceneDesc.staticKineFilteringMode = physx::PxPairFilteringMode::eKEEP; // Static-Kinematic contacts
-		//sceneDesc.simulationEventCallback = 
+		sceneDesc.simulationEventCallback = new CustomSimulationEventCallback();
+
+#if ENABLE_CUDA
+		sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
+#endif
 
 		/*
 			There may be a performance penalty for enabling the Active Actor Notification, hence this flag should
@@ -92,8 +106,15 @@ namespace PhysicsEngine
 
 		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_CCD;
 
+		// Persistent Contact Manifold (PCM)
+		// GJK-based distance collision detection system
+		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_PCM;
+
+#if ENABLE_CUDA
+		sceneDesc.flags |= physx::PxSceneFlag::eENABLE_GPU_DYNAMICS;
+#endif
+
 		m_physxScene = const_cast<physx::PxPhysics*>(physxObject)->createScene(sceneDesc);
-		m_physxScene->setSimulationEventCallback(new CustomSimulationEventCallback());
 
 #ifdef REMOTE_VISUAL_DEBUG
 		// Transmits streams to visual debugger 
@@ -135,7 +156,14 @@ namespace PhysicsEngine
 
 		for (size_t i = 0; i < m_clothActorCount; i++)
 		{
+			SetupActorFilter(m_clothActors[i]);
 			RegisterActor(m_clothActors[i]);
+		}
+
+		for (size_t i = 0; i < m_vehicleActorCount; i++)
+		{
+			SetupActorFilter(m_vehicleActors[i]);
+			RegisterActor(m_vehicleActors[i]);
 		}
 
 		m_state = State::RUNNING;
@@ -145,37 +173,74 @@ namespace PhysicsEngine
 
 	void Scene::SetupActorFilter(const Actor* actor)
 	{
-		CollisionFilter::FilterGroup collisionLayer = actor->GetCollisionLayer();
-
-		// Count leading zeros and invert so we get an layer id
-		uint32_t collisionIndex = CLZ::CLZ1(~(uint32_t) collisionLayer);
-
 		physx::PxActor* castedPhysxActor = const_cast<physx::PxActor*>(actor->GetCurrentPhysxActor());
 		
 		if (castedPhysxActor->is<physx::PxRigidActor>())
 		{
 			physx::PxRigidActor* rigidPxActor = (physx::PxRigidActor*) castedPhysxActor;
 
+			bool isVehicle = actor->GetType() == ActorType::Vehicle;
+
 			physx::PxU32 numShapes = rigidPxActor->getNbShapes();
 			physx::PxShape** shapes = new physx::PxShape * [numShapes];
 			rigidPxActor->getShapes(shapes, numShapes, 0);
 
 			physx::PxFilterData filterData;
+
 			for (physx::PxU32 i = 0; i < numShapes; ++i)
 			{
-				filterData = shapes[i]->getSimulationFilterData();
-				filterData.word0 = (uint32_t) collisionLayer;
-				filterData.word1 = m_configuration->m_collisionFilter->GetCollisionMask(collisionIndex);
+				filterData.word0 = (uint32_t) actor->GetCollisionLayer();
+				filterData.word1 = (uint32_t) m_configuration->m_collisionFilter->GetCollisionMask(actor->GetCollisionLayerIndex());
+
+				if (isVehicle)
+				{
+					filterData.word3 = SurfaceType::UNDRIVABLE_SURFACE;
+				}
+
 				shapes[i]->setSimulationFilterData(filterData);
 			}
 
 			delete[] shapes;
+			return;
 		}
+
+		if (castedPhysxActor->is<physx::PxCloth>())
+		{
+			physx::PxCloth* clothPxActor = (physx::PxCloth*) castedPhysxActor;
+
+			physx::PxFilterData filterData;
+			filterData.word0 = (uint32_t)actor->GetCollisionLayer();
+			filterData.word1 = (uint32_t) m_configuration->m_collisionFilter->GetCollisionMask(actor->GetCollisionLayerIndex());
+
+			clothPxActor->setSimulationFilterData(filterData);
+		}
+	}
+
+	void Scene::Prepare()
+	{
+		if (m_state != State::RUNNING) return;
+
+		VehicleSceneQueryData* a = VehicleSceneQueryData::Create(2);
+		VehicleSceneQueryResults* b = VehicleSceneQueryResults::Create(2);
+
+		/*
+		physx::PxVehicleDrivableSurfaceToTireFrictionPairs* m_surfaceTirePairs;
+		m_surfaceTirePairs->setup(MAX_NUM_TIRE_TYPES, MAX_NUM_SURFACE_TYPES, drivableSurfaceMaterials, drivableSurfaceTypes);
+		for (PxU32 i = 0; i < MAX_NUM_SURFACE_TYPES; i++)
+		{
+			for (PxU32 j = 0; j < MAX_NUM_TIRE_TYPES; j++)
+			{
+				mSurfaceTirePairs->setTypePairFriction(i, j, TireFrictionMultipliers::getValue(i, j));
+			}
+		}
+		*/
 	}
 
 	void Scene::Update(float dt)
 	{
 		if (m_state != State::RUNNING) return;
+
+		//physx::PxVehicleUpdates(dt, m_physxScene->getGravity(), m_frictionPairs, 1, m_vehicles, NULL);
 
 		// When this call returns, the simulation step has begun in a separate thread
 		m_physxScene->simulate(dt);
@@ -235,6 +300,11 @@ namespace PhysicsEngine
 		{
 			ClothSync(sourceScene);
 		}
+
+		if (syncState & SyncState::VEHICLE)
+		{
+			VehicleSync(sourceScene);
+		}
 	}
 
 	void Scene::StaticSync(Scene* sourceScene)
@@ -263,7 +333,7 @@ namespace PhysicsEngine
 				m_staticActors[i] = sourceScene->m_staticActors[i]->CloneToPhysics();
 			}
 
-			AddActor((StaticActor*) m_staticActors[i]);
+			AddActorInternal((StaticActor*) m_staticActors[i]);
 		}
 	}
 
@@ -293,7 +363,7 @@ namespace PhysicsEngine
 				m_dynamicActors[i] = sourceScene->m_dynamicActors[i]->CloneToPhysics();
 			}
 
-			AddActor((DynamicActor*) m_dynamicActors[i]);
+			AddActorInternal((DynamicActor*) m_dynamicActors[i]);
 		}
 	}
 
@@ -325,7 +395,40 @@ namespace PhysicsEngine
 
 			if (m_clothActors[i])
 			{
-				AddActor((ClothActor*) m_clothActors[i]);
+				AddActorInternal((ClothActor*) m_clothActors[i]);
+			}
+		}
+	}
+
+	void Scene::VehicleSync(Scene* sourceScene)
+	{
+		std::unique_lock<std::mutex> lock(m_mutex);
+
+		for (uint32_t i = 0; i < m_vehicleActorCount; i++)
+		{
+			m_vehicleActors[i]->Release();
+			delete m_vehicleActors[i];
+		}
+
+		m_vehicleActorCount = 0;
+#ifdef PHYSICS_DEBUG_MODE
+		m_vehicleActorsDebug.clear();
+#endif
+
+		for (uint32_t i = 0; i < sourceScene->m_vehicleActorCount; i++)
+		{
+			if (sourceScene->m_engineScene == nullptr)
+			{
+				m_vehicleActors[i] = sourceScene->m_vehicleActors[i]->CloneToRender();
+			}
+			else
+			{
+				m_vehicleActors[i] = sourceScene->m_vehicleActors[i]->CloneToPhysics();
+			}
+
+			if (m_vehicleActors[i])
+			{
+				AddActorInternal((VehicleActor*) m_vehicleActors[i]);
 			}
 		}
 	}
@@ -345,7 +448,7 @@ namespace PhysicsEngine
 		m_engineScene = gameScenePointer;
 	}
 
-	void Scene::AddActor(StaticActor* actor)
+	void Scene::AddActorInternal(StaticActor* actor)
 	{
 #ifdef PHYSICS_DEBUG_MODE
 		m_staticActorsDebug.push_back(actor);
@@ -361,7 +464,7 @@ namespace PhysicsEngine
 		}
 	}
 
-	void Scene::AddActor(DynamicActor* actor)
+	void Scene::AddActorInternal(DynamicActor* actor)
 	{
 #ifdef PHYSICS_DEBUG_MODE
 		m_dynamicActorsDebug.push_back(actor);
@@ -376,7 +479,7 @@ namespace PhysicsEngine
 		}
 	}
 
-	void Scene::AddActor(ClothActor* actor)
+	void Scene::AddActorInternal(ClothActor* actor)
 	{
 #ifdef PHYSICS_DEBUG_MODE
 		m_clothActorsDebug.push_back(actor);
@@ -388,6 +491,47 @@ namespace PhysicsEngine
 		if (m_state == State::RUNNING)
 		{
 			RegisterActor(actor);
+		}
+	}
+
+	void Scene::AddActorInternal(VehicleActor* actor)
+	{
+#ifdef PHYSICS_DEBUG_MODE
+		m_vehicleActorsDebug.push_back(actor);
+#endif
+
+		m_vehicleActors[m_vehicleActorCount] = actor;
+		m_vehicleActorCount++;
+
+		if (m_state == State::RUNNING)
+		{
+			RegisterActor(actor);
+		}
+	}
+
+	void Scene::AddActor(Actor* actor)
+	{
+		switch (actor->GetType())
+		{
+			case ActorType::Static:
+				AddActorInternal((StaticActor*) actor);
+				break;
+
+			case ActorType::Dynamic:
+				AddActorInternal((DynamicActor*) actor);
+				break;
+
+			case ActorType::Cloth:
+				AddActorInternal((ClothActor*) actor);
+				break;
+
+			case ActorType::Vehicle:
+				AddActorInternal((VehicleActor*) actor);
+				break;
+
+			default:
+				std::printf("Unknown Actor Type. Add failed!");
+				break;
 		}
 	}
 
@@ -419,6 +563,16 @@ namespace PhysicsEngine
 	const uint32_t Scene::GetClothActorCount() const
 	{
 		return m_clothActorCount;
+	}
+
+	const Actor** Scene::GetVehicleActors() const
+	{
+		return const_cast<const Actor**>(m_vehicleActors);
+	}
+	
+	const uint32_t Scene::GetVehicleActorCount() const
+	{
+		return m_vehicleActorCount;
 	}
 
 	const physx::PxScene* Scene::GetPhysxScene() const

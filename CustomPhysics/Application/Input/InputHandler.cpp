@@ -5,7 +5,6 @@ namespace CustomApplication
 {
 	bool InputHandler::Init()
 	{
-		m_keyState = new bool[256];
 		return true;
 	}
 
@@ -19,81 +18,71 @@ namespace CustomApplication
 
 	void InputHandler::HandleInput(double dt)
 	{
-		for (int i = 0; i < MAX_KEYS; i++)
+		for (int keyID = 0; keyID < MAX_KEYS; keyID++)
 		{
-			if (m_keyState[i])
+			bool currentlyPressed = m_keyState[keyID];
+			bool previouslyPressed = m_keyStatePrev[keyID];
+
+			if (currentlyPressed && !previouslyPressed)
 			{
-				// CameraInput(i);
-				// ForceInput(i);
-				// UserKeyHold(i);
+				printf("KeyPressed: %c\n", keyID);
+
+				auto events = m_onKeyPressCallbacks.find(keyID);
+				if (events != m_onKeyPressCallbacks.end())
+				{
+					for (auto& entry : m_onKeyPressCallbacks[keyID])
+					{
+						entry.m_callback(dt);
+					}
+				}
 			}
+
+			if (currentlyPressed && previouslyPressed)
+			{
+				printf("KeyHold: %c\n", keyID);
+
+				auto events = m_onKeyHoldCallbacks.find(keyID);
+				if (events != m_onKeyHoldCallbacks.end())
+				{
+					for (auto& entry : m_onKeyHoldCallbacks.at(keyID))
+					{
+						entry.m_callback(dt);
+					}
+				}
+			}
+
+			if (!currentlyPressed && previouslyPressed)
+			{
+				printf("KeyReleased: %c\n", keyID);
+
+				auto events = m_onKeyReleaseCallbacks.find(keyID);
+				if (events != m_onKeyReleaseCallbacks.end())
+				{
+					for (auto& entry : m_onKeyReleaseCallbacks.at(keyID))
+					{
+						entry.m_callback(dt);
+					}
+				}
+			}
+
+			// Update prev states
+			m_keyStatePrev[keyID] = m_keyState[keyID];
 		}
 	}
 
 	void InputHandler::KeyPress(unsigned char key, int x, int y)
 	{
-		printf("KeyPressed: %c\n", key);
-		switch (key)
-		{
-			case 'R':
-				// scene->ExampleKeyPressHandler();
-				break;
-
-			default:
-				break;
-		}
+		m_keyState[key] = true;
 	}
 
 	void InputHandler::KeySpecial(int key, int x, int y)
 	{
-		/*
-		  switch (key)
-		  {
-		  // display control
-		  case GLUT_KEY_F5:
-		  // hud on/off
-		  hud_show = !hud_show;
-		  break;
-
-		  case GLUT_KEY_F6:
-		  // shadows on/off
-		  Renderer::ShowShadows(!Renderer::ShowShadows());
-		  break;
-
-		  case GLUT_KEY_F7:
-		  // toggle render mode
-		  ToggleRenderMode();
-		  break;
-
-		  case GLUT_KEY_F8:
-		  // reset camera view
-		  camera->Reset();
-		  break;
-
-		  // simulation control
-		  case GLUT_KEY_F9:
-		  // select next actor
-		  scene->SelectNextActor();
-		  break;
-
-		  case GLUT_KEY_F10:
-		  // toggle scene pause
-		  scene->Pause(!scene->Pause());
-		  break;
-
-		  case GLUT_KEY_F12:
-		  // resect scene
-		  scene->Reset();
-		  break;
-
-		  default:
-		  break;
-		  }
-		  */
+		m_keyState[key] = true;
 	}
 
 	void InputHandler::KeyRelease(int key, int x, int y)
 	{
+		m_keyState[key] = false;
 	}
 
 	void InputHandler::MouseMotion(int x, int y)
@@ -101,7 +90,10 @@ namespace CustomApplication
 		int dx = m_mouseX - x;
 		int dy = m_mouseY - y;
 
-		//m_camera->Motion(dx, dy, delta_time);
+		for (auto& entry : m_onMouseMoveCallback)
+		{
+			entry.m_callback(dx, dy, x, y, 1 / 60.0f);
+		}
 
 		m_mouseX = x;
 		m_mouseY = y;
@@ -111,5 +103,25 @@ namespace CustomApplication
 	{
 		m_mouseX = x;
 		m_mouseY = y;
+	}
+
+	void InputHandler::SubscribeOnMouseMoveEvent(MouseMoveCallbackEntry& callback)
+	{
+		m_onMouseMoveCallback.emplace(callback);
+	}
+
+	void InputHandler::SubscribeOnKeyPress(uint32_t key, KeyCallbackEntry& callback)
+	{
+		m_onKeyPressCallbacks[key].emplace(callback);
+	}
+
+	void InputHandler::SubscribeOnKeyRelease(uint32_t key, KeyCallbackEntry& callback)
+	{
+		m_onKeyReleaseCallbacks[key].emplace(callback);
+	}
+
+	void InputHandler::SubscribeOnKeyHold(uint32_t key, KeyCallbackEntry& callback)
+	{
+		m_onKeyHoldCallbacks[key].emplace(callback);
 	}
 }

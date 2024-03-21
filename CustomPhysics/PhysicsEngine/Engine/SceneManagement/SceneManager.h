@@ -27,6 +27,7 @@ namespace PhysicsEngine
 	public:
 		bool PostInit(const physx::PxPhysics* physxObject,
 					  const Dispatcher* dispatcherObject);
+		void Prepare();
 		void Update(float dt);
 		void Sync();
 		void Release();

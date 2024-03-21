@@ -5,6 +5,9 @@
 #include "../../../PhysicsEngine/Engine/Actors/Actor.h"
 #include <string>
 #include "../../GameObjects/ClothGameObject.h"
+#include "../../GameObjects/CustomRenderGameObject.h"
+
+#define M_PI 3.14159265358979323846264338327950288
 
 namespace CustomApplication
 {
@@ -36,6 +39,9 @@ namespace CustomApplication
 
 	void GlutRenderer::SetupLighting()
 	{
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+
 		glEnable(GL_LIGHTING);
 		physx::PxReal ambientColor[] = { 0.2f, 0.2f, 0.2f, 1.f };
 		physx::PxReal diffuseColor[] = { 0.7f, 0.7f, 0.7f, 1.f };
@@ -61,6 +67,33 @@ namespace CustomApplication
 	void GlutRenderer::DrawSphere(const physx::PxGeometryHolder& geometry) const
 	{
 		glutSolidSphere(geometry.sphere().radius, m_renderDetail, m_renderDetail);
+	}
+
+	void GlutRenderer::DrawBox(const physx::PxTransform& pose, const physx::PxVec3& halfExtents, const RenderData& renderData) const
+	{
+		physx::PxMat44 shapePose(pose);
+		glPushMatrix();
+		glMultMatrixf((float*)&shapePose);
+
+		bool isLightingDisabled = renderData.GetIsLightingDisabled();
+		physx::PxVec3 shapeColor = *renderData.GetColor();
+
+		if (isLightingDisabled)
+		{
+			glDisable(GL_LIGHTING);
+		}
+
+		glColor4f(shapeColor.x, shapeColor.y, shapeColor.z, 1.f);
+
+		glScalef(halfExtents.x, halfExtents.y, halfExtents.z);
+		glutSolidCube(2.f);
+
+		if (isLightingDisabled)
+		{
+			glEnable(GL_LIGHTING);
+		}
+
+		glPopMatrix();
 	}
 
 	void GlutRenderer::DrawBox(const physx::PxGeometryHolder& geometry) const
@@ -236,7 +269,8 @@ namespace CustomApplication
 		// copy vertex positions
 		for (physx::PxU32 j = 0; j < verts.size(); j++)
 		{
-			verts[j] = particle_data->particles[j].pos;
+			physx::PxVec3 pos = particle_data->particles[j].pos;
+			verts[j] = pos;
 		}
 
 		particle_data->unlock();
@@ -279,6 +313,48 @@ namespace CustomApplication
 		glDisableClientState(GL_VERTEX_ARRAY);
 
 		glPopMatrix();
+
+		if (m_showShadows && !renderData.GetIsLightingDisabled())
+		{	
+			glPushMatrix();
+			glMultMatrixf(k_shadowMat);
+			glMultMatrixf((float*) &shapePose);
+			glDisable(GL_LIGHTING);
+
+			// Shadow render
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glEnableClientState(GL_NORMAL_ARRAY);
+
+			glVertexPointer(3, GL_FLOAT, sizeof(physx::PxVec3), &verts.front());
+			glNormalPointer(GL_FLOAT, sizeof(physx::PxVec3), &norms.front());
+
+			float originYPos = pose.p.y;
+
+			for (int i = 0; i < quad_count; i++)
+			{
+				float quadCenterY = 0;
+
+				for (int j = 0; j < 4; j++)
+				{
+					int vertexIndex = quads[i * 4 + j];
+					quadCenterY += abs((abs(verts[vertexIndex].y) - originYPos));
+				}
+				quadCenterY /= 4;
+
+				if (quadCenterY > k_specialMinRenderDistance)
+				{
+					float shadowHardness = (m_maxShadowDistance - quadCenterY) / m_maxShadowDistance;
+					glColor4f(k_shadowColor.x, k_shadowColor.y, k_shadowColor.z, shadowHardness);
+					glDrawElements(GL_QUADS, 4, GL_UNSIGNED_INT, &quads[i]);
+				}
+			}
+
+			glDisableClientState(GL_NORMAL_ARRAY);
+			glDisableClientState(GL_VERTEX_ARRAY);
+
+			glEnable(GL_LIGHTING);
+			glPopMatrix();
+		}
 	}
 
 	void GlutRenderer::RenderBuffer(float* pVertList, float* pColorList, int type, int num) const
@@ -292,15 +368,11 @@ namespace CustomApplication
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 
-	void GlutRenderer::UpdateCameraRender(const physx::PxVec3& cameraEye, const physx::PxVec3& cameraDir) const
+	void GlutRenderer::UpdateCameraRender(const float fov, const physx::PxVec3& cameraEye, const physx::PxVec3& cameraDir) const
 	{
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		gluPerspective(60.f,
-					   (float) glutGet(GLUT_WINDOW_WIDTH) /
-					   (float) glutGet(GLUT_WINDOW_HEIGHT),
-					   1.f, 10000.f);
-
+		gluPerspective(fov, (float) glutGet(GLUT_WINDOW_WIDTH) / (float) glutGet(GLUT_WINDOW_HEIGHT), 0.1f, 10000.f);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		gluLookAt(cameraEye.x, cameraEye.y, cameraEye.z,
@@ -311,23 +383,40 @@ namespace CustomApplication
 	void GlutRenderer::Clear()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		UpdateCameraRender(m_camera->GetPos(), m_camera->GetDir());
+	}
+
+	void GlutRenderer::Prepare(const float fov, physx::PxVec3& pos, physx::PxVec3& dir)
+	{
+		UpdateCameraRender(fov, pos, dir);
 	}
 
 	void GlutRenderer::Render(const GameObject** gameActors, const physx::PxU32 numActors)
 	{
 		for (physx::PxU32 i = 0; i < numActors; i++)
 		{
+			const RenderData& data = gameActors[i]->GetRenderData();
+			if (data.GetIgnoreRender())
+			{
+				continue;
+			}
+
+			auto gameActorType = gameActors[i]->GetType();
+			if (gameActorType == GameObject::Custom)
+			{
+				((CustomRenderGameObject*) gameActors[i])->CustomRender();
+				continue;
+			}
+
 			PhysicsEngine::Actor* actor = (PhysicsEngine::Actor*) (*gameActors[i]->GetPhysicsActorPointer());
 			const RenderData& renderData = gameActors[i]->GetRenderData();
 
-			if (actor->GetType() == PhysicsEngine::Actor::Type::Cloth)
+			if (actor->GetType() == PhysicsEngine::ActorType::Cloth)
 			{
 				RenderCloth((PhysicsEngine::ClothActor*) actor, renderData);
 				continue;
 			}
 
-			if (actor->GetType() == PhysicsEngine::Actor::Type::Static || actor->GetType() == PhysicsEngine::Actor::Type::Dynamic)
+			if (actor->GetType() == PhysicsEngine::ActorType::Static || actor->GetType() == PhysicsEngine::ActorType::Dynamic)
 			{
 				RenderShapes(actor, renderData);
 				continue;
@@ -354,6 +443,7 @@ namespace CustomApplication
 			const physx::PxShape* shape = shapes[j];
 			physx::PxTransform pose = physx::PxShapeExt::getGlobalPose(*shape, *shape->getActor());
 			physx::PxGeometryHolder h = shape->getGeometry();
+			bool isLightingDisabled = renderData.GetIsLightingDisabled();
 
 			// Move the plane slightly down to avoid visual artefacts
 			if (h.getType() == physx::PxGeometryType::ePLANE)
@@ -363,41 +453,100 @@ namespace CustomApplication
 			}
 
 			physx::PxMat44 shapePose(pose);
-
-			// Render object
 			glPushMatrix();
 			glMultMatrixf((float*) &shapePose);
 
-			if (h.getType() == physx::PxGeometryType::ePLANE)
+			// Render object
+			physx::PxVec3 shapeColor = *renderData.GetColor();
+			
+			if (isLightingDisabled)
 			{
 				glDisable(GL_LIGHTING);
 			}
-
-			physx::PxVec3 shapeColor = *renderData.GetColor();
-			physx::PxVec3 shadowColor = shapeColor * 0.9;
-
+				
 			glColor4f(shapeColor.x, shapeColor.y, shapeColor.z, 1.f);
-
 			RenderGeometry(h);
 
-			if (h.getType() == physx::PxGeometryType::ePLANE)
+			if (isLightingDisabled)
 			{
 				glEnable(GL_LIGHTING);
 			}
 
 			glPopMatrix();
 
-			if (m_showShadows && (h.getType() != physx::PxGeometryType::ePLANE))
+			// Draw shadows
+			float absVerticalPos = abs(pose.p.y);
+			if (m_showShadows && !isLightingDisabled && absVerticalPos < m_maxShadowDistance)
 			{
+				if (h.getType() == physx::PxGeometryType::ePLANE && absVerticalPos < k_specialMinRenderDistance)
+				{
+					return;
+				}
+
+				float shadowHardness = (m_maxShadowDistance-absVerticalPos) / m_maxShadowDistance;
+
 				glPushMatrix();
 				glMultMatrixf(k_shadowMat);
 				glMultMatrixf((float*) &shapePose);
 				glDisable(GL_LIGHTING);
-				glColor4f(shadowColor.x, shadowColor.y, shadowColor.z, 1.f);
+
+				glColor4f(k_shadowColor.x, k_shadowColor.y, k_shadowColor.z, shadowHardness);
 				RenderGeometry(h);
+
 				glEnable(GL_LIGHTING);
 				glPopMatrix();
 			}
+		}
+	}
+
+	void GlutRenderer::DrawCircle(const physx::PxVec3& centerOffset, const float radius, const int segments, const float startAngle, const float endAngle, const RenderData& renderData) const
+	{
+		glBegin(GL_TRIANGLE_FAN);
+		glVertex3f(centerOffset.x, centerOffset.y, centerOffset.z);
+
+		for (int i = 0; i <= segments; i++) {
+			float theta = startAngle + (endAngle - startAngle) * float(i) / float(segments);
+			float x = radius * cosf(theta);
+			float z = radius * sinf(theta);
+			glVertex3f(x + centerOffset.x, centerOffset.y, z + centerOffset.z);
+		}
+		glEnd();
+	}
+
+	void GlutRenderer::DrawCircleLine(const physx::PxVec3& centerOffset, const float radius, const int segments, const float startAngle, const float endAngle, const RenderData& renderData) const
+	{
+		const physx::PxVec3* color = renderData.GetColor();
+		bool isLightingDisabled = renderData.GetIsLightingDisabled();
+
+		if (isLightingDisabled)
+		{
+			glDisable(GL_LIGHTING);
+		}
+
+		glColor4f(color->x, color->y, color->z, 1);
+
+		float lineWidth = renderData.GetLineWidth();
+
+		// Magic constant that makes the circle perfect
+		// Need to use that, because glLineWidth sets the height of the line in x-z perspective
+		float invisibleDiff = 0.0075f;
+
+		for (float t = 0; t < lineWidth; t += invisibleDiff)
+		{
+			glBegin(GL_LINE_STRIP);
+			for (int i = 0; i <= segments; i++)
+			{
+				float theta = startAngle + (endAngle - startAngle) * float(i) / float(segments);
+				float x = (t + radius) * cosf(theta);
+				float z = (t + radius) * sinf(theta);
+				glVertex3f(x + centerOffset.x, centerOffset.y, z + centerOffset.z);
+			}
+			glEnd();
+		}
+
+		if (isLightingDisabled)
+		{
+			glEnable(GL_LIGHTING);
 		}
 	}
 
@@ -533,6 +682,10 @@ namespace CustomApplication
 
 	bool GlutRenderer::Init(const char* name, int width, int height)
 	{
+		m_renderDetail = 100;
+		m_maxShadowDistance = 20.f;
+		m_showShadows = true;
+
 		SetupWindow(name, width, height);
 
 		SetupRenderStates();
@@ -541,10 +694,8 @@ namespace CustomApplication
 		return true;
 	}
 
-	void GlutRenderer::PostInit(const Camera* camera,
-								const physx::PxVec3* backgroundColor)
+	void GlutRenderer::PostInit(const physx::PxVec3* backgroundColor)
 	{
-		m_camera = camera;
 		m_backgroundColour = backgroundColor;
 	}
 

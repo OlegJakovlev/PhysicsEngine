@@ -21,6 +21,18 @@ namespace CustomApplication
 		m_clothGameObjectCount++;
 	}
 
+	void GameScene::AddGameActorInternal(VehicleGameObject* vehicleGameObject)
+	{
+		m_vehicleGameObjects[m_vehicleGameObjectCount] = vehicleGameObject;
+		m_vehicleGameObjectCount++;
+	}
+
+	void GameScene::AddGameActorInternal(CustomRenderGameObject* customRenderObject)
+	{
+		m_customRenderGameObjects[m_customRenderGameObjectCount] = customRenderObject;
+		m_customRenderGameObjectCount++;
+	}
+
 	void GameScene::AddGameActor(GameObject* gameObject)
 	{
 		GameObject::Type underlayingType = gameObject->GetType();
@@ -46,6 +58,20 @@ namespace CustomApplication
 			return;
 		}
 
+		if (underlayingType == GameObject::Type::Vehicle)
+		{
+			VehicleGameObject* vehicleGameObject = (VehicleGameObject*) gameObject;
+			AddGameActorInternal(vehicleGameObject);
+			return;
+		}
+
+		if (underlayingType == GameObject::Type::Custom)
+		{
+			CustomRenderGameObject* customRenderObject = (CustomRenderGameObject*) gameObject;
+			AddGameActorInternal(customRenderObject);
+			return;
+		}
+
 		std::printf("Unknown underlaying GameObject type!\n");
 		return;
 	}
@@ -54,20 +80,87 @@ namespace CustomApplication
 	{
 		m_staticGameObjectCount = 0;
 		m_dynamicGameObjectCount = 0;
+		m_clothGameObjectCount = 0;
+		m_vehicleGameObjectCount = 0;
+		m_customRenderGameObjectCount = 0;
 
 		m_staticGameObjects = new GameObject* [k_maxStaticGameObjects];
 		m_dynamicGameObjects = new GameObject* [k_maxDynamicGameObjects];
 		m_clothGameObjects = new GameObject* [k_maxClothGameObjects];
+		m_vehicleGameObjects = new GameObject* [k_maxVehicleGameObjects];
+		m_customRenderGameObjects = new GameObject* [k_maxCustomRenderGameObjects];
 
 		m_gameObjectFactory = new GameObjectFactory();
 		m_gameObjectFactory->Init(const_cast<PhysicsEngine::ActorFactory*>(physicsEngine->GetActorFactory()));
 	}
 
+	void GameScene::ConfigureInternalScene(const PhysicsEngine::PhysicsEngine* physicsEngine)
+	{
+		// Scene config
+		PhysicsEngine::Scene::SceneConfiguration* config = new PhysicsEngine::Scene::SceneConfiguration();
+		config->m_gravity = physx::PxVec3(0, -9.81f, 0);
+		config->m_enableDemo = true;
+
+		// Collision filter
+		config->m_collisionFilter->Init();
+		ConfigureCollisionLayers(config->m_collisionFilter);
+
+		// Scene
+		PhysicsEngine::SceneManager* sceneManager = const_cast<PhysicsEngine::SceneManager*>(physicsEngine->GetSceneManager());
+		PhysicsEngine::Scene* physicsSceneReplica = sceneManager->CreateScene(config);
+
+		m_physicsScene = physicsSceneReplica;
+		physicsSceneReplica->LinkEngineScene(this);
+
+		// Add actors to the scene
+		const GameObject** allStaticActors = GetStaticGameObjects();
+		for (uint32_t i = 0; i < GetStaticGameObjectsCount(); i++)
+		{
+			physicsSceneReplica->AddActor((PhysicsEngine::Actor*) *allStaticActors[i]->GetPhysicsActorPointer());
+		}
+
+		const GameObject** allDynamicActors = GetDynamicGameObjects();
+		for (uint32_t i = 0; i < GetDynamicGameObjectCount(); i++)
+		{
+			physicsSceneReplica->AddActor((PhysicsEngine::Actor*) *allDynamicActors[i]->GetPhysicsActorPointer());
+		}
+
+		const GameObject** allClothActors = GetClothGameObjects();
+		for (uint32_t i = 0; i < GetClothGameObjectCount(); i++)
+		{
+			physicsSceneReplica->AddActor((PhysicsEngine::Actor*) *allClothActors[i]->GetPhysicsActorPointer());
+		}
+
+		const GameObject** allVehicleActors = GetVehicleGameObjects();
+		for (uint32_t i = 0; i < GetVehicleGameObjectsCount(); i++)
+		{
+			physicsSceneReplica->AddActor((PhysicsEngine::Actor*) *allVehicleActors[i]->GetPhysicsActorPointer());
+		}
+
+		// Activate the scene
+		sceneManager->AddActiveScene(physicsSceneReplica);
+	}
+
+	void GameScene::ConfigureCollisionLayers(PhysicsEngine::CollisionFilter* m_collisionFilter)
+	{
+		for (int i = 0; i < 32; i++)
+		{
+			m_collisionFilter->SetCollisionMask((PhysicsEngine::FilterNumericGroup) i, 0xFFFFFFFF);
+		}
+	}
+
 	void GameScene::Update(float dt)
 	{
-		// TODO: Instead of forcing gameobjects to update, do more data oriented appoarch
-		// PhysicsComponets->Update(); CustomComponentA->Update();
-		// Maybe it is worth having all custom components in separate container?
+	}
+
+	// Fixed update based on rendering
+	void GameScene::FixedUpdate(float dt)
+	{
+	}
+
+	// Fixed update based on physics callback
+	void GameScene::FixedPhysicsUpdate(float dt)
+	{
 	}
 
 	void GameScene::Lock()
@@ -113,6 +206,26 @@ namespace CustomApplication
 	const uint32_t GameScene::GetClothGameObjectCount() const
 	{
 		return m_clothGameObjectCount;
+	}
+
+	const GameObject** GameScene::GetVehicleGameObjects() const
+	{
+		return const_cast<const GameObject**>(m_vehicleGameObjects);
+	}
+
+	const uint32_t GameScene::GetVehicleGameObjectsCount() const
+	{
+		return m_vehicleGameObjectCount;
+	}
+
+	const GameObject** GameScene::GetCustomRenderObjects() const
+	{
+		return const_cast<const GameObject**>(m_customRenderGameObjects);
+	}
+
+	const uint32_t GameScene::GetCustomRenderObjectCount() const
+	{
+		return m_customRenderGameObjectCount;
 	}
 
 }
